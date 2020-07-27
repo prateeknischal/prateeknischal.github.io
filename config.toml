@@ -1,0 +1,30 @@
+# The URL the site will be built for
+base_url = "http://prateeknischal.github.io"
+
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = true
+
+# Whether to do syntax highlighting
+# Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
+highlight_code = true
+
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = false
+
+theme = "zola-pickles"
+
+# title of the blog
+title = "The Impatient Software Engineer"
+
+[extra]
+# Text to display in the footer of the page
+copyright = "Copyleft <a href='https://github.com/prateeknischal'>prateeknischal</a> 2020"
+
+# Your Google Analytics ID
+analytics = ""
+
+# See below
+katex_enable = true
+
+# See below
+instantpage_enable = false

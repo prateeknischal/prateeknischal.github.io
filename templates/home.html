@@ -1,0 +1,14 @@
+{% extends "zola-pickles/templates/index.html" %}
+
+{% block content %}
+{% for sub in section.subsections %}
+{% set ss = get_section(path=sub, metadata_only=true) %}
+<header>
+    <h2><a href="{{ ss.path }}">{{ ss.title | safe}}</a></h2>
+</header>
+
+<section>
+    <p>{{ ss.description }}</p>
+</section>
+{% endfor %}
+{% endblock content %}
