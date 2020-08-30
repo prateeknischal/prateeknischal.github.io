@@ -17,11 +17,11 @@ public interface Animal {
     public String speak();
 }
 
-public class Cat impements Animal {
+public class Cat implements Animal {
     public String speak() { return "I am a God !"; }
 }
 
-public class Dog impements Animal {
+public class Dog implements Animal {
     public String speak() { return "Where's my hooman !"; }
 }
 ```
@@ -55,12 +55,12 @@ public class Dog implements Animal {
 ```
 These 2 classes have no common functionality, yet they share an interface. This
 is just to mark these classes in a common group, logically. Useful and bit
-intereting use too, but we have something better.
+interesting use too, but we have something better.
 
-## How do you test a function that taken a file as a parameter
+## How do you test a function that takes a filepath as a parameter
 
 I am sure you would have written, at some point of time, a function that takes a
-file path as in input and you do certain operations on it, maybe read to it, or
+file path as an input and you need to do certain operations on it, maybe read to it, or
 write to it and return. Something like this.
 
 ```java
@@ -83,11 +83,11 @@ Sorry, too much of Java, let's write something better.
 ## What's problematic with that interface design
 
 
-The above interface isn't wrong, but it has some problems with it.
+The above API isn't wrong, but it has some problems with it.
 - Testing becomes a problem, if you have more of those functions, your project
   will have a lot of stray files which are filled with different test cases.
 
-- The function signature doesn't signify, it needs a file and not some random
+- The function signature doesn't convey it needs a file and not some random
   string. Arguably, it would be just made as `findCharInFile(File file, char c)`
   but it's a generalized perspective with all the languages.
 
@@ -98,22 +98,22 @@ The above interface isn't wrong, but it has some problems with it.
 
 ## How to solve the above problems
 
-Let's look into a less constraint language which doesn't have such hardcode OOPs
+Let's look into a less constraint language which doesn't have such hardcore OOPs
 principles. 
 
 [golang](https://golang.org) is the new language for the writing webservers and
 things on the internet. I am looking at you, NodeJS. 
 
 I feel bringing JS to the backend was a mistake, or atleast not regulating it.
-I have an imperative programming background. I have worked a bit on a few NodeJS
+I have an imperative programming background. Also, I have worked a bit on a few NodeJS
 projects. For some reason, it didn't seem receptive to me and it had certain
 inconsistencies that made it hard for me to write correct code. I know a lot of
-the veterans (irrespective of their background) will disagree with me, but I
+the veterans (irrespective of their backgrounds) will disagree with me, but I
 didn't feel that with other languages, so, just my opinion, no one needs to
 agree to it.
 
-Back to go, so, it's an incredibly well designed language with constructs that
-are simple to use and most importantly, read. It looks minimalist yet has a
+Back to go, it's an incredibly well designed language with constructs that
+are simple to use and most importantly, easy to read. It looks minimalist yet has a
 loaded standard library.
 
 Go has 2 interfaces that has the power to change the way you write code.
@@ -137,8 +137,8 @@ This is piece of code has acheived the following things,
   interface requires exactly one implementation, that is `Read([]byte) (int,
   error)`. This function has no more bussiness than reading the file.
 
-- This is much more unit-testable. All you need is a constructs that implements
-  the `Read([]byte)` function. You can mock one up and send it to the function
+- This is much more unit-testable. All you need is a construct that implements
+  the `io.Reader` interface. You can mock one up and send it to the function
   or use one of the builtins.
   eg:
   ```go
@@ -153,17 +153,18 @@ This is piece of code has acheived the following things,
   ```
 
 - This expresses the permissions you have on the stream. The `io.Reader` only
-  has a `Read([]byte)` function, so you can't use the filename to anything else
-  with it.
+  has a `Read([]byte)` function, so you can't use it to do anything else
+  with it unlike when you have the file path and you are responsible for opening
+  and closing it.
 
 - It abstracts the underlying provider of the readable stream. It could be a
   file on the disk, an in-memory buffer, some key value store, even the network.
-  It just has to adhere to one property or should have atleast on `trait`, to be
+  It just has to adhere to one property or should have atleast the `Read` `trait`, to be
   able to Read out bytes to a bytes buffer.
 
 - It also tells you the ownership of the underlying object. The caller is only
   only allowed to read the stream and not do anything else with it, like close
-  the stream when it thinks it's done. Maybe other's a still reading it, that
+  the stream when it thinks it's done. Maybe other's are still reading it, that
   would cause a [panic](https://blog.golang.org/defer-panic-and-recover), 
   quite literally.
 
@@ -189,6 +190,7 @@ too.
 
 We can't not talk about Rust in this case. The title mentions to use the 
 [`trait`](https://doc.rust-lang.org/book/ch10-02-traits.html)
+related.
 which is the Rust way of definiting features. Every trait can be seen as an
 interface and whosoever implements the trait can be said to have implemented
 that interface.
@@ -213,7 +215,7 @@ Notice the definition,
 find_char_in_file(rd: &mut dyn Read, c:u8)
 ```
 
-This implies that the receiver `rd` must implement the
+This conveys that the receiver `rd` must implement the
 [`io::Read`](https://doc.rust-lang.org/std/io/trait.Read.html) trait and that's all
 is required for this function to work. Similarly it's easy to test too.
 
@@ -269,8 +271,8 @@ network connection and not a file or a device or an in-memory buffer. But it
 would work just fine as network connections too are just Read and Write calls.
 
 This helps simplify writing the code. Notice that those functions now no longer
-have to deal with opening and closing files, handling errors that are file
-related.
+have to deal with opening and closing files, handling errors that are related to
+files.
 
 This explicitly conveys what the caller is responsible for and what can he do
 with it, given that the API can do just what the interface allows.
@@ -283,7 +285,7 @@ has interfaces around `InputStreams` and `BufferedInputStreams`, `Readers`
 and `BufferedReaders` etc. All of this can be accomplished in a similar 
 idiomatic and clean way. But's it's too much to write, Java is too verbose ;)
 
-It's just a more useful outlook to interfaces.
+It's just about a more useful outlook to interfaces.
 
 ## Where did I learn this from
 
