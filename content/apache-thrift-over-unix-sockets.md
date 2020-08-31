@@ -357,3 +357,6 @@ fn main() {
 For now, the client implementation using unix sockets is sufficient as the aim
 for this is to be able to communicate to `/var/osquery/osquery.em` socket which
 I hope is a unix socket.
+
+---
+Discussion thread [here](https://www.reddit.com/r/rust/comments/i70l4b/apache_thrift_over_unix_sockets_in_rust/)

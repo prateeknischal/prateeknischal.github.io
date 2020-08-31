@@ -297,3 +297,6 @@ if someone wants to take a look (highly recommended).
 - [7 common mistakes in go and when to avoid them by spf13](https://www.youtube.com/watch?v=29LLRKIL_TI)
 - [How Do You Structure Your Go Apps](https://www.youtube.com/watch?v=oL6JBUk6tj0)
 - [Go anti-patterns](https://www.youtube.com/watch?v=ltqV6pDKZD8)
+
+---
+Discussion thread [here](https://www.reddit.com/r/rust/comments/ik4ijc/go_use_those_traits_the_impatient_software/)
