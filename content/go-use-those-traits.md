@@ -66,9 +66,8 @@ write to it and return. Something like this.
 ```java
 public int findCharInFile(String path, char c) {
     /** 
-    * Some crappy Java code to open a file that results in taking more 
-    * effort than manually opening the file and doing a find on it by 
-    * visual inspection.
+    * Open the file by creating a Reader over an input stream and then read
+    * operations.
     **/
     return Integer.MAX_VALUE;
 }
@@ -77,8 +76,6 @@ How would you write tests for it ? You could do a dummy test file in your
 project with the test strings. For a long time I thought that was an ok way.
 Recently, I realized, there are better ways to implement it with higher
 testability.
-
-Sorry, too much of Java, let's write something better.
 
 ## What's problematic with that interface design
 
@@ -98,9 +95,46 @@ The above API isn't wrong, but it has some problems with it.
 
 ## How to solve the above problems
 
-Let's look into a less constraint language which doesn't have such hardcore OOPs
-principles. 
+We write a function signature that expresses what is intended only. Every
+construct in a language has constraints on it. The less the constraints the more
+flexible it becomes. The real intent here is to read some bytes from a stream
+and then do some processing over it. Why limit it to a file ?
 
+Enters the abstract class, [`java.io.Reader`](https://docs.oracle.com/javase/7/docs/api/java/io/Reader.html). 
+It defines exactly the behaviour we need. An Entity, we don't care what, 
+with a `read` function.
+
+```java
+public int findCharInFile(Reader rd, char c) throws IOException {
+    char buf[] = new char[4096];
+    int pos = 0;
+    while (rd.read(buf) != -1) {
+        /* Find the char by interating the buffer. */
+    }
+
+    return pos;
+}
+```
+Since, the
+[`java.io.Reader`](https://docs.oracle.com/javase/7/docs/api/java/io/Reader.html)
+implements [`java.io.Closeable`](https://docs.oracle.com/javase/7/docs/api/java/io/Closeable.html) 
+iterface as well, it gives an API for the caller to be able to close the stream. 
+This might give a bit more control by default as there is no way to not allow 
+the caller to close the stream without wrapping it into another class that 
+does not expose those APIs.
+
+How do you test it ? 
+```java
+public class DummReader implements Reader {
+    /* implement all the methods required by the Reader abstract class */
+}
+```
+and you can pass this to the function.
+
+Let's look at some newer langauges and in some more detail. 
+
+
+---
 [golang](https://golang.org) is the new language for the writing webservers and
 things on the internet. I am looking at you, NodeJS. 
 
