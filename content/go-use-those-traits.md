@@ -64,7 +64,7 @@ file path as an input and you need to do certain operations on it, maybe read to
 write to it and return. Something like this.
 
 ```java
-public int findCharInFile(String path, char c) {
+public int findCharInFile(String path, byte c) {
     /** 
     * Open the file by creating a Reader over an input stream and then read
     * operations.
@@ -85,7 +85,7 @@ The above API isn't wrong, but it has some problems with it.
   will have a lot of stray files which are filled with different test cases.
 
 - The function signature doesn't convey it needs a file and not some random
-  string. Arguably, it would be just made as `findCharInFile(File file, char c)`
+  string. Arguably, it would be just made as `findCharInFile(File file, byte c)`
   but it's a generalized perspective with all the languages.
 
 - You don't know anything about the ownership of the file, what should you do
@@ -105,7 +105,7 @@ It defines exactly the behaviour we need. An Entity, we don't care what,
 with a `read` function.
 
 ```java
-public int findCharInFile(Reader rd, char c) throws IOException {
+public int findCharInFile(Reader rd, byte c) throws IOException {
     char buf[] = new char[4096];
     int pos = 0;
     while (rd.read(buf) != -1) {
@@ -160,9 +160,9 @@ explanatory code, but let's start with this.
 
 Let's see how the same function would look in go, but with these constructs.
 ```go
-func findCharInFile(rd io.Reader, c char) int {
+func findCharInFile(rd io.Reader, c rune) int {
     contents, _ := ioutil.ReadAll(rd)
-    return strings.IndexByte(contents, c)
+    return strings.IndexRune(contents, c)
 }
 ```
 
@@ -180,7 +180,7 @@ This is piece of code has acheived the following things,
     // Creates a *Reader type object which uses the supplied string as it's
     // backend and is Read only.
     rd := strings.NewReader("Contents of your test string")
-    if findCharInFile(rd, '$') != -1 {
+    if findCharInFile(rd, rune('$')) != -1 {
         t.Fail()
     }
   }
@@ -229,15 +229,13 @@ which is the Rust way of definiting features. Every trait can be seen as an
 interface and whosoever implements the trait can be said to have implemented
 that interface.
 
-How would the same code look in Rust.
+How would the same code (thanks to [vlisivka](https://www.reddit.com/r/rust/comments/ik4ijc/go_use_those_traits_the_impatient_software/g439ua9?utm_source=share&utm_medium=web2x&context=3))
+look in Rust.
 ```rust
 fn find_char_in_file(rd: &mut dyn Read, c: u8) -> Result<Option<usize>> {
-    let mut buf = Vec::new();
-    rd.read_to_end(&mut buf)?;
-
-    for i in 0..buf.len() {
-        if buf[i] == c {
-            return Ok(Some(i));
+    for idx, b in rd.bytes().enumerate() {
+        if b? == c {
+            Ok(Some(idx))
         }
     }
     Ok(None)
@@ -291,7 +289,7 @@ implementation in your interface, you can simply replace the `io.Reader` with
 
 So, it would become something like,
 ```go
-func findCharInFile(rd bufio.Reader, c char) int
+func findCharInFile(rd bufio.Reader, c rune) int
 ```
 Converting a normal unbuffered reader to a buffered one is easy,
 ```go
@@ -334,3 +332,4 @@ if someone wants to take a look (highly recommended).
 
 ---
 Discussion thread [here](https://www.reddit.com/r/rust/comments/ik4ijc/go_use_those_traits_the_impatient_software/)
+
