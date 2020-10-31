@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="referrer" content="no-referrer">
+
+        <!-- Enable responsiveness on mobile devices-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+
+        <title>I C and .so does Rust | The Impatient Software Engineer</title>
+<meta property="og:title" content="I C and .so does Rust | The Impatient Software Engineer" />
+<meta name="twitter:title" content="I C and .so does Rust | The Impatient Software Engineer" />
+
+        
+
+        <meta property="og:site_name" content="The Impatient Software Engineer" />
+        <meta property="og:url" content="http:&#x2F;&#x2F;127.0.0.1:1111" />
+
+        
+
+
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;base.css" />
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;fontawesome.css" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;brands.css" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;solid.css" rel="stylesheet">
+
+        <link rel='icon' type='image/x-icon' href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;favicon.ico" />
+
+        <link rel="alternate" type="application/atom+xml" title="The Impatient Software Engineer" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;atom.xml">
+
+        
+
+    </head>
+    <body>
+        <a href="#main" class="skip-link p-screen-reader-text">Skip to content</a>
+        <header class="l-header">
+            <h1 class="c-title p-title"><a href="http:&#x2F;&#x2F;127.0.0.1:1111" class="p-title__link">The Impatient Software Engineer</a></h1>
+            </header>
+
+        <main id="main" class="l-main">
+            
+<article class="p-article">
+    <header>
+        <h1>I C and .so does Rust</h1>
+        <div>
+            <div class="c-time">
+
+                <time datetime="2020-09-08">
+                    2020-09-08
+                </time>
+                
+                 - (12 min read)
+            </div>
+        </div>
+    </header>
+    
+    <section id="js-article" class="p-article__body">
+        
+    <p>Distributing software is a tricky thing. If you want to share the functionality
+with someone you may share the source with them and give them the build
+instructions and it would all play out good. But that may not be the case if the
+source is a different language and the consumer is using a different language.
+For example, there are a lot of libraries that use common functionalities like
+<a href="https://openssl.org">openssl</a> for crypto operations or network libraries or 
+packages like <a href="https://github.com/madler/zlib">zlib</a> just because they are
+reliable and have been tested for years on speed and correctness. You might not
+want to translate it in the language of your choice. </p>
+<p>How do you accomplish something like that. Calling a library written in some
+other language that your source. There is a concept called <a href="https://en.wikipedia.org/wiki/Foreign_function_interface">FFI or Foreign
+Function Interface</a>
+which is used for this exact thing.</p>
+<p>You might have heard about 
+<a href="https://en.wikipedia.org/wiki/Java_Native_Interface">JNI or Java Native Interfaces</a>
+which is used to call subroutines in such native libraries. This came to me as a
+surprise, a lot of the core components of Java is written in C and is called
+within the language using JNI bindings. You would have seen the following
+signature in some Java classes when traversing the Go-To definitions. </p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">public native </span><span style="color:#ebcb8b;">String </span><span style="color:#bf616a;">foo</span><span style="color:#c0c5ce;">()
+</span></code></pre>
+<p>For example, This is what <a href="https://github.com/openjdk/jdk/blob/master/src/java.base/share/native/libjava/FileInputStream.c#L59">FileInputStream.open</a> 
+looks like</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">JNIEXPORT </span><span style="color:#b48ead;">void</span><span style="color:#c0c5ce;"> JNICALL
+</span><span style="color:#8fa1b3;">Java_java_io_FileInputStream_open0</span><span style="color:#c0c5ce;">(JNIEnv *</span><span style="color:#bf616a;">env</span><span style="color:#c0c5ce;">, jobject </span><span style="color:#bf616a;">this</span><span style="color:#c0c5ce;">, jstring </span><span style="color:#bf616a;">path</span><span style="color:#c0c5ce;">) {
+    </span><span style="color:#bf616a;">fileOpen</span><span style="color:#c0c5ce;">(env, this, path, fis_fd, O_RDONLY);
+}
+</span></code></pre>
+<p>That's the calling convention for JNI, the <code>java.io.FileInputStream.open0()</code>
+would be translated to <code>Java_java_io_FileInputStream_open0()</code>.</p>
+<p>Java is hardwired to look for these symbols when someone calls the Java name of
+these functions and most of it is present in <code>libjava.so</code> and <code>libjvm.so</code> files.
+These are distributable <code>Shared Objects</code> that contains the implementation of
+these native functions and is platform dependant. This may come as a surprise to
+some people (or I may be making a fool out of myself), Java isn't platform
+independant, atleast not all the core components. The bytecode generated by Java
+compiler is platform independant. The VM on which the bytecode executes has to
+be written and compiled for all platforms and architectures.</p>
+<p>That looks something like this <a href="https://github.com/openjdk/jdk/tree/master/src/java.base">jdk/src/java.base/
+</a>.</p>
+<h2 id="shared-objects">Shared objects<a class="zola-anchor" href="#shared-objects" aria-label="Anchor link for: shared-objects">🔗</a></h2>
+<p>Shared objects or dynamic libraries are an interesting concept and sometimes a
+pain. Let's go through an example.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">#include </span><span style="color:#c0c5ce;">&lt;</span><span style="color:#a3be8c;">stdio.h</span><span style="color:#c0c5ce;">&gt;
+</span><span style="color:#b48ead;">int </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">() {
+    </span><span style="color:#96b5b4;">printf</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">hello world</span><span style="color:#c0c5ce;">&quot;);
+    </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">;
+}
+</span></code></pre>
+<p>This program is just calling a function called <code>printf</code>. But, wait, I can call
+the functions that actually exists, otherwise the compiler goes batshit crazy,
+unless it's javascript ofcourse, which will break at runtime. This code
+compiles, so this function must exist, but where, it's not present in my source
+file.</p>
+<p>Its present in the <code>/usr/include/stdio.h</code> file.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">extern int </span><span style="color:#8fa1b3;">printf </span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">const char </span><span style="color:#c0c5ce;">*</span><span style="color:#b48ead;">__restrict </span><span style="color:#bf616a;">__format</span><span style="color:#c0c5ce;">, ...);
+</span></code></pre>
+<p>Wait, it's only the declaration, where is the implementation. When I build this
+this code and run the linked dependency tools <a href="https://linux.die.net/man/1/ldd">ldd</a>, it shows this,</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">$ gcc hello.c -o hello
+$ ldd hello
+        linux-vdso.so.1 (0x00007fff715ea000)
+        libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f1f085a1000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007f1f08b94000)
+</span></code></pre>
+<p>Notice, there is something called, <code>libc</code> present in here. Linux exports all
+these implementations in this shared object. For example, notice this file in
+the glibc repository, <a href="https://github.com/lattera/glibc/blob/master/stdio-common/printf.c#L27">glibc/printf.c</a>.
+If libc is not present on the target host, the simple hello world program 
+won't work since it would not find the <code>printf</code> subroutine.</p>
+<p>Now, if the code is in a binary file, how do people and compilers know if they
+using it correctly. That's where the header files come in. Header files are
+basically signatures that the compiler can rely on to check if the code is
+correct syntactically. This is generally exported as a public <code>include</code> folder
+in C projects. </p>
+<p>There is a very nice explanation on what shared objects are in this 
+<a href="https://stackoverflow.com/a/9688536/6266958">SO post</a>. TL;DR, it's a binary
+which contains implementation of the corresponding headers. Shared object naming
+convention is specific to link. For other platforms, they are called <a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/DynamicLibraries/100-Articles/UsingDynamicLibraries.html"><code>dylib</code></a>
+for MacOS and
+<a href="https://support.microsoft.com/en-in/help/815065/what-is-a-dll"><code>dll</code></a> for
+windows. They are not quite the same but, they behave in a similar fashion and
+this can be backed up by the C API <a href="https://linux.die.net/man/3/dlopen">dlopen</a>
+which is used to load dynamic libraries.</p>
+<p>Now, that we have vague idea of what shared objects represent, let's move to
+&quot;why this waste of internet resources, this article&quot;.</p>
+<h2 id="interoperability-with-rust">Interoperability with Rust<a class="zola-anchor" href="#interoperability-with-rust" aria-label="Anchor link for: interoperability-with-rust">🔗</a></h2>
+<p>Rust is popular because it boasts a good interoperability with the C APIs. Which
+means, it's simple in Rust to call C APIs with minimal efforts. Let's see a
+minimal API.</p>
+<h3 id="the-c-code-we-would-call">The C code we would call.<a class="zola-anchor" href="#the-c-code-we-would-call" aria-label="Anchor link for: the-c-code-we-would-call">🔗</a></h3>
+<p>We need to have some functionality that we want to call from other languages.
+Let's write a toy project which exposes such API.</p>
+<p>The project structure looks like this.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">.
+├── Makefile
+└── src
+   ├── include
+   │  └── shared.h
+   └── shared
+      └── shared.c
+</span></code></pre>
+<p>This is a fairly standard structure for C projects. To have definitions for all
+public APIs in the <code>include</code> folder.</p>
+<p>The <code>shared.h</code> file.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">#ifndef</span><span style="color:#c0c5ce;"> SHARED_H
+</span><span style="color:#b48ead;">#define </span><span style="color:#c0c5ce;">SHARED_H
+</span><span style="color:#b48ead;">#endif
+
+struct </span><span style="color:#c0c5ce;">key_spec {
+    </span><span style="color:#b48ead;">char</span><span style="color:#c0c5ce;"> key[</span><span style="color:#d08770;">16</span><span style="color:#c0c5ce;">];
+    </span><span style="color:#b48ead;">const char </span><span style="color:#c0c5ce;">*type;
+};
+
+</span><span style="color:#b48ead;">struct</span><span style="color:#c0c5ce;"> key_spec* </span><span style="color:#8fa1b3;">get_key</span><span style="color:#c0c5ce;">();
+</span></code></pre>
+<p>The <code>shared.c</code> file that contains the actual implementation. This is a very
+advanced key generator ! almost cryptographically secure.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">#include </span><span style="color:#c0c5ce;">&lt;</span><span style="color:#a3be8c;">shared.h</span><span style="color:#c0c5ce;">&gt;
+</span><span style="color:#b48ead;">#include </span><span style="color:#c0c5ce;">&lt;</span><span style="color:#a3be8c;">stdlib.h</span><span style="color:#c0c5ce;">&gt;
+
+</span><span style="color:#b48ead;">struct</span><span style="color:#c0c5ce;"> key_spec *</span><span style="color:#8fa1b3;">get_key</span><span style="color:#c0c5ce;">() {
+    </span><span style="color:#b48ead;">struct</span><span style="color:#c0c5ce;"> key_spec *ks = (</span><span style="color:#b48ead;">struct</span><span style="color:#c0c5ce;"> key_spec*) </span><span style="color:#96b5b4;">malloc</span><span style="color:#c0c5ce;">(sizeof(</span><span style="color:#b48ead;">struct</span><span style="color:#c0c5ce;"> key_spec*));
+    </span><span style="color:#b48ead;">for </span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;"> i = </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">; i &lt; </span><span style="color:#d08770;">16</span><span style="color:#c0c5ce;">; i++) {
+        ks-&gt;key[i] = i + </span><span style="color:#d08770;">32</span><span style="color:#c0c5ce;">;
+    }
+
+    ks-&gt;type = (</span><span style="color:#b48ead;">const char</span><span style="color:#c0c5ce;">*)&quot;</span><span style="color:#a3be8c;">dummy</span><span style="color:#96b5b4;">\0</span><span style="color:#c0c5ce;">&quot;;
+    </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> ks;
+}
+</span></code></pre>
+<p>How to build it into a shared object (notice it does not have a <code>int main()</code>.
+Create a Makefile with </p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#8fa1b3;">build</span><span style="color:#c0c5ce;">:
+        </span><span style="color:#a3be8c;">gcc -shared -Isrc/include src/shared/shared.c -o libshared.so
+</span></code></pre>
+<p>And that's it. Just run <code>make</code> and it should dump a shared object file.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> make
+</span><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> file libshared.so
+</span><span style="color:#bf616a;">libshared.so:</span><span style="color:#c0c5ce;"> ELF 64-bit LSB shared object, x86-64, version 1 (SYSV)</span><span style="color:#bf616a;">, 
+dynamically</span><span style="color:#c0c5ce;"> linked, BuildID</span><span style="color:#b48ead;">[</span><span style="color:#c0c5ce;">sha1</span><span style="color:#b48ead;">]</span><span style="color:#c0c5ce;">=65587972f8df8f099b66363f0cc44f96f43c2828, not stripped
+</span></code></pre><h2 id="interfacing-rust-with-the-shared-object">Interfacing rust with the shared object<a class="zola-anchor" href="#interfacing-rust-with-the-shared-object" aria-label="Anchor link for: interfacing-rust-with-the-shared-object">🔗</a></h2>
+<p>Now that we have a shared object which has out advanced key generator, we need
+to tell Rust, how does it look, function definitions, fields etc. There is just
+the tool for it, <a href="https://github.com/rust-lang/rust-bindgen">bindgen</a>. It's a
+rust language project that generates FFI bindings (the interface in the target
+language, i.e. Rust for it's compiler to understand. It's basically a header
+file but in rust.)</p>
+<p>Install the bindgen crate via <code>cargo install bindgen</code>. Make sure you have some
+form of a C compiler present, I am using <code>gcc</code> here.</p>
+<h3 id="generating-the-header-ish-files-for-rust">Generating the header-ish files for rust<a class="zola-anchor" href="#generating-the-header-ish-files-for-rust" aria-label="Anchor link for: generating-the-header-ish-files-for-rust">🔗</a></h3>
+<p>Let's ask rust to generate some code.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> cargo init</span><span style="color:#bf616a;"> --bin</span><span style="color:#c0c5ce;"> test-rs
+</span><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> cd test-rs
+</span><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> bindgen cproject/src/include/shared.hpp</span><span style="color:#bf616a;"> -o</span><span style="color:#c0c5ce;"> src/shared.rs
+</span></code></pre>
+<p>This should generate a rust source file.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#65737e;">/* automatically generated by rust-bindgen 0.55.1 */
+
+</span><span style="color:#c0c5ce;">#[</span><span style="color:#bf616a;">repr</span><span style="color:#c0c5ce;">(C)]
+#[</span><span style="color:#bf616a;">derive</span><span style="color:#c0c5ce;">(Debug, Copy, Clone)]
+</span><span style="color:#b48ead;">pub struct </span><span style="color:#c0c5ce;">key_spec {
+    </span><span style="color:#b48ead;">pub </span><span style="color:#bf616a;">key</span><span style="color:#c0c5ce;">: [::std::os::raw::c_char; 16usize],
+    </span><span style="color:#b48ead;">pub </span><span style="color:#bf616a;">type_</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">*const </span><span style="color:#c0c5ce;">::std::os::raw::c_char,
+}
+
+</span><span style="color:#65737e;">/* omitting tests */ 
+
+</span><span style="color:#b48ead;">extern </span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">C</span><span style="color:#c0c5ce;">&quot; {
+    </span><span style="color:#b48ead;">pub fn </span><span style="color:#8fa1b3;">get_key</span><span style="color:#c0c5ce;">() -&gt; </span><span style="color:#b48ead;">*mut</span><span style="color:#c0c5ce;"> key_spec;
+}
+</span></code></pre>
+<p>Notice, it has a similar structure of our header file and defintions. Alright,
+it looks nice and usable in rust. Let's move on.</p>
+<p>Let's write the <code>main.rs</code> file.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">mod </span><span style="color:#c0c5ce;">shared;
+
+</span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">() {
+    </span><span style="color:#b48ead;">unsafe </span><span style="color:#c0c5ce;">{
+        </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> k = shared::get_key();
+        println!(&quot;</span><span style="color:#a3be8c;">the key: </span><span style="color:#d08770;">{:#?}</span><span style="color:#c0c5ce;">&quot;, k.</span><span style="color:#96b5b4;">as_ref</span><span style="color:#c0c5ce;">());
+    };
+}
+</span></code></pre>
+<p>Since, this is a call from a different library, rust can not guarantee it would
+not do something funny, so we have to write it inside the 
+<a href="https://doc.rust-lang.org/book/ch19-01-unsafe-rust.html"><code>unsafe</code></a> block.</p>
+<p>That's all code we need.</p>
+<h2 id="building-it-in-rust">Building it in rust<a class="zola-anchor" href="#building-it-in-rust" aria-label="Anchor link for: building-it-in-rust">🔗</a></h2>
+<p>Before we rush and do a <code>cargo run</code>, we need to tell the compiler what are we
+trying to do.</p>
+<p>If you try to build it now, the linker will throw a huge error saying, it can't
+find </p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> cargo build
+</span><span style="color:#bf616a;">error:</span><span style="color:#c0c5ce;"> linking with `</span><span style="color:#bf616a;">cc</span><span style="color:#c0c5ce;">` failed: exit code: 1
+</span><span style="color:#bf616a;">...
+error:</span><span style="color:#c0c5ce;"> linking with `</span><span style="color:#bf616a;">cc</span><span style="color:#c0c5ce;">` failed: exit code: 1
+  |
+  = </span><span style="color:#bf616a;">note: </span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">cc</span><span style="color:#c0c5ce;">&quot; &quot;</span><span style="color:#a3be8c;">-Wl,--as-needed</span><span style="color:#c0c5ce;">&quot;...
+  = </span><span style="color:#bf616a;">note:</span><span style="color:#c0c5ce;"> test-rs/target/debug/deps/test_rs-b3e83acc1bd66527.3yrtf1vyhbvxamca.rcgu.o: In function `</span><span style="color:#bf616a;">test_rs::main</span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">:
+          test-rs/src/main.rs:5: undefined reference to `get_key</span><span style="color:#c0c5ce;">&#39;
+          </span><span style="color:#bf616a;">collect2:</span><span style="color:#c0c5ce;"> error: ld returned 1 exit status
+</span></code></pre>
+<p>which is logical as we just told rust about the definition, we never told rust
+where to look for the actual implementation is, notice it's a linker <code>ld</code> error
+saying it can't find <code>get_key</code> function.</p>
+<p>There are 2 ways to do it. </p>
+<h3 id="using-linker-flags-link-and-search-paths">Using linker flags, link and search paths<a class="zola-anchor" href="#using-linker-flags-link-and-search-paths" aria-label="Anchor link for: using-linker-flags-link-and-search-paths">🔗</a></h3>
+<p>We can do it the old school way using the <code>-L</code> and the <code>-l</code> options in 
+<a href="https://linux.die.net/man/1/ld"><code>ld</code></a>.</p>
+<p>The rust compiler, just like the gcc can take some linker flags and pass it on
+to the linker in the linking step. </p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> env RUSTFLAGS=&quot;</span><span style="color:#a3be8c;">-Lcproject/ -lshared</span><span style="color:#c0c5ce;">&quot; cargo build
+</span></code></pre>
+<p>This will tell <code>ld</code> to look for <code>libshared.so</code> file in the search path
+<code>cproject</code> (since we build the shared object in that project folder). </p>
+<h3 id="the-all-rust-way">The all rust way<a class="zola-anchor" href="#the-all-rust-way" aria-label="Anchor link for: the-all-rust-way">🔗</a></h3>
+<p>We can tell rust by specifying a <code>links</code> key in <code>package</code> section in <code>Cargo.toml</code>.</p>
+<p>This naming convention is same as <code>dlopen</code>, omit the leading <code>lib</code> from the
+shared object name. So, <code>libshared.so</code> becomes <code>shared</code>.</p>
+<p>After adding this, <code>cargo build</code> will ask you to have a custom build script,
+i.e. <code>build.rs</code>. This very specific use case is present in the
+<a href="https://rust-lang.github.io/rust-bindgen/tutorial-3.html">bindgen manual</a></p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">use </span><span style="color:#c0c5ce;">std::env;
+
+</span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">() {
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> project_dir = env::var(&quot;</span><span style="color:#a3be8c;">CARGO_MANIFEST_DIR</span><span style="color:#c0c5ce;">&quot;).</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">();
+
+    println!(&quot;</span><span style="color:#a3be8c;">cargo:rustc-link-search=</span><span style="color:#d08770;">{}</span><span style="color:#c0c5ce;">&quot;, project_dir); </span><span style="color:#65737e;">// the &quot;-L&quot; flag
+    </span><span style="color:#c0c5ce;">println!(&quot;</span><span style="color:#a3be8c;">cargo:rustc-link-lib=shared</span><span style="color:#c0c5ce;">&quot;); </span><span style="color:#65737e;">// the &quot;-l&quot; flag
+</span><span style="color:#c0c5ce;">}
+</span></code></pre>
+<p>We tell cargo to use this <code>build.rs</code> file by specifying the <code>build</code> key in the
+<code>package</code> section in <code>Cargo.toml</code>.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">[package]
+</span><span style="color:#bf616a;">name </span><span style="color:#c0c5ce;">= </span><span style="background-color:#bf616a;color:#2b303b;">test-rs</span><span style="color:#c0c5ce;">
+...
+</span><span style="color:#bf616a;">links </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">shared</span><span style="color:#c0c5ce;">&quot;
+</span><span style="color:#bf616a;">build </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">build.rs</span><span style="color:#c0c5ce;">&quot;
+</span></code></pre>
+<p>Now, when we run, we should get a successful build. Run a <code>cargo clean</code> to make
+sure old artefacts are removed.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> cargo clean &amp;&amp; </span><span style="color:#bf616a;">cargo</span><span style="color:#c0c5ce;"> build
+</span></code></pre><h2 id="let-s-celebrate-our-victory">Let's celebrate our victory<a class="zola-anchor" href="#let-s-celebrate-our-victory" aria-label="Anchor link for: let-s-celebrate-our-victory">🔗</a></h2>
+<p>We are ready to fly..</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> cargo build
+</span><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> ./target/debug/test-rs
+</span><span style="color:#bf616a;">./target/debug/test-rs:</span><span style="color:#c0c5ce;"> error while loading shared libraries: libshared.so: 
+</span><span style="color:#bf616a;">cannot</span><span style="color:#c0c5ce;"> open shared object file: No such file or directory
+</span></code></pre>
+<p>But wait, this is trivial, remember <code>LD_LIBRARY_PATH</code>. All binaries that have
+dynamic dependencies should be told where to find those dependencies. eg:</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> ldd $</span><span style="color:#bf616a;">HOME</span><span style="color:#c0c5ce;">/.cargo/bin/cargo
+        </span><span style="color:#bf616a;">linux-vdso.so.1</span><span style="color:#c0c5ce;"> (0x00007ffe401f4000)
+        </span><span style="color:#bf616a;">libdl.so.2</span><span style="color:#c0c5ce;"> =&gt; /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f6ed709c000)
+        </span><span style="color:#bf616a;">librt.so.1</span><span style="color:#c0c5ce;"> =&gt; /lib/x86_64-linux-gnu/librt.so.1 (0x00007f6ed6e94000)
+        </span><span style="color:#bf616a;">libpthread.so.0</span><span style="color:#c0c5ce;"> =&gt; /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f6ed6c75000)
+        </span><span style="color:#bf616a;">libgcc_s.so.1</span><span style="color:#c0c5ce;"> =&gt; /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f6ed6a5d000)
+        </span><span style="color:#bf616a;">libc.so.6</span><span style="color:#c0c5ce;"> =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f6ed666c000)
+        </span><span style="color:#bf616a;">libm.so.6</span><span style="color:#c0c5ce;"> =&gt; /lib/x86_64-linux-gnu/libm.so.6 (0x00007f6ed62ce000)
+        </span><span style="color:#bf616a;">/lib64/ld-linux-x86-64.so.2</span><span style="color:#c0c5ce;"> (0x00007f6ed7e2c000)
+</span></code></pre>
+<p>Notice, how all the shared objects are mapped to a physical location in the
+memory which is usually part of <code>/lib</code> and <code>/lib64</code>. For an exhustive list look at
+<code>/etc/ld.so.conf.d/</code>.</p>
+<p>We can set the environment variable <code>LD_LIBRARY_PATH</code> and then it should run.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> env LD_LIBRARY_PATH=cproject target/debug/test-rs
+</span><span style="color:#bf616a;">the</span><span style="color:#c0c5ce;"> key: Some(
+    </span><span style="color:#bf616a;">key_spec </span><span style="color:#c0c5ce;">{
+        key: [
+            32,
+            33,
+            ...
+            45,
+            46,
+            47,
+        ],
+        type_: 0x00007fbafa2f2665,
+    },
+)
+</span></code></pre>
+<p><strong>Rejoice!!</strong></p>
+<h2 id="something-interesting-that-i-observed">Something interesting that I observed<a class="zola-anchor" href="#something-interesting-that-i-observed" aria-label="Anchor link for: something-interesting-that-i-observed">🔗</a></h2>
+<p>The original intent of this excercise was to get Rust to use C++ library. So, the
+initial version of the C source was in C++. Then, I decided to move to something
+simpler. But I forgot to rename the header file to a <code>.h</code> extension from a
+<code>.hpp</code> extension. Due to that, <code>bindgen</code> was compiling those headers into
+mangled <code>link_name</code>s causing a lot of pain to me. </p>
+<p>When generating the ffi bindings for the headers named as <code>.hpp</code> instead of
+<code>.h</code>, I was getting</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">extern </span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">C</span><span style="color:#c0c5ce;">&quot; {
+    #[</span><span style="color:#bf616a;">link_name </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#96b5b4;">\u{1}</span><span style="color:#a3be8c;">_Z7get_keyv</span><span style="color:#c0c5ce;">&quot;]
+    </span><span style="color:#b48ead;">pub fn </span><span style="color:#8fa1b3;">get_key</span><span style="color:#c0c5ce;">() -&gt; </span><span style="color:#b48ead;">*mut</span><span style="color:#c0c5ce;"> key_spec;
+}
+</span></code></pre>
+<p>Notice the <code>link_name</code>, an additional attribute.The cargo builds kept failing due to
+the following errors when I was trying to use the above generated code with a C
+version of the shared object build, i.e. using <code>gcc</code>.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">cc</span><span style="color:#c0c5ce;">&quot; &quot;</span><span style="color:#a3be8c;">-Wl,--as-needed</span><span style="color:#c0c5ce;">&quot; ... &quot;</span><span style="color:#a3be8c;">-L</span><span style="color:#c0c5ce;">&quot; &quot;</span><span style="color:#a3be8c;">cproject</span><span style="color:#c0c5ce;">&quot; ... &quot;</span><span style="color:#a3be8c;">-l</span><span style="color:#c0c5ce;">&quot; &quot;</span><span style="color:#a3be8c;">shared</span><span style="color:#c0c5ce;">&quot; ... 
+</span></code></pre>
+<p>It seems to be looking at the correct locations, but it's not able to find the
+mangled name.</p>
+<p>Notice the <code>link_name</code>, it's not <code>get_key</code> but <code>_Z7get_keyv</code>. This is called 
+<a href="https://en.wikipedia.org/wiki/Name_mangling">Name Mangling</a>, compiler's way of
+embedding meta data for the linker. Let's see what name is present in the <code>gcc</code>
+version of the shared object that the linker is trying to look in.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> objdump</span><span style="color:#bf616a;"> -d</span><span style="color:#c0c5ce;"> libshared.so | </span><span style="color:#bf616a;">grep</span><span style="color:#c0c5ce;"> get_key
+</span><span style="color:#bf616a;">000000000000060a </span><span style="color:#c0c5ce;">&lt;get_key&gt;:
+ </span><span style="color:#bf616a;">627:</span><span style="color:#c0c5ce;">   eb 18                   jmp    641 &lt;get_key+0x37&gt;
+ </span><span style="color:#d08770;">645</span><span style="color:#c0c5ce;">:   7e e2                   jle    629 &lt;get_key+0x1f&gt;
+</span></code></pre>
+<p>This seems to be plain and simple, no mangling at all, as expected.</p>
+<p>We can explicitly tell bindgen to not use those compiler provided mangled link
+names. by specifying</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">bindgen --distrust-clang-mangling </span><span style="color:#c0c5ce;">&lt;header file&gt; -o src/shared.rs
+</span></code></pre>
+<hr />
+<h2 id="observing-bindgen-with-c">Observing bindgen with C++<a class="zola-anchor" href="#observing-bindgen-with-c" aria-label="Anchor link for: observing-bindgen-with-c">🔗</a></h2>
+<p>Mangling is a very prominent feature in C++. Which means, g++
+should be able to produce the same results as <code>bindgen</code> when asserting the
+project to be a c++ project by the <code>.hpp</code> extension.</p>
+<p>Let's compile the source shared object with <code>g++</code> instead of <code>gcc</code>.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> g++</span><span style="color:#bf616a;"> -shared -Isrc</span><span style="color:#c0c5ce;">/include src/shared/shared.c</span><span style="color:#bf616a;"> -o</span><span style="color:#c0c5ce;"> libshared.so
+</span><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> file libshared.so
+</span><span style="color:#bf616a;">libshared.so:</span><span style="color:#c0c5ce;"> ELF 64-bit LSB shared object, x86-64, version 1 (SYSV)</span><span style="color:#bf616a;">, 
+dynamically</span><span style="color:#c0c5ce;"> linked, BuildID</span><span style="color:#b48ead;">[</span><span style="color:#c0c5ce;">sha1</span><span style="color:#b48ead;">]</span><span style="color:#c0c5ce;">=002b495798ab8683e9596c1e2a85104dc5e48fb6, not stripped
+
+</span><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> objdump</span><span style="color:#bf616a;"> -d</span><span style="color:#c0c5ce;"> libshared.so | </span><span style="color:#bf616a;">grep</span><span style="color:#c0c5ce;"> get_key
+</span><span style="color:#bf616a;">000000000000061a </span><span style="color:#c0c5ce;">&lt;_Z7get_keyv&gt;:
+ </span><span style="color:#bf616a;">63b:</span><span style="color:#c0c5ce;">   7f 1a                   jg     657 &lt;_Z7get_keyv+0x3d&gt;
+ </span><span style="color:#d08770;">655</span><span style="color:#c0c5ce;">:   eb e0                   jmp    637 &lt;_Z7get_keyv+0x1d&gt;
+</span></code></pre>
+<p>So, the shared object built with <code>g++</code> does produce the expected mangled name.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> c++filt _Z7get_keyv
+</span><span style="color:#8fa1b3;">get_key</span><span style="color:#c0c5ce;">()
+</span></code></pre>
+<p>And is able to reverse properly too.</p>
+<p>Thanks to <a href="https://www.reddit.com/r/rust/comments/iovqrw/rust_and_ffi_initiation/g4gxp1y">/u/boomshroom</a>
+for pointing this <code>.h</code> to <code>.hpp</code> error out.</p>
+<h3 id="references">References<a class="zola-anchor" href="#references" aria-label="Anchor link for: references">🔗</a></h3>
+<p>Some interesting things that I came across that may help</p>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=Mln3idSVsxg">Linux Executables: From Assembly to C and Rust</a></li>
+<li><a href="https://www.youtube.com/watch?v=jR2hUhjcAXI">Before Main: How Executables Work on Linux</a></li>
+<li><a href="https://rust-lang.github.io/rust-bindgen/">Rust bindgen tutorial</a></li>
+</ul>
+<hr />
+<p>Discussion thread: <a href="https://www.reddit.com/r/rust/comments/iovqrw/rust_and_ffi_initiation/">here</a></p>
+
+
+    </section>
+    <footer>
+        <nav class="c-pagination p-pagination">
+            <div class="c-pagination__ctrl">
+                <div class="c-pagination__newer">
+                    <a href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;pre-commit-workflow&#x2F;">Test before you Go and commit</a>
+                </div>
+                <div class="c-pagination__older">
+                    <a href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;go-use-those-traits&#x2F;">Go use those Traits</a>
+                </div>
+            </div>
+        </nav>
+    </footer>
+</article>
+        </main>
+
+     
+      <footer class="l-footer">
+          <p class="p-copyright">
+              
+              
+    Copyleft <a href='https://github.com/prateeknischal'>prateeknischal</a> 2020
+
+          </p>
+      </footer>
+
+       
+      <link rel="stylesheet" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;css&#x2F;katex.min.css">
+      <script defer src="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;js&#x2F;katex.min.js"></script>
+      <script defer src="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;js&#x2F;mathtex-script-type.min.js"></script>
+    <script src="/livereload.js?port=1025&amp;mindelay=10"></script></body>
+</html>
+            

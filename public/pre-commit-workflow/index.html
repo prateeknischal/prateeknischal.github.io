@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="referrer" content="no-referrer">
+
+        <!-- Enable responsiveness on mobile devices-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+
+        <title>Test before you Go and commit | The Impatient Software Engineer</title>
+<meta property="og:title" content="Test before you Go and commit | The Impatient Software Engineer" />
+<meta name="twitter:title" content="Test before you Go and commit | The Impatient Software Engineer" />
+
+        
+
+        <meta property="og:site_name" content="The Impatient Software Engineer" />
+        <meta property="og:url" content="http:&#x2F;&#x2F;127.0.0.1:1111" />
+
+        
+
+
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;base.css" />
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;fontawesome.css" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;brands.css" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;solid.css" rel="stylesheet">
+
+        <link rel='icon' type='image/x-icon' href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;favicon.ico" />
+
+        <link rel="alternate" type="application/atom+xml" title="The Impatient Software Engineer" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;atom.xml">
+
+        
+
+    </head>
+    <body>
+        <a href="#main" class="skip-link p-screen-reader-text">Skip to content</a>
+        <header class="l-header">
+            <h1 class="c-title p-title"><a href="http:&#x2F;&#x2F;127.0.0.1:1111" class="p-title__link">The Impatient Software Engineer</a></h1>
+            </header>
+
+        <main id="main" class="l-main">
+            
+<article class="p-article">
+    <header>
+        <h1>Test before you Go and commit</h1>
+        <div>
+            <div class="c-time">
+
+                <time datetime="2020-11-01">
+                    2020-11-01
+                </time>
+                
+                 - (5 min read)
+            </div>
+        </div>
+    </header>
+    
+    <section id="js-article" class="p-article__body">
+        
+    <p>There is a certain confidence boost when you see that message &quot;All tests pass&quot;,
+unless you are like me and get lazy, skimping on writing good tests for your
+logic. There are a lot of tools integrated with github, gitlab and probably
+other git interfaces that run a set of pre-defined tasks before potentially
+allowing you to raise a PR or mark it safe for merge. For the uninitiated, it's
+know as <a href="https://en.wikipedia.org/wiki/Continuous_integration">CI or continuous
+integration</a> tools. For
+example,</p>
+<ul>
+<li><a href="https://github.com/marketplace/azure-pipelines">Azure pipelines</a></li>
+<li><a href="https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions">Github actions</a></li>
+<li><a href="https://github.com/circleci">CicleCI</a></li>
+<li><a href="https://travis-ci.org/">TravisCI</a></li>
+</ul>
+<p>What if you could run those tests, lint checks and other stuff before you push
+your commit and realize it's going to fail in your CI pipeline and make you look
+like a n00b. Wouldn't that be great !</p>
+<p>Unfortunately, there aren't a lot of tools that do the same for plain old git, I
+mean locally in your development environment. There is one for nodejs, called
+the <a href="https://www.npmjs.com/package/pre-commit">pre-commit</a>, but let's ignore
+that since we are gophers here.</p>
+<p>There is a project
+<a href="https://github.com/pre-commit/pre-commit">pre-commit/pre-commit</a> that can be
+used to manage a wide variety of pre-commit stuff and in a pretty way. It looks
+really good ! The only gripe that I have with it (highly personal) is it needs a
+runtime. I am not saying that runtimes are bad, they just feel a bit bloated and
+then you run into their dependencies and versions and give up.  The most painful
+transition for me has been <code>python2.x</code> to <code>python3.x</code>. So, I try to avoid python
+until <code>python3</code> is an adopted standard and the only version present in all of my
+machines. If that's not a concern for you, then feel free to use the pre-commit
+project. It will probably suit your needs much better.</p>
+<p>If you share similar thoughts as me or don't have anything better to do than
+reading this, let's see how these things are implemented.</p>
+<h3 id="hooks-all-over-the-place">Hooks all over the place<a class="zola-anchor" href="#hooks-all-over-the-place" aria-label="Anchor link for: hooks-all-over-the-place">🔗</a></h3>
+<p>I can feel the incoming disappointment. Git, the vanilla thing has something
+called <a href="https://git-scm.com/docs/githooks">githooks</a> at different stages that
+you can use to hook in and run your stuff.</p>
+<p>Let's try something !</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> git clone https://github.com/cloudmarker/cloudmarker.git
+</span><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> exa</span><span style="color:#bf616a;"> --tree</span><span style="color:#c0c5ce;"> cloudmarker/.git/hooks
+</span><span style="color:#bf616a;">.git/hooks
+├──</span><span style="color:#c0c5ce;"> applypatch-msg.sample
+</span><span style="color:#bf616a;">├──</span><span style="color:#c0c5ce;"> commit-msg.sample
+</span><span style="color:#bf616a;">├──</span><span style="color:#c0c5ce;"> fsmonitor-watchman.sample
+</span><span style="color:#bf616a;">├──</span><span style="color:#c0c5ce;"> post-update.sample
+</span><span style="color:#bf616a;">├──</span><span style="color:#c0c5ce;"> pre-applypatch.sample
+</span><span style="color:#bf616a;">├──</span><span style="color:#c0c5ce;"> pre-commit.sample
+</span><span style="color:#bf616a;">├──</span><span style="color:#c0c5ce;"> pre-push.sample
+</span><span style="color:#bf616a;">├──</span><span style="color:#c0c5ce;"> pre-rebase.sample
+</span><span style="color:#bf616a;">├──</span><span style="color:#c0c5ce;"> pre-receive.sample
+</span><span style="color:#bf616a;">├──</span><span style="color:#c0c5ce;"> prepare-commit-msg.sample
+</span><span style="color:#bf616a;">└──</span><span style="color:#c0c5ce;"> update.sample
+</span></code></pre>
+<p>Notice the
+<a href="https://github.com/git/git/blob/master/templates/hooks--pre-commit.sample"><code>pre-commit.sample</code></a>
+file. It has a sample defintion that could be run before the commit, as the name
+suggests. What if we create a file <code>pre-commit</code> with the scripts that we need to
+run, tests, lints, checks, print xkcd, whatever be it.</p>
+<p>That script would get called before you try and commit and the commit would fail
+if the script exited with a non-zero error code, thus preventing you from your
+impulsive force pushes.</p>
+<h3 id="make-it-more-manageable"><em>make</em> it more manageable<a class="zola-anchor" href="#make-it-more-manageable" aria-label="Anchor link for: make-it-more-manageable">🔗</a></h3>
+<p>This is a file present in the <code>.git</code> folder that is not under version control, so
+how do you manage it better. If the commands or workflow changes in between, you
+would have to keep updating the script manually which is not what we want.</p>
+<p>One way to do it is, softlinks. Create a softlink to your version controlled
+script file and make the pre-commit hook to point your script. A sample project
+structure that you make want to follow.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> exa</span><span style="color:#bf616a;"> --tree --level</span><span style="color:#c0c5ce;"> 1 .
+</span><span style="color:#96b5b4;">.
+</span><span style="color:#bf616a;">├──</span><span style="color:#c0c5ce;"> go.mod
+</span><span style="color:#bf616a;">├──</span><span style="color:#c0c5ce;"> go.sum
+</span><span style="color:#bf616a;">├──</span><span style="color:#c0c5ce;"> main.go
+</span><span style="color:#bf616a;">├──</span><span style="color:#c0c5ce;"> main_test.go
+</span><span style="color:#bf616a;">├──</span><span style="color:#c0c5ce;"> Makefile
+</span><span style="color:#bf616a;">└──</span><span style="color:#c0c5ce;"> .pre-commit
+</span></code></pre>
+<p>The project contains a version controlled file called <code>.pre-commit</code> (a dotfile
+to keep the folder view clean) which will contain your commands that you may
+need to run.</p>
+<p>The first time setup can be automated using your favourite tools. Let's try to
+do something using <a href="https://www.gnu.org/software/make/manual/make.html"><code>gnu make</code></a>
+(which is <strong>not</strong> my favourite).</p>
+<p>Contents of the <code>.pre-commit</code>.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#65737e;">#/bin/bash
+</span><span style="color:#bf616a;">./.git/hooks/pre-commit.sample
+make</span><span style="color:#c0c5ce;"> pre-commit
+</span></code></pre>
+<p>The make target.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#8fa1b3;">pre-commit</span><span style="color:#c0c5ce;">:
+    </span><span style="color:#a3be8c;">@go test ./...
+    </span><span style="color:#d08770;">@</span><span style="color:#bf616a;">go</span><span style="color:#c0c5ce;"> fmt ./...
+    </span><span style="color:#d08770;">@</span><span style="color:#bf616a;">goimports -w</span><span style="color:#c0c5ce;"> .
+    </span><span style="color:#d08770;">@</span><span style="color:#bf616a;">golint</span><span style="color:#c0c5ce;"> ./...
+
+    </span><span style="color:#d08770;">@</span><span style="color:#bf616a;">go</span><span style="color:#c0c5ce;"> vet ./...
+    </span><span style="color:#d08770;">@</span><span style="color:#bf616a;">gocyclo -over</span><span style="color:#c0c5ce;"> 10 .
+
+</span><span style="color:#8fa1b3;">deps</span><span style="color:#c0c5ce;">:
+    </span><span style="color:#a3be8c;">@echo &quot;Installing tools: goimports, golint, gocyclo&quot;
+    </span><span style="color:#d08770;">@</span><span style="color:#bf616a;">go</span><span style="color:#c0c5ce;"> get</span><span style="color:#bf616a;"> -u</span><span style="color:#c0c5ce;"> golang.org/x/lint/golint
+    </span><span style="color:#d08770;">@</span><span style="color:#bf616a;">go</span><span style="color:#c0c5ce;"> get</span><span style="color:#bf616a;"> -u</span><span style="color:#c0c5ce;"> github.com/fzipp/gocyclo
+    </span><span style="color:#d08770;">@</span><span style="color:#bf616a;">go</span><span style="color:#c0c5ce;"> get golang.org/x/tools/cmd/goimports
+
+    </span><span style="color:#d08770;">@</span><span style="color:#96b5b4;">echo </span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">Setting up pre-commit hook</span><span style="color:#c0c5ce;">&quot;
+    </span><span style="color:#d08770;">@</span><span style="color:#bf616a;">ln -snf</span><span style="color:#c0c5ce;"> ../../.pre-commit .git/hooks/pre-commit
+    </span><span style="color:#d08770;">@</span><span style="color:#bf616a;">chmod</span><span style="color:#c0c5ce;"> +x .pre-commit
+</span></code></pre>
+<p>Notice the <code>deps</code> target that downloads all the tools that I am using in my
+pre-commit flow and then sets a softlink to the git hooks pointing to the
+relative path of the <code>.pre-commit</code> file.</p>
+<p>This may seem a bit annoying (to have an indirection from the pre-commit file to
+the makefile) but it gives you a minimal pre-commit file and all of dependencies
+and complexities are captured and controlled from a single place which is your
+build mechanism, <code>make</code> in this case,</p>
+<h3 id="using-this-workflow">Using this workflow<a class="zola-anchor" href="#using-this-workflow" aria-label="Anchor link for: using-this-workflow">🔗</a></h3>
+<p>To setup this workflow, you could just do</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> make deps
+</span></code></pre>
+<p>And you are all set with the dependencies for your project and the git hook as
+well. The next time you try a commit, it will run the whole <code>pre-commit</code> target
+and break your commit if have messed something up automatically.</p>
+<p>I like this because it's minimal (has it's own downsides) and does not require
+installing any extra tools or libraries other than what you anyways need (make
+is usually present on most unix systems). If your project is large and this is
+not enough, I would recommend going with a more verbose and configurable tool,
+but for small project, this should be familiar enough. I have seen people
+customize their makefiles to extremes, so maybe that's all they need.</p>
+<hr />
+<p>Discussion thread:
+<a href="https://www.reddit.com/r/golang/comments/jlqht8/a_minimal_precommit_go_workflow/">here</a></p>
+
+
+    </section>
+    <footer>
+        <nav class="c-pagination p-pagination">
+            <div class="c-pagination__ctrl">
+                <div class="c-pagination__newer">
+                    
+                </div>
+                <div class="c-pagination__older">
+                    <a href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;i-c-and-so-does-rust&#x2F;">I C and .so does Rust</a>
+                </div>
+            </div>
+        </nav>
+    </footer>
+</article>
+        </main>
+
+     
+      <footer class="l-footer">
+          <p class="p-copyright">
+              
+              
+    Copyleft <a href='https://github.com/prateeknischal'>prateeknischal</a> 2020
+
+          </p>
+      </footer>
+
+       
+      <link rel="stylesheet" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;css&#x2F;katex.min.css">
+      <script defer src="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;js&#x2F;katex.min.js"></script>
+      <script defer src="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;js&#x2F;mathtex-script-type.min.js"></script>
+    <script src="/livereload.js?port=1025&amp;mindelay=10"></script></body>
+</html>
+            

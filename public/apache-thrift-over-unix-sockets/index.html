@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="referrer" content="no-referrer">
+
+        <!-- Enable responsiveness on mobile devices-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+
+        <title>Apache thrift over unix sockets in Rust | The Impatient Software Engineer</title>
+<meta property="og:title" content="Apache thrift over unix sockets in Rust | The Impatient Software Engineer" />
+<meta name="twitter:title" content="Apache thrift over unix sockets in Rust | The Impatient Software Engineer" />
+
+        
+
+        <meta property="og:site_name" content="The Impatient Software Engineer" />
+        <meta property="og:url" content="http:&#x2F;&#x2F;127.0.0.1:1111" />
+
+        
+
+
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;base.css" />
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;fontawesome.css" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;brands.css" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;solid.css" rel="stylesheet">
+
+        <link rel='icon' type='image/x-icon' href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;favicon.ico" />
+
+        <link rel="alternate" type="application/atom+xml" title="The Impatient Software Engineer" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;atom.xml">
+
+        
+
+    </head>
+    <body>
+        <a href="#main" class="skip-link p-screen-reader-text">Skip to content</a>
+        <header class="l-header">
+            <h1 class="c-title p-title"><a href="http:&#x2F;&#x2F;127.0.0.1:1111" class="p-title__link">The Impatient Software Engineer</a></h1>
+            </header>
+
+        <main id="main" class="l-main">
+            
+<article class="p-article">
+    <header>
+        <h1>Apache thrift over unix sockets in Rust</h1>
+        <div>
+            <div class="c-time">
+
+                <time datetime="2020-08-01">
+                    2020-08-01
+                </time>
+                
+                 - (10 min read)
+            </div>
+        </div>
+    </header>
+    
+    <section id="js-article" class="p-article__body">
+        
+    <p><a href="https://en.wikipedia.org/wiki/Apache_Thrift">Apache Thrift</a> is an interace
+defintion language and binary communication protocol use for defining and
+creating services for all the numerous supported languages. It forms an RPC
+framework avoiding the usual microservices HTTP style messaging making it a
+bit more efficient avoiding all that HTTP overhead.</p>
+<p>Thrift was developed at facebook. Now I have some views about facebook due to
+their primary product which is quite stupid (the users), the social network, not the
+movie but the website, <a href="https://facebook.com">facebook.com</a>. It has almost no
+credibility for common people, nothing useful, full of memes (which are
+hilarious by the way if you find your way to some awesome math meme pages) and
+a serious time killer. There is a <a href="https://www.youtube.com/watch?v=LKPwKFigF8U">video from Veritasium</a>
+about how the human mind is getting dull day by day due to these mankind's
+effort of filling those spare minutes which could be used for better things.</p>
+<p>Too much trash talk now. I actually have started to respect facebook as a tech
+innovation company. Facebook has developed some pretty awesome tech like,</p>
+<ul>
+<li><a href="https://github.com/osquery/osquery">osquery</a> - Exposing the OS with an SQL
+engine on top of it.</li>
+<li><a href="https://github.com/apache/thrift">Apache thrift</a> - This article</li>
+<li><a href="https://github.com/facebookincubator/katran">Katran</a> - A library to build a
+high performance L4 loadbalancing forwarding plane using linux's XDP
+infrastructure.</li>
+<li><a href="https://reactjs.org">React</a> - The first choice to build a cross platform UI
+application.</li>
+<li><a href="https://github.com/facebook/rocksdb">RocksDB</a> - A fast multi-core version of
+levelDB.</li>
+</ul>
+<p>and many more !!</p>
+<h2 id="what-is-thrift">What is Thrift<a class="zola-anchor" href="#what-is-thrift" aria-label="Anchor link for: what-is-thrift">🔗</a></h2>
+<p>Thrift lets you define an interface for how a service expects input and output.
+It's like a unified way of defining a language which then can be
+implemented by other languages. It's similar to defining a protocol like
+<a href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP</a> which isn't
+bound to any language but is a list of guidelines which are implemented by
+multiple languages which allows cross language communication across processes,
+applications and platforms.</p>
+<p>Lets take a look at a dummy interface that just allows reporting a time string.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">service Timer {
+    string time()
+}
+</span></code></pre>
+<p>This service <code>Timer</code> returns a <code>string</code> when calling the <code>Timer.time</code> function.
+Thrift works by generating boilerplate code for any supported language. We can
+do so by</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#65737e;"># MacOS install
+</span><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> brew install thrfit
+
+</span><span style="color:#65737e;"># Linux
+</span><span style="color:#c0c5ce;">$ sudo apt install thrift
+</span></code></pre>
+<p>or visit <a href="http://thrift.apache.org">Project homepage</a> for complete instructions.</p>
+<p>Once, thrift is installed, we generate the boilerplate code using</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">thrift --gen</span><span style="color:#c0c5ce;"> py timer.thrift
+</span></code></pre>
+<p>We are using a python codegen for simplicity for the moment. We will do the same
+set of activities using Rust as well.</p>
+<p>The autogen should generate a folder <code>gen-py</code> with a bunch of python code. Let's
+ignore it for now and get a server up and running to make sure it works as
+expected.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">sys
+
+</span><span style="color:#65737e;"># Add the generated code to the path so that the boilerplate can be imported.
+</span><span style="color:#c0c5ce;">sys.path.</span><span style="color:#bf616a;">append</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">./gen-py</span><span style="color:#c0c5ce;">&#39;)
+</span><span style="color:#b48ead;">from </span><span style="color:#c0c5ce;">timer </span><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">Timer
+
+</span><span style="color:#b48ead;">from </span><span style="color:#c0c5ce;">thrift.transport </span><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">TSocket, TTransport
+</span><span style="color:#b48ead;">from </span><span style="color:#c0c5ce;">thrift.protocol </span><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">TBinaryProtocol
+</span><span style="color:#b48ead;">from </span><span style="color:#c0c5ce;">thrift.server </span><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">TServer
+
+</span><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">time
+
+</span><span style="color:#65737e;"># Implementation of the Service
+</span><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">TimerHandler</span><span style="color:#eff1f5;">:
+    </span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">time</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">):
+        </span><span style="color:#b48ead;">return </span><span style="color:#bf616a;">str</span><span style="color:#c0c5ce;">(time.</span><span style="color:#bf616a;">time</span><span style="color:#c0c5ce;">())
+
+</span><span style="color:#65737e;"># Handler for the thrift calls are defined and setup
+</span><span style="color:#c0c5ce;">handler = </span><span style="color:#bf616a;">TimerHandler</span><span style="color:#c0c5ce;">()
+proc = Timer.</span><span style="color:#bf616a;">Processor</span><span style="color:#c0c5ce;">(handler)
+
+socket = TSocket.</span><span style="color:#bf616a;">TServerSocket</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">port</span><span style="color:#c0c5ce;">=</span><span style="color:#d08770;">9090</span><span style="color:#c0c5ce;">)
+transport = TTransport.</span><span style="color:#bf616a;">TBufferedTransportFactory</span><span style="color:#c0c5ce;">()
+protocol = TBinaryProtocol.</span><span style="color:#bf616a;">TBinaryProtocolFactory</span><span style="color:#c0c5ce;">()
+server = TServer.</span><span style="color:#bf616a;">TSimpleServer</span><span style="color:#c0c5ce;">(proc, socket, transport, protocol)
+
+server.</span><span style="color:#bf616a;">serve</span><span style="color:#c0c5ce;">()
+</span></code></pre>
+<p>Save as <code>server.py</code></p>
+<p>This will basically setup the server which now accepts and replies over the thrift
+protocol. A client generated from the same interface file can communicate with
+this service.</p>
+<p>Let's create a client. The boilerplate code exposes a <code>Client</code> class as well
+that can be then used to communicate.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">sys
+
+</span><span style="color:#65737e;"># Add the generated code to the path so that the boilerplate can be imported.
+</span><span style="color:#c0c5ce;">sys.path.</span><span style="color:#bf616a;">append</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">./gen-py</span><span style="color:#c0c5ce;">&#39;)
+</span><span style="color:#b48ead;">from </span><span style="color:#c0c5ce;">timer </span><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">Timer
+
+</span><span style="color:#b48ead;">from </span><span style="color:#c0c5ce;">thrift.transport </span><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">TSocket, TTransport
+</span><span style="color:#b48ead;">from </span><span style="color:#c0c5ce;">thrift.protocol </span><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">TBinaryProtocol
+
+socket = TSocket.</span><span style="color:#bf616a;">TSocket</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">port</span><span style="color:#c0c5ce;">=</span><span style="color:#d08770;">9090</span><span style="color:#c0c5ce;">)
+transport = TTransport.</span><span style="color:#bf616a;">TBufferedTransport</span><span style="color:#c0c5ce;">(socket)
+protocol = TBinaryProtocol.</span><span style="color:#bf616a;">TBinaryProtocol</span><span style="color:#c0c5ce;">(transport)
+client = Timer.</span><span style="color:#bf616a;">Client</span><span style="color:#c0c5ce;">(protocol)
+
+transport.</span><span style="color:#bf616a;">open</span><span style="color:#c0c5ce;">()
+
+</span><span style="color:#65737e;"># Make the call to the server using the generated client.
+</span><span style="color:#96b5b4;">print </span><span style="color:#c0c5ce;">(client.</span><span style="color:#bf616a;">time</span><span style="color:#c0c5ce;">())
+transport.</span><span style="color:#bf616a;">close</span><span style="color:#c0c5ce;">()
+</span></code></pre>
+<p>Save as <code>client.py</code></p>
+<p>The server can be run by just firing <code>python server.py</code> and then run <code>python client.py</code> to run the client.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> python server.py &amp;
+</span><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> python client.py
+</span><span style="color:#bf616a;">1596284880.527916
+</span></code></pre>
+<p>Nice and clean !</p>
+<h2 id="how-does-it-look">How does it look<a class="zola-anchor" href="#how-does-it-look" aria-label="Anchor link for: how-does-it-look">🔗</a></h2>
+<p>Let's try and take a look at the socket dump of the request. Just set up a
+wireshark dump over the loopback and it should recognize the protocol as
+<code>THRIFT</code>.</p>
+<p><img src="/thrift_tcp_capture.png" alt="Thrift packets" /></p>
+<p>If we take a look at the request packet, it's just a few bits of binary message.
+<img src="/thrift_request.png" alt="Request" /></p>
+<p>And the same is for reply, a serialized version of the response is sent as a TCP
+package.
+<img src="/thrift_reply.png" alt="Response" /></p>
+<p>Describing the protocol would be counter productive and out of scope of this
+article (because I don't know how to) as it's a full blown binary
+protocol that supports multiple encodings, from pure binary protocol to higher
+level JSON protocol and even a space optimized zlib transport.</p>
+<h2 id="let-s-do-the-client-in-rust">Let's do the client in Rust<a class="zola-anchor" href="#let-s-do-the-client-in-rust" aria-label="Anchor link for: let-s-do-the-client-in-rust">🔗</a></h2>
+<p>Now that we have a client and server, let's try to make the client in rust (
+deal with only one component at a time).</p>
+<p>We generate rust code using the <code>thrift</code> CLI.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> cargo init thrust
+</span><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> cd thrust/src
+</span><span style="color:#bf616a;">$</span><span style="color:#c0c5ce;"> thrift</span><span style="color:#bf616a;"> --gen</span><span style="color:#c0c5ce;"> rs /path/to/timer.thrift
+</span></code></pre>
+<p>This will generate a file called <code>timer.rs</code> with all the boilerplate code and is
+simpler than the python code.</p>
+<p>Let's write the client in Rust. We can use the Python code for inspiration or
+just use the sample code in the <a href="https://docs.rs/thrift"><code>thrift</code></a> crate's example.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">extern crate</span><span style="color:#c0c5ce;"> thrift;
+</span><span style="color:#b48ead;">mod </span><span style="color:#c0c5ce;">timer;
+
+</span><span style="color:#b48ead;">use </span><span style="color:#c0c5ce;">timer::*;
+</span><span style="color:#b48ead;">use </span><span style="color:#c0c5ce;">thrift::protocol::{TBinaryInputProtocol, TBinaryOutputProtocol}
+</span><span style="color:#b48ead;">use </span><span style="color:#c0c5ce;">thrift::transport::TTcpChannel;
+
+</span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">() {
+    </span><span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> channel = TTcpChannel::new();
+    channel.</span><span style="color:#96b5b4;">connect</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">localhost:9090</span><span style="color:#c0c5ce;">&quot;).</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">();
+
+    </span><span style="color:#b48ead;">let </span><span style="color:#c0c5ce;">(readable, writeable) = channel.</span><span style="color:#96b5b4;">split</span><span style="color:#c0c5ce;">().</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">();
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> in_stream = TBinaryInputProtocol::new(readable, </span><span style="color:#d08770;">true</span><span style="color:#c0c5ce;">);
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> out_stream = TBinaryOutputProtocol::new(writeable_true);
+
+    </span><span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> client = TimerSyncClient::new(in_stream, out_stream);
+    println!(&quot;</span><span style="color:#d08770;">{:?}</span><span style="color:#c0c5ce;">&quot;, client.</span><span style="color:#96b5b4;">time</span><span style="color:#c0c5ce;">());
+}
+</span></code></pre>
+<p>If you do a <code>cargo run</code>, It should return a similar output as the python client.
+Pretty simple, didn't require a lot of effort, example's got you.</p>
+<h2 id="let-s-get-into-the-unix-socket">Let's get into the unix socket.<a class="zola-anchor" href="#let-s-get-into-the-unix-socket" aria-label="Anchor link for: let-s-get-into-the-unix-socket">🔗</a></h2>
+<p><a href="http://beej.us/guide/bgipc/html/multi/unixsock.html">Unix sockets</a>
+are Full duplex named sockets that are usually meant for inter-process
+communication. It's relatively faster than using the loopback mechanism because
+it avoids the data going over the whole TCP Stack that includes the routing
+mechanism as well since it's going over an interface. Due to the same reason, it
+would be more efficient if we route the thrift traffic over a unix domain socket
+instead of localhost.</p>
+<p>But, the <code>thrift</code> crate doesn't show any example or API to be able to connect
+via Unix Sockets. It only has a
+<a href="https://docs.rs/thrift/0.13.0/thrift/transport/struct.TTcpChannel.html"><code>thrift::transport::TTcpChannel</code></a>
+which can't be used with the Unix Sockets as it doesn't use the TCP Stack at
+all.</p>
+<p>Now, let's see what can be done. Let's explore the <code>TimerSyncClient</code>'s
+signature from the generated <code>timer.rs</code> file.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">pub struct </span><span style="color:#c0c5ce;">TimerSyncClient&lt;IP, OP&gt; where IP: TInputProtocol, OP: TOutputProtocol {
+  </span><span style="color:#bf616a;">_i_prot</span><span style="color:#c0c5ce;">: IP,
+  </span><span style="color:#bf616a;">_o_prot</span><span style="color:#c0c5ce;">: OP,
+  </span><span style="color:#bf616a;">_sequence_number</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">,
+}
+
+</span><span style="color:#b48ead;">impl </span><span style="color:#c0c5ce;">&lt;IP, OP&gt; TimerSyncClient&lt;IP, OP&gt; </span><span style="color:#b48ead;">where</span><span style="color:#c0c5ce;"> IP: TInputProtocol, OP: TOutputProtocol {
+  </span><span style="color:#b48ead;">pub fn </span><span style="color:#8fa1b3;">new</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">input_protocol</span><span style="color:#c0c5ce;">: IP, </span><span style="color:#bf616a;">output_protocol</span><span style="color:#c0c5ce;">: OP) -&gt; TimerSyncClient&lt;IP, OP&gt; {
+    TimerSyncClient { _i_prot: input_protocol, _o_prot: output_protocol, _sequence_number: </span><span style="color:#d08770;">0 </span><span style="color:#c0c5ce;">}
+  }
+}
+</span></code></pre>
+<p>So, the client needs <code>thrift::protocol::{TInputProtocol, TOuptutProtocol}</code>
+for initialization.</p>
+<p>Upon inspection of those traits, not much insight is gained.</p>
+<p>Let's try looking into the <code>readable</code> and <code>writeable</code> streams that the TCP
+example has. <code>thrift::tranport::TIoChannel</code> has a <code>split</code> method that returns a</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">split</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">) -&gt; Result&lt;(ReadHalf&lt;</span><span style="color:#b48ead;">Self</span><span style="color:#c0c5ce;">&gt;, WriteHalf&lt;</span><span style="color:#b48ead;">Self</span><span style="color:#c0c5ce;">&gt;)&gt;
+</span></code></pre>
+<p>Ok, so looks like it needs individual streams to be able to read and write.
+Let's inspect these structs.</p>
+<p>An instance of the <code>ReadHalf</code> struct can be created as</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">pub fn </span><span style="color:#8fa1b3;">new</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">handle</span><span style="color:#c0c5ce;">: C) -&gt; ReadHalf&lt;C&gt;
+</span><span style="color:#b48ead;">where</span><span style="color:#c0c5ce;">
+    C: Read,
+</span></code></pre>
+<p>So, we just need a struct which implements a <code>Read</code> and we should be good
+to create a <code>ReadHalf</code> implementation, and same for <code>WriteHalf</code>, we just need a
+<code>Write</code> implementation.</p>
+<p>Let's roll back to our unix sockets from the standard library.
+<a href="https://doc.rust-lang.org/std/os/unix/net/struct.UnixStream.html"><code>std::os::unix::net::UnixStream</code></a></p>
+<p>From the docs we see that it has the following traits implemented.</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/os/unix/net/struct.UnixStream.html#impl-Read"><code>Read</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/os/unix/net/struct.UnixStream.html#impl-Write"><code>Write</code></a></li>
+</ul>
+<p>Which means, <a href="https://doc.rust-lang.org/std/os/unix/net/struct.UnixStream.html"><code>UnixStream</code></a>
+should suffice. Let's get to it then.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">extern crate</span><span style="color:#c0c5ce;"> thrift;
+</span><span style="color:#b48ead;">mod </span><span style="color:#c0c5ce;">timer;
+
+</span><span style="color:#b48ead;">use </span><span style="color:#c0c5ce;">timer::*;
+</span><span style="color:#b48ead;">use </span><span style="color:#c0c5ce;">thrift::protocol::{TBinaryInputProtocol,TBinaryOutputProtocol};
+</span><span style="color:#b48ead;">use </span><span style="color:#c0c5ce;">std::os::unix::net::UnixStream;
+</span><span style="color:#b48ead;">use </span><span style="color:#c0c5ce;">std::io::prelude::*;
+
+</span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">() {
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> socket_tx = UnixStream::connect(&quot;</span><span style="color:#a3be8c;">/tmp/timer.sock</span><span style="color:#c0c5ce;">&quot;).</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">();
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> socket_rx = socket_tx.</span><span style="color:#96b5b4;">try_clone</span><span style="color:#c0c5ce;">().</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">();
+
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> in_proto = TBinaryInputProtocol::new(socket_tx, </span><span style="color:#d08770;">true</span><span style="color:#c0c5ce;">);
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> out_proto = TBinaryOutputProtocol::new(socket_rx, </span><span style="color:#d08770;">true</span><span style="color:#c0c5ce;">);
+    </span><span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> client = TimerSyncClient::new(in_proto, out_proto);
+
+    println!(&quot;</span><span style="color:#d08770;">{:?}</span><span style="color:#c0c5ce;">&quot;, client.</span><span style="color:#96b5b4;">time</span><span style="color:#c0c5ce;">());
+}
+</span></code></pre>
+<p>Change the python server to listen on a unix socket instead of a TCP socket,
+i.e.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">socket = TSocket.</span><span style="color:#bf616a;">TServerSocket</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">unix_socket</span><span style="color:#c0c5ce;">=&#39;</span><span style="color:#a3be8c;">/tmp/timer.sock</span><span style="color:#c0c5ce;">&#39;)
+</span></code></pre>
+<p>And, then a <code>cargo run</code> and <strong>Success!!</strong>. We get the time!. Too much trouble to
+just get a time string, but it's worth it B).</p>
+<blockquote>
+<p>Note that we require to clone the socket. This is because
+<a href="https://docs.rs/thrift/0.13.0/thrift/protocol/struct.TBinaryInputProtocol.html#method.new"><code>TBinaryInputProtocol::new</code></a>
+takes the ownership of the <code>transport: T</code>. The <code>UnixStream</code> is full duplex,
+which means the same object will do a read and write, so we need to get
+individual copies of the socket for BinaryIn and BinaryOut protocols.</p>
+</blockquote>
+<p>And that was it. At the moment, I don't have a good enough understanding of the
+rust thrift crate to be able to figure out how to get it to listen on a
+Unix Socket since it only has a listen method on a <a href="https://docs.rs/thrift/0.13.0/thrift/server/struct.TServer.html#method.listen"><code>TSocket</code></a>
+struct that accepts a <em>host:port</em> combo.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">pub fn </span><span style="color:#8fa1b3;">listen</span><span style="color:#c0c5ce;">(&amp;</span><span style="color:#b48ead;">mut </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">listen_address</span><span style="color:#c0c5ce;">: &amp;</span><span style="color:#b48ead;">str</span><span style="color:#c0c5ce;">) -&gt; Result&lt;()&gt;
+</span></code></pre><h2 id="thrift-server-over-tcp">Thrift Server over TCP<a class="zola-anchor" href="#thrift-server-over-tcp" aria-label="Anchor link for: thrift-server-over-tcp">🔗</a></h2>
+<p>As a consolation, just to make sure, the TCP server works, here is the
+implementation. Most of it can be taken from either the python code or
+<a href="https://docs.rs/thrift/0.13.0/thrift/server/struct.TServer.html#examples">examples</a>
+in the <a href="https://docs.rs/thrift"><code>thrift</code></a> crate.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">impl </span><span style="color:#c0c5ce;">TimerSyncHandler </span><span style="color:#b48ead;">for </span><span style="color:#c0c5ce;">TimerSyncHandlerImpl {
+    </span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">handle_time</span><span style="color:#c0c5ce;">(&amp;</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">) -&gt; thrift::Result&lt;String&gt; {
+        </span><span style="color:#b48ead;">return </span><span style="color:#c0c5ce;">Ok(format!(
+            &quot;</span><span style="color:#d08770;">{:?}</span><span style="color:#c0c5ce;">&quot;,
+            SystemTime::now().</span><span style="color:#96b5b4;">duration_since</span><span style="color:#c0c5ce;">(SystemTime::</span><span style="color:#d08770;">UNIX_EPOCH</span><span style="color:#c0c5ce;">)
+        ));
+    }
+}
+
+</span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">server</span><span style="color:#c0c5ce;">() {
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> processor = TimerSyncProcessor::new(TimerSyncHandlerImpl {});
+
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> i_tr_fact: Box&lt;TReadTransportFactory&gt; = Box::new(TBufferedReadTransportFactory::new());
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> i_pr_fact: Box&lt;TInputProtocolFactory&gt; = Box::new(TBinaryInputProtocolFactory::new());
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> o_tr_fact: Box&lt;TWriteTransportFactory&gt; = Box::new(TBufferedWriteTransportFactory::new());
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> o_pr_fact: Box&lt;TOutputProtocolFactory&gt; = Box::new(TBinaryOutputProtocolFactory::new());
+
+    </span><span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> server = TServer::new(i_tr_fact, i_pr_fact, o_tr_fact, o_pr_fact, processor, </span><span style="color:#d08770;">10</span><span style="color:#c0c5ce;">);
+    server.</span><span style="color:#96b5b4;">listen</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">localhost:9090</span><span style="color:#c0c5ce;">&quot;).</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">();
+}
+
+</span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">() {
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> t = thread::spawn(|| { </span><span style="color:#96b5b4;">server</span><span style="color:#c0c5ce;">(); });
+
+    </span><span style="color:#65737e;">/* client code */
+    // The client will connect to the server, print the output and then
+    // start listening for other connections.
+</span><span style="color:#c0c5ce;">
+    t.</span><span style="color:#96b5b4;">join</span><span style="color:#c0c5ce;">().</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">();
+}
+</span></code></pre>
+<hr />
+<p>For now, the client implementation using unix sockets is sufficient as the aim
+for this is to be able to communicate to <code>/var/osquery/osquery.em</code> socket which
+I hope is a unix socket.</p>
+<hr />
+<p>Discussion thread <a href="https://www.reddit.com/r/rust/comments/i70l4b/apache_thrift_over_unix_sockets_in_rust/">here</a></p>
+
+
+    </section>
+    <footer>
+        <nav class="c-pagination p-pagination">
+            <div class="c-pagination__ctrl">
+                <div class="c-pagination__newer">
+                    <a href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;go-use-those-traits&#x2F;">Go use those Traits</a>
+                </div>
+                <div class="c-pagination__older">
+                    <a href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;re-ally-fast&#x2F;">Re-ally fast</a>
+                </div>
+            </div>
+        </nav>
+    </footer>
+</article>
+        </main>
+
+     
+      <footer class="l-footer">
+          <p class="p-copyright">
+              
+              
+    Copyleft <a href='https://github.com/prateeknischal'>prateeknischal</a> 2020
+
+          </p>
+      </footer>
+
+       
+      <link rel="stylesheet" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;css&#x2F;katex.min.css">
+      <script defer src="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;js&#x2F;katex.min.js"></script>
+      <script defer src="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;js&#x2F;mathtex-script-type.min.js"></script>
+    <script src="/livereload.js?port=1025&amp;mindelay=10"></script></body>
+</html>
+            

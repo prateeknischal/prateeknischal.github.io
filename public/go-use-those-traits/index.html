@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="referrer" content="no-referrer">
+
+        <!-- Enable responsiveness on mobile devices-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+
+        <title>Go use those Traits | The Impatient Software Engineer</title>
+<meta property="og:title" content="Go use those Traits | The Impatient Software Engineer" />
+<meta name="twitter:title" content="Go use those Traits | The Impatient Software Engineer" />
+
+        
+
+        <meta property="og:site_name" content="The Impatient Software Engineer" />
+        <meta property="og:url" content="http:&#x2F;&#x2F;127.0.0.1:1111" />
+
+        
+
+
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;base.css" />
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;fontawesome.css" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;brands.css" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;solid.css" rel="stylesheet">
+
+        <link rel='icon' type='image/x-icon' href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;favicon.ico" />
+
+        <link rel="alternate" type="application/atom+xml" title="The Impatient Software Engineer" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;atom.xml">
+
+        
+
+    </head>
+    <body>
+        <a href="#main" class="skip-link p-screen-reader-text">Skip to content</a>
+        <header class="l-header">
+            <h1 class="c-title p-title"><a href="http:&#x2F;&#x2F;127.0.0.1:1111" class="p-title__link">The Impatient Software Engineer</a></h1>
+            </header>
+
+        <main id="main" class="l-main">
+            
+<article class="p-article">
+    <header>
+        <h1>Go use those Traits</h1>
+        <div>
+            <div class="c-time">
+
+                <time datetime="2020-08-30">
+                    2020-08-30
+                </time>
+                
+                 - (10 min read)
+            </div>
+        </div>
+    </header>
+    
+    <section id="js-article" class="p-article__body">
+        
+    <p><strong>Interfaces</strong> were popularized by Java but originally came from Objective-C
+(<a href="https://stackoverflow.com/a/2758619/6266958">source</a>).Until a few days ago I
+did not realize how powerful they were. In my opinion, interfaces have been
+potrayed in an incomplete manner by all the tutorials. The key idea is correct
+but it limits the thinking of what it can be used for. </p>
+<p>I am sure everyone who has written some form of object oriented language would
+know this example.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">public interface </span><span style="color:#ebcb8b;">Animal </span><span style="color:#eff1f5;">{
+    </span><span style="color:#b48ead;">public </span><span style="color:#ebcb8b;">String </span><span style="color:#8fa1b3;">speak</span><span style="color:#eff1f5;">();
+}
+
+</span><span style="color:#b48ead;">public class </span><span style="color:#ebcb8b;">Cat </span><span style="color:#b48ead;">implements </span><span style="color:#a3be8c;">Animal </span><span style="color:#eff1f5;">{
+    </span><span style="color:#b48ead;">public </span><span style="color:#ebcb8b;">String </span><span style="color:#8fa1b3;">speak</span><span style="color:#eff1f5;">() { </span><span style="color:#b48ead;">return </span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">I am a God !</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#eff1f5;">; }
+}
+
+</span><span style="color:#b48ead;">public class </span><span style="color:#ebcb8b;">Dog </span><span style="color:#b48ead;">implements </span><span style="color:#a3be8c;">Animal </span><span style="color:#eff1f5;">{
+    </span><span style="color:#b48ead;">public </span><span style="color:#ebcb8b;">String </span><span style="color:#8fa1b3;">speak</span><span style="color:#eff1f5;">() { </span><span style="color:#b48ead;">return </span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">Where&#39;s my hooman !</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#eff1f5;">; }
+}
+</span></code></pre>
+<p>And this being used as follows:</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#ebcb8b;">Animal</span><span style="color:#b48ead;">[]</span><span style="color:#c0c5ce;"> animals = </span><span style="color:#b48ead;">new </span><span style="color:#ebcb8b;">Animal</span><span style="color:#c0c5ce;">[</span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">];
+animals[</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">] = </span><span style="color:#b48ead;">new </span><span style="color:#ebcb8b;">Cat</span><span style="color:#c0c5ce;">();
+animals[</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">] = </span><span style="color:#b48ead;">new </span><span style="color:#ebcb8b;">Dog</span><span style="color:#c0c5ce;">();
+
+</span><span style="color:#b48ead;">for </span><span style="color:#c0c5ce;">(</span><span style="color:#ebcb8b;">Animal</span><span style="color:#c0c5ce;"> a : animals) {
+    a.</span><span style="color:#bf616a;">speak</span><span style="color:#c0c5ce;">();
+}
+</span></code></pre>
+<p>This shows a very generic and boring use of interfaces. Accepting multiple types
+to make a function generic or grouping a certain group of objects by an
+interface type. You would have seen things like this.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">public interface </span><span style="color:#ebcb8b;">Animal </span><span style="color:#eff1f5;">{}
+
+</span><span style="color:#b48ead;">public class </span><span style="color:#ebcb8b;">Cat </span><span style="color:#b48ead;">implements </span><span style="color:#a3be8c;">Animal </span><span style="color:#eff1f5;">{
+    </span><span style="color:#b48ead;">public void </span><span style="color:#8fa1b3;">walk</span><span style="color:#eff1f5;">() { </span><span style="color:#65737e;">/* Some funny walk */ </span><span style="color:#eff1f5;">}
+    </span><span style="color:#b48ead;">public void </span><span style="color:#8fa1b3;">beWeird</span><span style="color:#eff1f5;">()  { </span><span style="color:#65737e;">/* Need I say anything */ </span><span style="color:#eff1f5;">}
+}
+
+</span><span style="color:#b48ead;">public class </span><span style="color:#ebcb8b;">Dog </span><span style="color:#b48ead;">implements </span><span style="color:#a3be8c;">Animal </span><span style="color:#eff1f5;">{
+    </span><span style="color:#b48ead;">public void </span><span style="color:#8fa1b3;">beGoodDoggo</span><span style="color:#eff1f5;">() { </span><span style="color:#65737e;">/* Woof ! */ </span><span style="color:#eff1f5;">}
+    </span><span style="color:#b48ead;">public void </span><span style="color:#8fa1b3;">bathe</span><span style="color:#eff1f5;">() { throws </span><span style="color:#b48ead;">new </span><span style="color:#ebcb8b;">RuntimeException</span><span style="color:#eff1f5;">(); }
+}
+</span></code></pre>
+<p>These 2 classes have no common functionality, yet they share an interface. This
+is just to mark these classes in a common group, logically. Useful and bit
+interesting use too, but we have something better.</p>
+<h2 id="how-do-you-test-a-function-that-takes-a-filepath-as-a-parameter">How do you test a function that takes a filepath as a parameter<a class="zola-anchor" href="#how-do-you-test-a-function-that-takes-a-filepath-as-a-parameter" aria-label="Anchor link for: how-do-you-test-a-function-that-takes-a-filepath-as-a-parameter">🔗</a></h2>
+<p>I am sure you would have written, at some point of time, a function that takes a
+file path as an input and you need to do certain operations on it, maybe read to it, or
+write to it and return. Something like this.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">public int </span><span style="color:#bf616a;">findCharInFile</span><span style="color:#c0c5ce;">(</span><span style="color:#ebcb8b;">String</span><span style="color:#c0c5ce;"> path, </span><span style="color:#b48ead;">byte</span><span style="color:#c0c5ce;"> c) {
+    </span><span style="color:#65737e;">/** 
+    * Open the file by creating a Reader over an input stream and then read
+    * operations.
+    **/
+    </span><span style="color:#b48ead;">return </span><span style="color:#ebcb8b;">Integer</span><span style="color:#c0c5ce;">.</span><span style="color:#d08770;">MAX_VALUE</span><span style="color:#c0c5ce;">;
+}
+</span></code></pre>
+<p>How would you write tests for it ? You could do a dummy test file in your
+project with the test strings. For a long time I thought that was an ok way.
+Recently, I realized, there are better ways to implement it with higher
+testability.</p>
+<h2 id="what-s-problematic-with-that-interface-design">What's problematic with that interface design<a class="zola-anchor" href="#what-s-problematic-with-that-interface-design" aria-label="Anchor link for: what-s-problematic-with-that-interface-design">🔗</a></h2>
+<p>The above API isn't wrong, but it has some problems with it.</p>
+<ul>
+<li>
+<p>Testing becomes a problem, if you have more of those functions, your project
+will have a lot of stray files which are filled with different test cases.</p>
+</li>
+<li>
+<p>The function signature doesn't convey it needs a file and not some random
+string. Arguably, it would be just made as <code>findCharInFile(File file, byte c)</code>
+but it's a generalized perspective with all the languages.</p>
+</li>
+<li>
+<p>You don't know anything about the ownership of the file, what should you do
+once you get that File object.</p>
+</li>
+<li>
+<p>And the most fascinating, what do you do when it's not a regular file.</p>
+</li>
+</ul>
+<h2 id="how-to-solve-the-above-problems">How to solve the above problems<a class="zola-anchor" href="#how-to-solve-the-above-problems" aria-label="Anchor link for: how-to-solve-the-above-problems">🔗</a></h2>
+<p>We write a function signature that expresses what is intended only. Every
+construct in a language has constraints on it. The less the constraints the more
+flexible it becomes. The real intent here is to read some bytes from a stream
+and then do some processing over it. Why limit it to a file ?</p>
+<p>Enters the abstract class, <a href="https://docs.oracle.com/javase/7/docs/api/java/io/Reader.html"><code>java.io.Reader</code></a>. 
+It defines exactly the behaviour we need. An Entity, we don't care what, 
+with a <code>read</code> function.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">public int </span><span style="color:#bf616a;">findCharInFile</span><span style="color:#c0c5ce;">(</span><span style="color:#ebcb8b;">Reader</span><span style="color:#c0c5ce;"> rd, </span><span style="color:#b48ead;">byte</span><span style="color:#c0c5ce;"> c) throws </span><span style="color:#ebcb8b;">IOException </span><span style="color:#c0c5ce;">{
+    </span><span style="color:#b48ead;">char</span><span style="color:#c0c5ce;"> buf[] = </span><span style="color:#b48ead;">new char</span><span style="color:#c0c5ce;">[</span><span style="color:#d08770;">4096</span><span style="color:#c0c5ce;">];
+    </span><span style="color:#b48ead;">int</span><span style="color:#c0c5ce;"> pos = </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">;
+    </span><span style="color:#b48ead;">while </span><span style="color:#c0c5ce;">(rd.</span><span style="color:#bf616a;">read</span><span style="color:#c0c5ce;">(buf) != -</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">) {
+        </span><span style="color:#65737e;">/* Find the char by interating the buffer. */
+    </span><span style="color:#c0c5ce;">}
+
+    </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> pos;
+}
+</span></code></pre>
+<p>Since, the
+<a href="https://docs.oracle.com/javase/7/docs/api/java/io/Reader.html"><code>java.io.Reader</code></a>
+implements <a href="https://docs.oracle.com/javase/7/docs/api/java/io/Closeable.html"><code>java.io.Closeable</code></a> 
+iterface as well, it gives an API for the caller to be able to close the stream. 
+This might give a bit more control by default as there is no way to not allow 
+the caller to close the stream without wrapping it into another class that 
+does not expose those APIs.</p>
+<p>How do you test it ? </p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">public class </span><span style="color:#ebcb8b;">DummReader </span><span style="color:#b48ead;">implements </span><span style="color:#a3be8c;">Reader </span><span style="color:#eff1f5;">{
+    </span><span style="color:#65737e;">/* implement all the methods required by the Reader abstract class */
+</span><span style="color:#eff1f5;">}
+</span></code></pre>
+<p>and you can pass this to the function.</p>
+<p>Let's look at some newer langauges and in some more detail. </p>
+<hr />
+<p><a href="https://golang.org">golang</a> is the new language for the writing webservers and
+things on the internet. I am looking at you, NodeJS. </p>
+<p>I feel bringing JS to the backend was a mistake, or atleast not regulating it.
+I have an imperative programming background. Also, I have worked a bit on a few NodeJS
+projects. For some reason, it didn't seem receptive to me and it had certain
+inconsistencies that made it hard for me to write correct code. I know a lot of
+the veterans (irrespective of their backgrounds) will disagree with me, but I
+didn't feel that with other languages, so, just my opinion, no one needs to
+agree to it.</p>
+<p>Back to go, it's an incredibly well designed language with constructs that
+are simple to use and most importantly, easy to read. It looks minimalist yet has a
+loaded standard library.</p>
+<p>Go has 2 interfaces that has the power to change the way you write code.
+They are:</p>
+<ul>
+<li><a href="https://golang.org/pkg/io/#Writer"><code>io.Writer</code></a></li>
+<li><a href="https://golang.org/pkg/io/#Reader"><code>io.Reader</code></a></li>
+</ul>
+<p>There are other interfaces too that can help you write even cleaner and self
+explanatory code, but let's start with this.</p>
+<p>Let's see how the same function would look in go, but with these constructs.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">func </span><span style="color:#8fa1b3;">findCharInFile</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">rd io</span><span style="color:#c0c5ce;">.</span><span style="color:#b48ead;">Reader</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">c </span><span style="color:#b48ead;">rune</span><span style="color:#c0c5ce;">) </span><span style="color:#b48ead;">int </span><span style="color:#c0c5ce;">{
+    </span><span style="color:#bf616a;">contents</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">_ </span><span style="color:#c0c5ce;">:= </span><span style="color:#bf616a;">ioutil</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">ReadAll</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">rd</span><span style="color:#c0c5ce;">)
+    </span><span style="color:#b48ead;">return </span><span style="color:#bf616a;">strings</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">IndexRune</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">contents</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">c</span><span style="color:#c0c5ce;">)
+}
+</span></code></pre>
+<p>This is piece of code has acheived the following things,</p>
+<ul>
+<li>
+<p>The function signature clarifies exactly what it needs. The <code>io.Reader</code>
+interface requires exactly one implementation, that is <code>Read([]byte) (int, error)</code>. This function has no more bussiness than reading the file.</p>
+</li>
+<li>
+<p>This is much more unit-testable. All you need is a construct that implements
+the <code>io.Reader</code> interface. You can mock one up and send it to the function
+or use one of the builtins.
+eg:</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">func </span><span style="color:#8fa1b3;">TestFindCharInFile</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">t </span><span style="color:#c0c5ce;">*</span><span style="color:#bf616a;">testing</span><span style="color:#c0c5ce;">.</span><span style="color:#b48ead;">T</span><span style="color:#c0c5ce;">) {
+</span><span style="color:#c0c5ce;">  </span><span style="color:#65737e;">// Creates a *Reader type object which uses the supplied string as it&#39;s
+</span><span style="color:#c0c5ce;">  </span><span style="color:#65737e;">// backend and is Read only.
+</span><span style="color:#c0c5ce;">  </span><span style="color:#bf616a;">rd </span><span style="color:#c0c5ce;">:= </span><span style="color:#bf616a;">strings</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">NewReader</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">Contents of your test string</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">  </span><span style="color:#b48ead;">if </span><span style="color:#bf616a;">findCharInFile</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">rd</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">rune</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">&#39;$&#39;</span><span style="color:#c0c5ce;">)) != -</span><span style="color:#d08770;">1 </span><span style="color:#c0c5ce;">{
+</span><span style="color:#c0c5ce;">      </span><span style="color:#bf616a;">t</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">Fail</span><span style="color:#c0c5ce;">()
+</span><span style="color:#c0c5ce;">  }
+</span><span style="color:#c0c5ce;">}
+</span></code></pre></li>
+<li>
+<p>This expresses the permissions you have on the stream. The <code>io.Reader</code> only
+has a <code>Read([]byte)</code> function, so you can't use it to do anything else
+with it unlike when you have the file path and you are responsible for opening
+and closing it.</p>
+</li>
+<li>
+<p>It abstracts the underlying provider of the readable stream. It could be a
+file on the disk, an in-memory buffer, some key value store, even the network.
+It just has to adhere to one property or should have atleast the <code>Read</code> <code>trait</code>, to be
+able to Read out bytes to a bytes buffer.</p>
+</li>
+<li>
+<p>It also tells you the ownership of the underlying object. The caller is only
+only allowed to read the stream and not do anything else with it, like close
+the stream when it thinks it's done. Maybe other's are still reading it, that
+would cause a <a href="https://blog.golang.org/defer-panic-and-recover">panic</a>, 
+quite literally.</p>
+</li>
+</ul>
+<p>The same thing goes with <code>io.Writer</code>. It's only allowed to <code>Write([]byte) (int, error)</code> and will not allow the user to close it.</p>
+<h3 id="what-if-you-wanted-the-user-to-close-it">What if you wanted the user to close it.<a class="zola-anchor" href="#what-if-you-wanted-the-user-to-close-it" aria-label="Anchor link for: what-if-you-wanted-the-user-to-close-it">🔗</a></h3>
+<p>If you want to hand over or delegate the control of the stream to the caller,
+you can use one of the derived interfaces, <a href="https://golang.org/pkg/io/#ReadCloser">ReadCloser</a>.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">type </span><span style="color:#c0c5ce;">ReadCloser </span><span style="color:#b48ead;">interface </span><span style="color:#c0c5ce;">{
+    </span><span style="color:#a3be8c;">Reader
+    Closer
+</span><span style="color:#c0c5ce;">}
+</span></code></pre>
+<p>You can hand this out and let the caller be able to close the stream. There are
+other such interfaces that Go provides by default and you can create your own
+too.</p>
+<h2 id="can-rust-do-it">Can Rust do it<a class="zola-anchor" href="#can-rust-do-it" aria-label="Anchor link for: can-rust-do-it">🔗</a></h2>
+<p>We can't not talk about Rust in this case. The title mentions to use the 
+<a href="https://doc.rust-lang.org/book/ch10-02-traits.html"><code>trait</code></a>
+related.
+which is the Rust way of definiting features. Every trait can be seen as an
+interface and whosoever implements the trait can be said to have implemented
+that interface.</p>
+<p>How would the same code (thanks to <a href="https://www.reddit.com/r/rust/comments/ik4ijc/go_use_those_traits_the_impatient_software/g439ua9?utm_source=share&amp;utm_medium=web2x&amp;context=3">vlisivka</a>)
+look in Rust.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">find_char_in_file</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">rd</span><span style="color:#c0c5ce;">: &amp;</span><span style="color:#b48ead;">mut</span><span style="color:#c0c5ce;"> dyn Read, </span><span style="color:#bf616a;">c</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u8</span><span style="color:#c0c5ce;">) -&gt; Result&lt;Option&lt;</span><span style="color:#b48ead;">usize</span><span style="color:#c0c5ce;">&gt;&gt; {
+    </span><span style="color:#b48ead;">for</span><span style="color:#c0c5ce;"> idx, b in rd.</span><span style="color:#96b5b4;">bytes</span><span style="color:#c0c5ce;">().</span><span style="color:#96b5b4;">enumerate</span><span style="color:#c0c5ce;">() {
+        </span><span style="color:#b48ead;">if</span><span style="color:#c0c5ce;"> b? == c {
+            Ok(Some(idx))
+        }
+    }
+    Ok(None)
+}
+</span></code></pre>
+<p>Notice the definition, </p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#96b5b4;">find_char_in_file</span><span style="color:#c0c5ce;">(rd: &amp;</span><span style="color:#b48ead;">mut</span><span style="color:#c0c5ce;"> dyn Read, c:</span><span style="color:#b48ead;">u8</span><span style="color:#c0c5ce;">)
+</span></code></pre>
+<p>This conveys that the receiver <code>rd</code> must implement the
+<a href="https://doc.rust-lang.org/std/io/trait.Read.html"><code>io::Read</code></a> trait and that's all
+is required for this function to work. Similarly it's easy to test too.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">#[</span><span style="color:#bf616a;">cfg</span><span style="color:#c0c5ce;">(test)]
+</span><span style="color:#b48ead;">mod </span><span style="color:#c0c5ce;">tests {
+    </span><span style="color:#b48ead;">use super</span><span style="color:#c0c5ce;">::*;
+
+    #[</span><span style="color:#bf616a;">derive</span><span style="color:#c0c5ce;">(Default)]
+    </span><span style="color:#b48ead;">struct </span><span style="color:#c0c5ce;">TestReader();
+
+    </span><span style="color:#b48ead;">impl </span><span style="color:#c0c5ce;">Read </span><span style="color:#b48ead;">for </span><span style="color:#c0c5ce;">TestReader {
+        </span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">read</span><span style="color:#c0c5ce;">(&amp;</span><span style="color:#b48ead;">mut </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">, &amp;</span><span style="color:#b48ead;">mut </span><span style="color:#c0c5ce;">&amp;[</span><span style="color:#b48ead;">u8</span><span style="color:#c0c5ce;">]) -&gt; Result&lt;</span><span style="color:#b48ead;">usize</span><span style="color:#c0c5ce;">&gt; {
+            </span><span style="color:#65737e;">// Ignoring all the implementation details.
+            </span><span style="color:#c0c5ce;">Ok(</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">)
+        }
+    }
+
+    #[</span><span style="color:#bf616a;">test</span><span style="color:#c0c5ce;">]
+    </span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">test_find_char_in_file</span><span style="color:#c0c5ce;">() {
+        </span><span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> rd = TestReader::default();
+        </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> res = </span><span style="color:#96b5b4;">find_char_in_file</span><span style="color:#c0c5ce;">(&amp;</span><span style="color:#b48ead;">mut</span><span style="color:#c0c5ce;"> rd, &#39;</span><span style="color:#a3be8c;">c</span><span style="color:#c0c5ce;">&#39; as </span><span style="color:#b48ead;">u8</span><span style="color:#c0c5ce;">).</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">();
+        assert_eq!(res, None);
+    }
+}
+</span></code></pre><h3 id="what-about-buffering-i-don-t-want-to-do-that-on-my-own">What about buffering, I don't want to do that on my own.<a class="zola-anchor" href="#what-about-buffering-i-don-t-want-to-do-that-on-my-own" aria-label="Anchor link for: what-about-buffering-i-don-t-want-to-do-that-on-my-own">🔗</a></h3>
+<p>The <a href="https://doc.rust-lang.org/std/io/trait.Read.html"><code>io::Read</code></a> trait takes
+care of that. The buffered Reads are auto implemented traits given the <code>read()</code>
+implementation. So, all you need is to write a simple <code>read</code> and rust will take
+care of providing a more efficient Buffered read.</p>
+<p>The same is possible in go, using the <a href="https://golang.org/pkg/bufio"><code>bufio</code></a>
+package. If you want to imply to the caller that you need a more efficient read
+implementation in your interface, you can simply replace the <code>io.Reader</code> with
+<code>bufio.Reader</code> interface which implements buffering over an <code>io.Reader</code> for you.</p>
+<p>So, it would become something like,</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">func </span><span style="color:#8fa1b3;">findCharInFile</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">rd bufio</span><span style="color:#c0c5ce;">.</span><span style="color:#b48ead;">Reader</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">c </span><span style="color:#b48ead;">rune</span><span style="color:#c0c5ce;">) </span><span style="color:#b48ead;">int
+</span></code></pre>
+<p>Converting a normal unbuffered reader to a buffered one is easy,</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#bf616a;">bufRd </span><span style="color:#c0c5ce;">:= </span><span style="color:#bf616a;">bufio</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">NewReader</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">rd</span><span style="color:#c0c5ce;">)
+</span></code></pre><h2 id="what-did-i-learn">What did I learn<a class="zola-anchor" href="#what-did-i-learn" aria-label="Anchor link for: what-did-i-learn">🔗</a></h2>
+<p>We haven't even talked about doing the same operations with an underlying
+network connection and not a file or a device or an in-memory buffer. But it
+would work just fine as network connections too are just Read and Write calls.</p>
+<p>This helps simplify writing the code. Notice that those functions now no longer
+have to deal with opening and closing files, handling errors that are related to
+files.</p>
+<p>This explicitly conveys what the caller is responsible for and what can he do
+with it, given that the API can do just what the interface allows.</p>
+<p>Helps a ton with testability of the code, one of the &quot;ilities&quot; in software
+architecture.</p>
+<p>Don't get me wrong, It's not that all of it can't be done in Java. Java also 
+has interfaces around <code>InputStreams</code> and <code>BufferedInputStreams</code>, <code>Readers</code> 
+and <code>BufferedReaders</code> etc. All of this can be accomplished in a similar 
+idiomatic and clean way. But's it's too much to write, Java is too verbose ;)</p>
+<p>It's just about a more useful outlook to interfaces.</p>
+<h2 id="where-did-i-learn-this-from">Where did I learn this from<a class="zola-anchor" href="#where-did-i-learn-this-from" aria-label="Anchor link for: where-did-i-learn-this-from">🔗</a></h2>
+<p>Obviously, I didn't come up with all this. I have been working on a go project
+and in order to write better and well organized code, I started looking around
+for best practices and found some amazing talks about it. I will link them below
+if someone wants to take a look (highly recommended).</p>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=29LLRKIL_TI">7 common mistakes in go and when to avoid them by spf13</a></li>
+<li><a href="https://www.youtube.com/watch?v=oL6JBUk6tj0">How Do You Structure Your Go Apps</a></li>
+<li><a href="https://www.youtube.com/watch?v=ltqV6pDKZD8">Go anti-patterns</a></li>
+</ul>
+<hr />
+<p>Discussion thread <a href="https://www.reddit.com/r/rust/comments/ik4ijc/go_use_those_traits_the_impatient_software/">here</a></p>
+
+
+    </section>
+    <footer>
+        <nav class="c-pagination p-pagination">
+            <div class="c-pagination__ctrl">
+                <div class="c-pagination__newer">
+                    <a href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;i-c-and-so-does-rust&#x2F;">I C and .so does Rust</a>
+                </div>
+                <div class="c-pagination__older">
+                    <a href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;apache-thrift-over-unix-sockets&#x2F;">Apache thrift over unix sockets in Rust</a>
+                </div>
+            </div>
+        </nav>
+    </footer>
+</article>
+        </main>
+
+     
+      <footer class="l-footer">
+          <p class="p-copyright">
+              
+              
+    Copyleft <a href='https://github.com/prateeknischal'>prateeknischal</a> 2020
+
+          </p>
+      </footer>
+
+       
+      <link rel="stylesheet" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;css&#x2F;katex.min.css">
+      <script defer src="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;js&#x2F;katex.min.js"></script>
+      <script defer src="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;js&#x2F;mathtex-script-type.min.js"></script>
+    <script src="/livereload.js?port=1025&amp;mindelay=10"></script></body>
+</html>
+            

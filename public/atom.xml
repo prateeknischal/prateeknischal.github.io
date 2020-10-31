@@ -1,0 +1,1345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title>The Impatient Software Engineer</title>
+	<link href="http://127.0.0.1:1111/atom.xml" rel="self" type="application/atom+xml"/>
+	<link href="http://127.0.0.1:1111"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2020-11-01T00:00:00+00:00</updated>
+	<id>http://127.0.0.1:1111/atom.xml</id>
+	<entry xml:lang="en">
+		<title>Test before you Go and commit</title>
+		<published>2020-11-01T00:00:00+00:00</published>
+		<updated>2020-11-01T00:00:00+00:00</updated>
+		<link href="http://127.0.0.1:1111/pre-commit-workflow/"/>
+		<link rel="alternate" href="http://127.0.0.1:1111/pre-commit-workflow/" type="text/html"/>
+		<id>http://127.0.0.1:1111/pre-commit-workflow/</id>
+		<content type="html">&lt;p&gt;There is a certain confidence boost when you see that message &amp;quot;All tests pass&amp;quot;,
+unless you are like me and get lazy, skimping on writing good tests for your
+logic. There are a lot of tools integrated with github, gitlab and probably
+other git interfaces that run a set of pre-defined tasks before potentially
+allowing you to raise a PR or mark it safe for merge. For the uninitiated, it&#x27;s
+know as &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Continuous_integration&quot;&gt;CI or continuous
+integration&lt;&#x2F;a&gt; tools. For
+example,&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;marketplace&#x2F;azure-pipelines&quot;&gt;Azure pipelines&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;docs.github.com&#x2F;en&#x2F;free-pro-team@latest&#x2F;actions&#x2F;learn-github-actions&quot;&gt;Github actions&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;circleci&quot;&gt;CicleCI&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;travis-ci.org&#x2F;&quot;&gt;TravisCI&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;What if you could run those tests, lint checks and other stuff before you push
+your commit and realize it&#x27;s going to fail in your CI pipeline and make you look
+like a n00b. Wouldn&#x27;t that be great !&lt;&#x2F;p&gt;
+&lt;p&gt;Unfortunately, there aren&#x27;t a lot of tools that do the same for plain old git, I
+mean locally in your development environment. There is one for nodejs, called
+the &lt;a href=&quot;https:&#x2F;&#x2F;www.npmjs.com&#x2F;package&#x2F;pre-commit&quot;&gt;pre-commit&lt;&#x2F;a&gt;, but let&#x27;s ignore
+that since we are gophers here.&lt;&#x2F;p&gt;
+&lt;p&gt;There is a project
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;pre-commit&#x2F;pre-commit&quot;&gt;pre-commit&#x2F;pre-commit&lt;&#x2F;a&gt; that can be
+used to manage a wide variety of pre-commit stuff and in a pretty way. It looks
+really good ! The only gripe that I have with it (highly personal) is it needs a
+runtime. I am not saying that runtimes are bad, they just feel a bit bloated
+then you run into their dependencies and versions and then give up.  The most
+painful transition for me has been &lt;code&gt;python2.x&lt;&#x2F;code&gt; to &lt;code&gt;python3.x&lt;&#x2F;code&gt;. So, I try to
+avoid python until &lt;code&gt;python3&lt;&#x2F;code&gt; is standard and the only version present in all my
+machines. If that&#x27;s not a concern for you, then feel free to use the pre-commit
+project. It will probably suit your needs much better.&lt;&#x2F;p&gt;
+&lt;p&gt;If you share similar thoughts as me or don&#x27;t have anything better to do than
+reading this, let&#x27;s see how these things are implemented.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;hooks-all-over-the-place&quot;&gt;Hooks all over the place&lt;a class=&quot;zola-anchor&quot; href=&quot;#hooks-all-over-the-place&quot; aria-label=&quot;Anchor link for: hooks-all-over-the-place&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;I can feel the incoming disappointment. Git, the vanilla thing has something
+called &lt;a href=&quot;https:&#x2F;&#x2F;git-scm.com&#x2F;docs&#x2F;githooks&quot;&gt;githooks&lt;&#x2F;a&gt; at different stages that
+you can use to hook in and run your stuff.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s try something !&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; git clone https:&#x2F;&#x2F;github.com&#x2F;cloudmarker&#x2F;cloudmarker.git
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; exa&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --tree&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; cloudmarker&#x2F;.git&#x2F;hooks
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;.git&#x2F;hooks
+├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; applypatch-msg.sample
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; commit-msg.sample
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; fsmonitor-watchman.sample
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; post-update.sample
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; pre-applypatch.sample
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; pre-commit.sample
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; pre-push.sample
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; pre-rebase.sample
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; pre-receive.sample
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; prepare-commit-msg.sample
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;└──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; update.sample
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Notice the
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;git&#x2F;git&#x2F;blob&#x2F;master&#x2F;templates&#x2F;hooks--pre-commit.sample&quot;&gt;&lt;code&gt;pre-commit.sample&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+file. It has a sample defintion that could be run before the commit, as the name
+suggests. What if we create a file &lt;code&gt;pre-commit&lt;&#x2F;code&gt; with the scripts that we need to
+run, tests, lints, checks, print xkcd, whatever be it.&lt;&#x2F;p&gt;
+&lt;p&gt;That script would get called before you try and commit and the commit would fail
+if the script exited with a non-zero error code, thus preventing you from your
+impulsive force pushes.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;make-it-more-manageable&quot;&gt;&lt;em&gt;make&lt;&#x2F;em&gt; it more manageable&lt;a class=&quot;zola-anchor&quot; href=&quot;#make-it-more-manageable&quot; aria-label=&quot;Anchor link for: make-it-more-manageable&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;This is a file present in the .git folder that is not under version control, so
+how do you manage it better. If the commands or workflow changes in between, you
+would have to keep updating the script manually which is not what we want.&lt;&#x2F;p&gt;
+&lt;p&gt;One way to do it is, softlinks. A sample project structure that you make want to
+follow.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; exa&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --tree --level&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; 1 .
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; go.mod
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; go.sum
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; main.go
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; main_test.go
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; Makefile
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;└──&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; .pre-commit
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The project contains a version controlled file called &lt;code&gt;.pre-commit&lt;&#x2F;code&gt; (a dotfile
+to keep the folder view clean) which will contain your commands that you may
+need to run.&lt;&#x2F;p&gt;
+&lt;p&gt;The first time setup can be automated using your favourite tools. Let&#x27;s try to
+do something using &lt;a href=&quot;https:&#x2F;&#x2F;www.gnu.org&#x2F;software&#x2F;make&#x2F;manual&#x2F;make.html&quot;&gt;&lt;code&gt;gnu make&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+(which is &lt;strong&gt;not&lt;&#x2F;strong&gt; my favourite).&lt;&#x2F;p&gt;
+&lt;p&gt;Contents of the &lt;code&gt;.pre-commit&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;#&#x2F;bin&#x2F;bash
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;.&#x2F;.git&#x2F;hooks&#x2F;pre-commit.sample
+make&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; pre-commit
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The make target.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;pre-commit&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;:
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;@go test .&#x2F;...
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;go&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; fmt .&#x2F;...
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;goimports -w&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; .
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;golint&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; .&#x2F;...
+
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;go&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; vet .&#x2F;...
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;gocyclo -over&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; 10 .
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;deps&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;:
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;@echo &amp;quot;Installing tools: goimports, golint, gocyclo&amp;quot;
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;go&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; get&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -u&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; golang.org&#x2F;x&#x2F;lint&#x2F;golint
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;go&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; get&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -u&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; github.com&#x2F;fzipp&#x2F;gocyclo
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;go&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; get golang.org&#x2F;x&#x2F;tools&#x2F;cmd&#x2F;goimports
+
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Setting up pre-commit hook&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ln -snf&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; ..&#x2F;..&#x2F;.pre-commit .git&#x2F;hooks&#x2F;pre-commit
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;chmod&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; +x .pre-commit
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Notice the &lt;code&gt;deps&lt;&#x2F;code&gt; target that downloads all the tools that I am using in my
+pre-commit flow and then sets a softlink to the git hooks pointing to the
+relative path of the &lt;code&gt;.pre-commit&lt;&#x2F;code&gt; file.&lt;&#x2F;p&gt;
+&lt;p&gt;This may seem a bit annoying (to have an indirection from the pre-commit file to
+the makefile) but it gives you a minimal pre-commit file and all of dependencies
+and complexities are captured and controlled from a single place which is your
+build mechanism, &lt;code&gt;make&lt;&#x2F;code&gt; in this case,&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;using-this-workflow&quot;&gt;Using this workflow&lt;a class=&quot;zola-anchor&quot; href=&quot;#using-this-workflow&quot; aria-label=&quot;Anchor link for: using-this-workflow&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;To setup this workflow, you could just do&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; make deps
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And you are all set with the dependencies for your project and the git hook as
+well. The next time you try a commit, it will run the whole &lt;code&gt;pre-commit&lt;&#x2F;code&gt; target
+and break your commit if have messed something up automatically.&lt;&#x2F;p&gt;
+&lt;p&gt;I like this because it&#x27;s minimal (has it&#x27;s own downsides) and does not require
+installing any extra tools or libraries other than what you anyways need (make
+is usually present on most unix systems). If your project is large and this is
+not enough, I would recommend going with a more verbose and configurable tool,
+but for small project, this should be familiar enough. I have seen people
+customize their makefiles to extremes, so maybe that&#x27;s all they need.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;Discussion thread:
+&lt;a href=&quot;https:&#x2F;&#x2F;www.reddit.com&#x2F;r&#x2F;golang&#x2F;comments&#x2F;jlqht8&#x2F;a_minimal_precommit_go_workflow&#x2F;&quot;&gt;here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>I C and .so does Rust</title>
+		<published>2020-09-08T00:00:00+00:00</published>
+		<updated>2020-09-08T00:00:00+00:00</updated>
+		<link href="http://127.0.0.1:1111/i-c-and-so-does-rust/"/>
+		<link rel="alternate" href="http://127.0.0.1:1111/i-c-and-so-does-rust/" type="text/html"/>
+		<id>http://127.0.0.1:1111/i-c-and-so-does-rust/</id>
+		<content type="html">&lt;p&gt;Distributing software is a tricky thing. If you want to share the functionality
+with someone you may share the source with them and give them the build
+instructions and it would all play out good. But that may not be the case if the
+source is a different language and the consumer is using a different language.
+For example, there are a lot of libraries that use common functionalities like
+&lt;a href=&quot;https:&#x2F;&#x2F;openssl.org&quot;&gt;openssl&lt;&#x2F;a&gt; for crypto operations or network libraries or 
+packages like &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;madler&#x2F;zlib&quot;&gt;zlib&lt;&#x2F;a&gt; just because they are
+reliable and have been tested for years on speed and correctness. You might not
+want to translate it in the language of your choice. &lt;&#x2F;p&gt;
+&lt;p&gt;How do you accomplish something like that. Calling a library written in some
+other language that your source. There is a concept called &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Foreign_function_interface&quot;&gt;FFI or Foreign
+Function Interface&lt;&#x2F;a&gt;
+which is used for this exact thing.&lt;&#x2F;p&gt;
+&lt;p&gt;You might have heard about 
+&lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Java_Native_Interface&quot;&gt;JNI or Java Native Interfaces&lt;&#x2F;a&gt;
+which is used to call subroutines in such native libraries. This came to me as a
+surprise, a lot of the core components of Java is written in C and is called
+within the language using JNI bindings. You would have seen the following
+signature in some Java classes when traversing the Go-To definitions. &lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public native &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;String &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;foo&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;()
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;For example, This is what &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;openjdk&#x2F;jdk&#x2F;blob&#x2F;master&#x2F;src&#x2F;java.base&#x2F;share&#x2F;native&#x2F;libjava&#x2F;FileInputStream.c#L59&quot;&gt;FileInputStream.open&lt;&#x2F;a&gt; 
+looks like&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;JNIEXPORT &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;void&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; JNICALL
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;Java_java_io_FileInputStream_open0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(JNIEnv *&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;env&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;, jobject &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;this&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;, jstring &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;path&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;) {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fileOpen&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(env, this, path, fis_fd, O_RDONLY);
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;That&#x27;s the calling convention for JNI, the &lt;code&gt;java.io.FileInputStream.open0()&lt;&#x2F;code&gt;
+would be translated to &lt;code&gt;Java_java_io_FileInputStream_open0()&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Java is hardwired to look for these symbols when someone calls the Java name of
+these functions and most of it is present in &lt;code&gt;libjava.so&lt;&#x2F;code&gt; and &lt;code&gt;libjvm.so&lt;&#x2F;code&gt; files.
+These are distributable &lt;code&gt;Shared Objects&lt;&#x2F;code&gt; that contains the implementation of
+these native functions and is platform dependant. This may come as a surprise to
+some people (or I may be making a fool out of myself), Java isn&#x27;t platform
+independant, atleast not all the core components. The bytecode generated by Java
+compiler is platform independant. The VM on which the bytecode executes has to
+be written and compiled for all platforms and architectures.&lt;&#x2F;p&gt;
+&lt;p&gt;That looks something like this &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;openjdk&#x2F;jdk&#x2F;tree&#x2F;master&#x2F;src&#x2F;java.base&quot;&gt;jdk&#x2F;src&#x2F;java.base&#x2F;
+&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shared-objects&quot;&gt;Shared objects&lt;a class=&quot;zola-anchor&quot; href=&quot;#shared-objects&quot; aria-label=&quot;Anchor link for: shared-objects&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;Shared objects or dynamic libraries are an interesting concept and sometimes a
+pain. Let&#x27;s go through an example.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;#include &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;stdio.h&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;int &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;() {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;printf&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;hello world&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;);
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;;
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This program is just calling a function called &lt;code&gt;printf&lt;&#x2F;code&gt;. But, wait, I can call
+the functions that actually exists, otherwise the compiler goes batshit crazy,
+unless it&#x27;s javascript ofcourse, which will break at runtime. This code
+compiles, so this function must exist, but where, it&#x27;s not present in my source
+file.&lt;&#x2F;p&gt;
+&lt;p&gt;Its present in the &lt;code&gt;&#x2F;usr&#x2F;include&#x2F;stdio.h&lt;&#x2F;code&gt; file.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;extern int &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;printf &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const char &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;__restrict &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;__format&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;, ...);
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Wait, it&#x27;s only the declaration, where is the implementation. When I build this
+this code and run the linked dependency tools &lt;a href=&quot;https:&#x2F;&#x2F;linux.die.net&#x2F;man&#x2F;1&#x2F;ldd&quot;&gt;ldd&lt;&#x2F;a&gt;, it shows this,&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;$ gcc hello.c -o hello
+$ ldd hello
+        linux-vdso.so.1 (0x00007fff715ea000)
+        libc.so.6 =&amp;gt; &#x2F;lib&#x2F;x86_64-linux-gnu&#x2F;libc.so.6 (0x00007f1f085a1000)
+        &#x2F;lib64&#x2F;ld-linux-x86-64.so.2 (0x00007f1f08b94000)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Notice, there is something called, &lt;code&gt;libc&lt;&#x2F;code&gt; present in here. Linux exports all
+these implementations in this shared object. For example, notice this file in
+the glibc repository, &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;lattera&#x2F;glibc&#x2F;blob&#x2F;master&#x2F;stdio-common&#x2F;printf.c#L27&quot;&gt;glibc&#x2F;printf.c&lt;&#x2F;a&gt;.
+If libc is not present on the target host, the simple hello world program 
+won&#x27;t work since it would not find the &lt;code&gt;printf&lt;&#x2F;code&gt; subroutine.&lt;&#x2F;p&gt;
+&lt;p&gt;Now, if the code is in a binary file, how do people and compilers know if they
+using it correctly. That&#x27;s where the header files come in. Header files are
+basically signatures that the compiler can rely on to check if the code is
+correct syntactically. This is generally exported as a public &lt;code&gt;include&lt;&#x2F;code&gt; folder
+in C projects. &lt;&#x2F;p&gt;
+&lt;p&gt;There is a very nice explanation on what shared objects are in this 
+&lt;a href=&quot;https:&#x2F;&#x2F;stackoverflow.com&#x2F;a&#x2F;9688536&#x2F;6266958&quot;&gt;SO post&lt;&#x2F;a&gt;. TL;DR, it&#x27;s a binary
+which contains implementation of the corresponding headers. Shared object naming
+convention is specific to link. For other platforms, they are called &lt;a href=&quot;https:&#x2F;&#x2F;developer.apple.com&#x2F;library&#x2F;archive&#x2F;documentation&#x2F;DeveloperTools&#x2F;Conceptual&#x2F;DynamicLibraries&#x2F;100-Articles&#x2F;UsingDynamicLibraries.html&quot;&gt;&lt;code&gt;dylib&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+for MacOS and
+&lt;a href=&quot;https:&#x2F;&#x2F;support.microsoft.com&#x2F;en-in&#x2F;help&#x2F;815065&#x2F;what-is-a-dll&quot;&gt;&lt;code&gt;dll&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; for
+windows. They are not quite the same but, they behave in a similar fashion and
+this can be backed up by the C API &lt;a href=&quot;https:&#x2F;&#x2F;linux.die.net&#x2F;man&#x2F;3&#x2F;dlopen&quot;&gt;dlopen&lt;&#x2F;a&gt;
+which is used to load dynamic libraries.&lt;&#x2F;p&gt;
+&lt;p&gt;Now, that we have vague idea of what shared objects represent, let&#x27;s move to
+&amp;quot;why this waste of internet resources, this article&amp;quot;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;interoperability-with-rust&quot;&gt;Interoperability with Rust&lt;a class=&quot;zola-anchor&quot; href=&quot;#interoperability-with-rust&quot; aria-label=&quot;Anchor link for: interoperability-with-rust&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;Rust is popular because it boasts a good interoperability with the C APIs. Which
+means, it&#x27;s simple in Rust to call C APIs with minimal efforts. Let&#x27;s see a
+minimal API.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;the-c-code-we-would-call&quot;&gt;The C code we would call.&lt;a class=&quot;zola-anchor&quot; href=&quot;#the-c-code-we-would-call&quot; aria-label=&quot;Anchor link for: the-c-code-we-would-call&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;We need to have some functionality that we want to call from other languages.
+Let&#x27;s write a toy project which exposes such API.&lt;&#x2F;p&gt;
+&lt;p&gt;The project structure looks like this.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;.
+├── Makefile
+└── src
+   ├── include
+   │  └── shared.h
+   └── shared
+      └── shared.c
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This is a fairly standard structure for C projects. To have definitions for all
+public APIs in the &lt;code&gt;include&lt;&#x2F;code&gt; folder.&lt;&#x2F;p&gt;
+&lt;p&gt;The &lt;code&gt;shared.h&lt;&#x2F;code&gt; file.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;#ifndef&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; SHARED_H
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;#define &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;SHARED_H
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;#endif
+
+struct &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;key_spec {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;char&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; key[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;16&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;];
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const char &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;*type;
+};
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;struct&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; key_spec* &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;get_key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;();
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The &lt;code&gt;shared.c&lt;&#x2F;code&gt; file that contains the actual implementation. This is a very
+advanced key generator ! almost cryptographically secure.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;#include &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;shared.h&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;#include &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;stdlib.h&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;gt;
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;struct&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; key_spec *&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;get_key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;() {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;struct&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; key_spec *ks = (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;struct&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; key_spec*) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;malloc&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(sizeof(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;struct&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; key_spec*));
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; i = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;; i &amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;16&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;; i++) {
+        ks-&amp;gt;key[i] = i + &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;32&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;;
+    }
+
+    ks-&amp;gt;type = (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const char&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;*)&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;dummy&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;;
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; ks;
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;How to build it into a shared object (notice it does not have a &lt;code&gt;int main()&lt;&#x2F;code&gt;.
+Create a Makefile with &lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;build&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;:
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;gcc -shared -Isrc&#x2F;include src&#x2F;shared&#x2F;shared.c -o libshared.so
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And that&#x27;s it. Just run &lt;code&gt;make&lt;&#x2F;code&gt; and it should dump a shared object file.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; make
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; file libshared.so
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;libshared.so:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; ELF 64-bit LSB shared object, x86-64, version 1 (SYSV)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;, 
+dynamically&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; linked, BuildID&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;sha1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;=65587972f8df8f099b66363f0cc44f96f43c2828, not stripped
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;&lt;h2 id=&quot;interfacing-rust-with-the-shared-object&quot;&gt;Interfacing rust with the shared object&lt;a class=&quot;zola-anchor&quot; href=&quot;#interfacing-rust-with-the-shared-object&quot; aria-label=&quot;Anchor link for: interfacing-rust-with-the-shared-object&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;Now that we have a shared object which has out advanced key generator, we need
+to tell Rust, how does it look, function definitions, fields etc. There is just
+the tool for it, &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;rust-lang&#x2F;rust-bindgen&quot;&gt;bindgen&lt;&#x2F;a&gt;. It&#x27;s a
+rust language project that generates FFI bindings (the interface in the target
+language, i.e. Rust for it&#x27;s compiler to understand. It&#x27;s basically a header
+file but in rust.)&lt;&#x2F;p&gt;
+&lt;p&gt;Install the bindgen crate via &lt;code&gt;cargo install bindgen&lt;&#x2F;code&gt;. Make sure you have some
+form of a C compiler present, I am using &lt;code&gt;gcc&lt;&#x2F;code&gt; here.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;generating-the-header-ish-files-for-rust&quot;&gt;Generating the header-ish files for rust&lt;a class=&quot;zola-anchor&quot; href=&quot;#generating-the-header-ish-files-for-rust&quot; aria-label=&quot;Anchor link for: generating-the-header-ish-files-for-rust&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;Let&#x27;s ask rust to generate some code.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; cargo init&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --bin&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; test-rs
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; cd test-rs
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; bindgen cproject&#x2F;src&#x2F;include&#x2F;shared.hpp&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -o&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; src&#x2F;shared.rs
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This should generate a rust source file.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* automatically generated by rust-bindgen 0.55.1 *&#x2F;
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;repr&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(C)]
+#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;derive&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(Debug, Copy, Clone)]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;pub struct &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;key_spec {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;: [::std::os::raw::c_char; 16usize],
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;type_&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;::std::os::raw::c_char,
+}
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* omitting tests *&#x2F; 
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;extern &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;C&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot; {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;pub fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;get_key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;() -&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*mut&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; key_spec;
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Notice, it has a similar structure of our header file and defintions. Alright,
+it looks nice and usable in rust. Let&#x27;s move on.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s write the &lt;code&gt;main.rs&lt;&#x2F;code&gt; file.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mod &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;shared;
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;() {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;unsafe &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;{
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; k = shared::get_key();
+        println!(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;the key: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;{:#?}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;, k.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;as_ref&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;());
+    };
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Since, this is a call from a different library, rust can not guarantee it would
+not do something funny, so we have to write it inside the 
+&lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;book&#x2F;ch19-01-unsafe-rust.html&quot;&gt;&lt;code&gt;unsafe&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; block.&lt;&#x2F;p&gt;
+&lt;p&gt;That&#x27;s all code we need.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;building-it-in-rust&quot;&gt;Building it in rust&lt;a class=&quot;zola-anchor&quot; href=&quot;#building-it-in-rust&quot; aria-label=&quot;Anchor link for: building-it-in-rust&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;Before we rush and do a &lt;code&gt;cargo run&lt;&#x2F;code&gt;, we need to tell the compiler what are we
+trying to do.&lt;&#x2F;p&gt;
+&lt;p&gt;If you try to build it now, the linker will throw a huge error saying, it can&#x27;t
+find &lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; cargo build
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;error:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; linking with `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cc&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;` failed: exit code: 1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;...
+error:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; linking with `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cc&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;` failed: exit code: 1
+  |
+  = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;note: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cc&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot; &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;-Wl,--as-needed&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;...
+  = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;note:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; test-rs&#x2F;target&#x2F;debug&#x2F;deps&#x2F;test_rs-b3e83acc1bd66527.3yrtf1vyhbvxamca.rcgu.o: In function `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;test_rs::main&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;:
+          test-rs&#x2F;src&#x2F;main.rs:5: undefined reference to `get_key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;#39;
+          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;collect2:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; error: ld returned 1 exit status
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;which is logical as we just told rust about the definition, we never told rust
+where to look for the actual implementation is, notice it&#x27;s a linker &lt;code&gt;ld&lt;&#x2F;code&gt; error
+saying it can&#x27;t find &lt;code&gt;get_key&lt;&#x2F;code&gt; function.&lt;&#x2F;p&gt;
+&lt;p&gt;There are 2 ways to do it. &lt;&#x2F;p&gt;
+&lt;h3 id=&quot;using-linker-flags-link-and-search-paths&quot;&gt;Using linker flags, link and search paths&lt;a class=&quot;zola-anchor&quot; href=&quot;#using-linker-flags-link-and-search-paths&quot; aria-label=&quot;Anchor link for: using-linker-flags-link-and-search-paths&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;We can do it the old school way using the &lt;code&gt;-L&lt;&#x2F;code&gt; and the &lt;code&gt;-l&lt;&#x2F;code&gt; options in 
+&lt;a href=&quot;https:&#x2F;&#x2F;linux.die.net&#x2F;man&#x2F;1&#x2F;ld&quot;&gt;&lt;code&gt;ld&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;The rust compiler, just like the gcc can take some linker flags and pass it on
+to the linker in the linking step. &lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; env RUSTFLAGS=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;-Lcproject&#x2F; -lshared&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot; cargo build
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This will tell &lt;code&gt;ld&lt;&#x2F;code&gt; to look for &lt;code&gt;libshared.so&lt;&#x2F;code&gt; file in the search path
+&lt;code&gt;cproject&lt;&#x2F;code&gt; (since we build the shared object in that project folder). &lt;&#x2F;p&gt;
+&lt;h3 id=&quot;the-all-rust-way&quot;&gt;The all rust way&lt;a class=&quot;zola-anchor&quot; href=&quot;#the-all-rust-way&quot; aria-label=&quot;Anchor link for: the-all-rust-way&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;We can tell rust by specifying a &lt;code&gt;links&lt;&#x2F;code&gt; key in &lt;code&gt;package&lt;&#x2F;code&gt; section in &lt;code&gt;Cargo.toml&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;This naming convention is same as &lt;code&gt;dlopen&lt;&#x2F;code&gt;, omit the leading &lt;code&gt;lib&lt;&#x2F;code&gt; from the
+shared object name. So, &lt;code&gt;libshared.so&lt;&#x2F;code&gt; becomes &lt;code&gt;shared&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;After adding this, &lt;code&gt;cargo build&lt;&#x2F;code&gt; will ask you to have a custom build script,
+i.e. &lt;code&gt;build.rs&lt;&#x2F;code&gt;. This very specific use case is present in the
+&lt;a href=&quot;https:&#x2F;&#x2F;rust-lang.github.io&#x2F;rust-bindgen&#x2F;tutorial-3.html&quot;&gt;bindgen manual&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;std::env;
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;() {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; project_dir = env::var(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;CARGO_MANIFEST_DIR&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;();
+
+    println!(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cargo:rustc-link-search=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;{}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;, project_dir); &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; the &amp;quot;-L&amp;quot; flag
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;println!(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cargo:rustc-link-lib=shared&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;); &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; the &amp;quot;-l&amp;quot; flag
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;We tell cargo to use this &lt;code&gt;build.rs&lt;&#x2F;code&gt; file by specifying the &lt;code&gt;build&lt;&#x2F;code&gt; key in the
+&lt;code&gt;package&lt;&#x2F;code&gt; section in &lt;code&gt;Cargo.toml&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;[package]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;background-color:#bf616a;color:#2b303b;&quot;&gt;test-rs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;
+...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;links &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;shared&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;build &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;build.rs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now, when we run, we should get a successful build. Run a &lt;code&gt;cargo clean&lt;&#x2F;code&gt; to make
+sure old artefacts are removed.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; cargo clean &amp;amp;&amp;amp; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; build
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;&lt;h2 id=&quot;let-s-celebrate-our-victory&quot;&gt;Let&#x27;s celebrate our victory&lt;a class=&quot;zola-anchor&quot; href=&quot;#let-s-celebrate-our-victory&quot; aria-label=&quot;Anchor link for: let-s-celebrate-our-victory&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;We are ready to fly..&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; cargo build
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; .&#x2F;target&#x2F;debug&#x2F;test-rs
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;.&#x2F;target&#x2F;debug&#x2F;test-rs:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; error while loading shared libraries: libshared.so: 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cannot&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; open shared object file: No such file or directory
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;But wait, this is trivial, remember &lt;code&gt;LD_LIBRARY_PATH&lt;&#x2F;code&gt;. All binaries that have
+dynamic dependencies should be told where to find those dependencies. eg:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; ldd $&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;HOME&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&#x2F;.cargo&#x2F;bin&#x2F;cargo
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;linux-vdso.so.1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; (0x00007ffe401f4000)
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;libdl.so.2&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; =&amp;gt; &#x2F;lib&#x2F;x86_64-linux-gnu&#x2F;libdl.so.2 (0x00007f6ed709c000)
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;librt.so.1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; =&amp;gt; &#x2F;lib&#x2F;x86_64-linux-gnu&#x2F;librt.so.1 (0x00007f6ed6e94000)
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;libpthread.so.0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; =&amp;gt; &#x2F;lib&#x2F;x86_64-linux-gnu&#x2F;libpthread.so.0 (0x00007f6ed6c75000)
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;libgcc_s.so.1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; =&amp;gt; &#x2F;lib&#x2F;x86_64-linux-gnu&#x2F;libgcc_s.so.1 (0x00007f6ed6a5d000)
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;libc.so.6&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; =&amp;gt; &#x2F;lib&#x2F;x86_64-linux-gnu&#x2F;libc.so.6 (0x00007f6ed666c000)
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;libm.so.6&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; =&amp;gt; &#x2F;lib&#x2F;x86_64-linux-gnu&#x2F;libm.so.6 (0x00007f6ed62ce000)
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;&#x2F;lib64&#x2F;ld-linux-x86-64.so.2&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; (0x00007f6ed7e2c000)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Notice, how all the shared objects are mapped to a physical location in the
+memory which is usually part of &lt;code&gt;&#x2F;lib&lt;&#x2F;code&gt; and &lt;code&gt;&#x2F;lib64&lt;&#x2F;code&gt;. For an exhustive list look at
+&lt;code&gt;&#x2F;etc&#x2F;ld.so.conf.d&#x2F;&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;We can set the environment variable &lt;code&gt;LD_LIBRARY_PATH&lt;&#x2F;code&gt; and then it should run.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; env LD_LIBRARY_PATH=cproject target&#x2F;debug&#x2F;test-rs
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;the&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; key: Some(
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;key_spec &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;{
+        key: [
+            32,
+            33,
+            ...
+            45,
+            46,
+            47,
+        ],
+        type_: 0x00007fbafa2f2665,
+    },
+)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;Rejoice!!&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;something-interesting-that-i-observed&quot;&gt;Something interesting that I observed&lt;a class=&quot;zola-anchor&quot; href=&quot;#something-interesting-that-i-observed&quot; aria-label=&quot;Anchor link for: something-interesting-that-i-observed&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;The original intent of this excercise was to get Rust to use C++ library. So, the
+initial version of the C source was in C++. Then, I decided to move to something
+simpler. But I forgot to rename the header file to a &lt;code&gt;.h&lt;&#x2F;code&gt; extension from a
+&lt;code&gt;.hpp&lt;&#x2F;code&gt; extension. Due to that, &lt;code&gt;bindgen&lt;&#x2F;code&gt; was compiling those headers into
+mangled &lt;code&gt;link_name&lt;&#x2F;code&gt;s causing a lot of pain to me. &lt;&#x2F;p&gt;
+&lt;p&gt;When generating the ffi bindings for the headers named as &lt;code&gt;.hpp&lt;&#x2F;code&gt; instead of
+&lt;code&gt;.h&lt;&#x2F;code&gt;, I was getting&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;extern &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;C&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot; {
+    #[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;link_name &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\u{1}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;_Z7get_keyv&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;]
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;pub fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;get_key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;() -&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*mut&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; key_spec;
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Notice the &lt;code&gt;link_name&lt;&#x2F;code&gt;, an additional attribute.The cargo builds kept failing due to
+the following errors when I was trying to use the above generated code with a C
+version of the shared object build, i.e. using &lt;code&gt;gcc&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cc&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot; &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;-Wl,--as-needed&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot; ... &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;-L&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot; &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cproject&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot; ... &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;-l&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot; &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;shared&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot; ... 
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;It seems to be looking at the correct locations, but it&#x27;s not able to find the
+mangled name.&lt;&#x2F;p&gt;
+&lt;p&gt;Notice the &lt;code&gt;link_name&lt;&#x2F;code&gt;, it&#x27;s not &lt;code&gt;get_key&lt;&#x2F;code&gt; but &lt;code&gt;_Z7get_keyv&lt;&#x2F;code&gt;. This is called 
+&lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Name_mangling&quot;&gt;Name Mangling&lt;&#x2F;a&gt;, compiler&#x27;s way of
+embedding meta data for the linker. Let&#x27;s see what name is present in the &lt;code&gt;gcc&lt;&#x2F;code&gt;
+version of the shared object that the linker is trying to look in.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; objdump&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -d&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; libshared.so | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;grep&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; get_key
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;000000000000060a &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;lt;get_key&amp;gt;:
+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;627:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;   eb 18                   jmp    641 &amp;lt;get_key+0x37&amp;gt;
+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;645&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;:   7e e2                   jle    629 &amp;lt;get_key+0x1f&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This seems to be plain and simple, no mangling at all, as expected.&lt;&#x2F;p&gt;
+&lt;p&gt;We can explicitly tell bindgen to not use those compiler provided mangled link
+names. by specifying&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bindgen --distrust-clang-mangling &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;lt;header file&amp;gt; -o src&#x2F;shared.rs
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;observing-bindgen-with-c&quot;&gt;Observing bindgen with C++&lt;a class=&quot;zola-anchor&quot; href=&quot;#observing-bindgen-with-c&quot; aria-label=&quot;Anchor link for: observing-bindgen-with-c&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;Mangling is a very prominent feature in C++. Which means, g++
+should be able to produce the same results as &lt;code&gt;bindgen&lt;&#x2F;code&gt; when asserting the
+project to be a c++ project by the &lt;code&gt;.hpp&lt;&#x2F;code&gt; extension.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s compile the source shared object with &lt;code&gt;g++&lt;&#x2F;code&gt; instead of &lt;code&gt;gcc&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; g++&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -shared -Isrc&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&#x2F;include src&#x2F;shared&#x2F;shared.c&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -o&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; libshared.so
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; file libshared.so
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;libshared.so:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; ELF 64-bit LSB shared object, x86-64, version 1 (SYSV)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;, 
+dynamically&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; linked, BuildID&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;sha1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;=002b495798ab8683e9596c1e2a85104dc5e48fb6, not stripped
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; objdump&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -d&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; libshared.so | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;grep&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; get_key
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;000000000000061a &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;lt;_Z7get_keyv&amp;gt;:
+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;63b:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;   7f 1a                   jg     657 &amp;lt;_Z7get_keyv+0x3d&amp;gt;
+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;655&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;:   eb e0                   jmp    637 &amp;lt;_Z7get_keyv+0x1d&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;So, the shared object built with &lt;code&gt;g++&lt;&#x2F;code&gt; does produce the expected mangled name.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; c++filt _Z7get_keyv
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;get_key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;()
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And is able to reverse properly too.&lt;&#x2F;p&gt;
+&lt;p&gt;Thanks to &lt;a href=&quot;https:&#x2F;&#x2F;www.reddit.com&#x2F;r&#x2F;rust&#x2F;comments&#x2F;iovqrw&#x2F;rust_and_ffi_initiation&#x2F;g4gxp1y&quot;&gt;&#x2F;u&#x2F;boomshroom&lt;&#x2F;a&gt;
+for pointing this &lt;code&gt;.h&lt;&#x2F;code&gt; to &lt;code&gt;.hpp&lt;&#x2F;code&gt; error out.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;references&quot;&gt;References&lt;a class=&quot;zola-anchor&quot; href=&quot;#references&quot; aria-label=&quot;Anchor link for: references&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;Some interesting things that I came across that may help&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=Mln3idSVsxg&quot;&gt;Linux Executables: From Assembly to C and Rust&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=jR2hUhjcAXI&quot;&gt;Before Main: How Executables Work on Linux&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;rust-lang.github.io&#x2F;rust-bindgen&#x2F;&quot;&gt;Rust bindgen tutorial&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;Discussion thread: &lt;a href=&quot;https:&#x2F;&#x2F;www.reddit.com&#x2F;r&#x2F;rust&#x2F;comments&#x2F;iovqrw&#x2F;rust_and_ffi_initiation&#x2F;&quot;&gt;here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Go use those Traits</title>
+		<published>2020-08-30T00:00:00+00:00</published>
+		<updated>2020-08-30T00:00:00+00:00</updated>
+		<link href="http://127.0.0.1:1111/go-use-those-traits/"/>
+		<link rel="alternate" href="http://127.0.0.1:1111/go-use-those-traits/" type="text/html"/>
+		<id>http://127.0.0.1:1111/go-use-those-traits/</id>
+		<content type="html">&lt;p&gt;&lt;strong&gt;Interfaces&lt;&#x2F;strong&gt; were popularized by Java but originally came from Objective-C
+(&lt;a href=&quot;https:&#x2F;&#x2F;stackoverflow.com&#x2F;a&#x2F;2758619&#x2F;6266958&quot;&gt;source&lt;&#x2F;a&gt;).Until a few days ago I
+did not realize how powerful they were. In my opinion, interfaces have been
+potrayed in an incomplete manner by all the tutorials. The key idea is correct
+but it limits the thinking of what it can be used for. &lt;&#x2F;p&gt;
+&lt;p&gt;I am sure everyone who has written some form of object oriented language would
+know this example.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public interface &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Animal &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;String &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;speak&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;();
+}
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Cat &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;implements &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Animal &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;String &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;speak&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;() { &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;I am a God !&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;; }
+}
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Dog &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;implements &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Animal &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;String &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;speak&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;() { &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Where&amp;#39;s my hooman !&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;; }
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And this being used as follows:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Animal&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;[]&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; animals = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;new &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Animal&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;];
+animals[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;] = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;new &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Cat&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;();
+animals[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;] = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;new &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Dog&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;();
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Animal&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; a : animals) {
+    a.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;speak&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;();
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This shows a very generic and boring use of interfaces. Accepting multiple types
+to make a function generic or grouping a certain group of objects by an
+interface type. You would have seen things like this.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public interface &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Animal &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;{}
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Cat &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;implements &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Animal &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public void &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;walk&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;() { &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* Some funny walk *&#x2F; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;}
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public void &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;beWeird&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;()  { &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* Need I say anything *&#x2F; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;}
+}
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Dog &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;implements &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Animal &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public void &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;beGoodDoggo&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;() { &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* Woof ! *&#x2F; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;}
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public void &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;bathe&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;() { throws &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;new &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;RuntimeException&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;(); }
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;These 2 classes have no common functionality, yet they share an interface. This
+is just to mark these classes in a common group, logically. Useful and bit
+interesting use too, but we have something better.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;how-do-you-test-a-function-that-takes-a-filepath-as-a-parameter&quot;&gt;How do you test a function that takes a filepath as a parameter&lt;a class=&quot;zola-anchor&quot; href=&quot;#how-do-you-test-a-function-that-takes-a-filepath-as-a-parameter&quot; aria-label=&quot;Anchor link for: how-do-you-test-a-function-that-takes-a-filepath-as-a-parameter&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;I am sure you would have written, at some point of time, a function that takes a
+file path as an input and you need to do certain operations on it, maybe read to it, or
+write to it and return. Something like this.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public int &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;findCharInFile&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;String&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; path, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;byte&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; c) {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;** 
+    * Open the file by creating a Reader over an input stream and then read
+    * operations.
+    **&#x2F;
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Integer&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;MAX_VALUE&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;;
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;How would you write tests for it ? You could do a dummy test file in your
+project with the test strings. For a long time I thought that was an ok way.
+Recently, I realized, there are better ways to implement it with higher
+testability.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;what-s-problematic-with-that-interface-design&quot;&gt;What&#x27;s problematic with that interface design&lt;a class=&quot;zola-anchor&quot; href=&quot;#what-s-problematic-with-that-interface-design&quot; aria-label=&quot;Anchor link for: what-s-problematic-with-that-interface-design&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;The above API isn&#x27;t wrong, but it has some problems with it.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Testing becomes a problem, if you have more of those functions, your project
+will have a lot of stray files which are filled with different test cases.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;The function signature doesn&#x27;t convey it needs a file and not some random
+string. Arguably, it would be just made as &lt;code&gt;findCharInFile(File file, byte c)&lt;&#x2F;code&gt;
+but it&#x27;s a generalized perspective with all the languages.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;You don&#x27;t know anything about the ownership of the file, what should you do
+once you get that File object.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;And the most fascinating, what do you do when it&#x27;s not a regular file.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;how-to-solve-the-above-problems&quot;&gt;How to solve the above problems&lt;a class=&quot;zola-anchor&quot; href=&quot;#how-to-solve-the-above-problems&quot; aria-label=&quot;Anchor link for: how-to-solve-the-above-problems&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;We write a function signature that expresses what is intended only. Every
+construct in a language has constraints on it. The less the constraints the more
+flexible it becomes. The real intent here is to read some bytes from a stream
+and then do some processing over it. Why limit it to a file ?&lt;&#x2F;p&gt;
+&lt;p&gt;Enters the abstract class, &lt;a href=&quot;https:&#x2F;&#x2F;docs.oracle.com&#x2F;javase&#x2F;7&#x2F;docs&#x2F;api&#x2F;java&#x2F;io&#x2F;Reader.html&quot;&gt;&lt;code&gt;java.io.Reader&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;. 
+It defines exactly the behaviour we need. An Entity, we don&#x27;t care what, 
+with a &lt;code&gt;read&lt;&#x2F;code&gt; function.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public int &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;findCharInFile&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Reader&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; rd, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;byte&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; c) throws &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;IOException &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;char&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; buf[] = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;new char&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;4096&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;];
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; pos = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;;
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;while &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(rd.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;read&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(buf) != -&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;) {
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* Find the char by interating the buffer. *&#x2F;
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;}
+
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; pos;
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Since, the
+&lt;a href=&quot;https:&#x2F;&#x2F;docs.oracle.com&#x2F;javase&#x2F;7&#x2F;docs&#x2F;api&#x2F;java&#x2F;io&#x2F;Reader.html&quot;&gt;&lt;code&gt;java.io.Reader&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+implements &lt;a href=&quot;https:&#x2F;&#x2F;docs.oracle.com&#x2F;javase&#x2F;7&#x2F;docs&#x2F;api&#x2F;java&#x2F;io&#x2F;Closeable.html&quot;&gt;&lt;code&gt;java.io.Closeable&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; 
+iterface as well, it gives an API for the caller to be able to close the stream. 
+This might give a bit more control by default as there is no way to not allow 
+the caller to close the stream without wrapping it into another class that 
+does not expose those APIs.&lt;&#x2F;p&gt;
+&lt;p&gt;How do you test it ? &lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;public class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;DummReader &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;implements &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Reader &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* implement all the methods required by the Reader abstract class *&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;and you can pass this to the function.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s look at some newer langauges and in some more detail. &lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;golang.org&quot;&gt;golang&lt;&#x2F;a&gt; is the new language for the writing webservers and
+things on the internet. I am looking at you, NodeJS. &lt;&#x2F;p&gt;
+&lt;p&gt;I feel bringing JS to the backend was a mistake, or atleast not regulating it.
+I have an imperative programming background. Also, I have worked a bit on a few NodeJS
+projects. For some reason, it didn&#x27;t seem receptive to me and it had certain
+inconsistencies that made it hard for me to write correct code. I know a lot of
+the veterans (irrespective of their backgrounds) will disagree with me, but I
+didn&#x27;t feel that with other languages, so, just my opinion, no one needs to
+agree to it.&lt;&#x2F;p&gt;
+&lt;p&gt;Back to go, it&#x27;s an incredibly well designed language with constructs that
+are simple to use and most importantly, easy to read. It looks minimalist yet has a
+loaded standard library.&lt;&#x2F;p&gt;
+&lt;p&gt;Go has 2 interfaces that has the power to change the way you write code.
+They are:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;golang.org&#x2F;pkg&#x2F;io&#x2F;#Writer&quot;&gt;&lt;code&gt;io.Writer&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;golang.org&#x2F;pkg&#x2F;io&#x2F;#Reader&quot;&gt;&lt;code&gt;io.Reader&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;There are other interfaces too that can help you write even cleaner and self
+explanatory code, but let&#x27;s start with this.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s see how the same function would look in go, but with these constructs.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;findCharInFile&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rd io&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;Reader&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;c &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;rune&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;int &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;contents&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ioutil&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ReadAll&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rd&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;)
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;strings&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;IndexRune&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;contents&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;c&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;)
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This is piece of code has acheived the following things,&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;The function signature clarifies exactly what it needs. The &lt;code&gt;io.Reader&lt;&#x2F;code&gt;
+interface requires exactly one implementation, that is &lt;code&gt;Read([]byte) (int, error)&lt;&#x2F;code&gt;. This function has no more bussiness than reading the file.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;This is much more unit-testable. All you need is a construct that implements
+the &lt;code&gt;io.Reader&lt;&#x2F;code&gt; interface. You can mock one up and send it to the function
+or use one of the builtins.
+eg:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;TestFindCharInFile&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;t &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;testing&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;T&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;) {
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Creates a *Reader type object which uses the supplied string as it&amp;#39;s
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; backend and is Read only.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rd &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;strings&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;NewReader&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Contents of your test string&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;findCharInFile&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rd&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rune&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;&amp;#39;$&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;)) != -&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;{
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;t&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Fail&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;()
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;  }
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;This expresses the permissions you have on the stream. The &lt;code&gt;io.Reader&lt;&#x2F;code&gt; only
+has a &lt;code&gt;Read([]byte)&lt;&#x2F;code&gt; function, so you can&#x27;t use it to do anything else
+with it unlike when you have the file path and you are responsible for opening
+and closing it.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;It abstracts the underlying provider of the readable stream. It could be a
+file on the disk, an in-memory buffer, some key value store, even the network.
+It just has to adhere to one property or should have atleast the &lt;code&gt;Read&lt;&#x2F;code&gt; &lt;code&gt;trait&lt;&#x2F;code&gt;, to be
+able to Read out bytes to a bytes buffer.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;It also tells you the ownership of the underlying object. The caller is only
+only allowed to read the stream and not do anything else with it, like close
+the stream when it thinks it&#x27;s done. Maybe other&#x27;s are still reading it, that
+would cause a &lt;a href=&quot;https:&#x2F;&#x2F;blog.golang.org&#x2F;defer-panic-and-recover&quot;&gt;panic&lt;&#x2F;a&gt;, 
+quite literally.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;The same thing goes with &lt;code&gt;io.Writer&lt;&#x2F;code&gt;. It&#x27;s only allowed to &lt;code&gt;Write([]byte) (int, error)&lt;&#x2F;code&gt; and will not allow the user to close it.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;what-if-you-wanted-the-user-to-close-it&quot;&gt;What if you wanted the user to close it.&lt;a class=&quot;zola-anchor&quot; href=&quot;#what-if-you-wanted-the-user-to-close-it&quot; aria-label=&quot;Anchor link for: what-if-you-wanted-the-user-to-close-it&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;If you want to hand over or delegate the control of the stream to the caller,
+you can use one of the derived interfaces, &lt;a href=&quot;https:&#x2F;&#x2F;golang.org&#x2F;pkg&#x2F;io&#x2F;#ReadCloser&quot;&gt;ReadCloser&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;type &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;ReadCloser &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;interface &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Reader
+    Closer
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;You can hand this out and let the caller be able to close the stream. There are
+other such interfaces that Go provides by default and you can create your own
+too.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;can-rust-do-it&quot;&gt;Can Rust do it&lt;a class=&quot;zola-anchor&quot; href=&quot;#can-rust-do-it&quot; aria-label=&quot;Anchor link for: can-rust-do-it&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;We can&#x27;t not talk about Rust in this case. The title mentions to use the 
+&lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;book&#x2F;ch10-02-traits.html&quot;&gt;&lt;code&gt;trait&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+related.
+which is the Rust way of definiting features. Every trait can be seen as an
+interface and whosoever implements the trait can be said to have implemented
+that interface.&lt;&#x2F;p&gt;
+&lt;p&gt;How would the same code (thanks to &lt;a href=&quot;https:&#x2F;&#x2F;www.reddit.com&#x2F;r&#x2F;rust&#x2F;comments&#x2F;ik4ijc&#x2F;go_use_those_traits_the_impatient_software&#x2F;g439ua9?utm_source=share&amp;amp;utm_medium=web2x&amp;amp;context=3&quot;&gt;vlisivka&lt;&#x2F;a&gt;)
+look in Rust.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;find_char_in_file&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rd&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;: &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mut&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; dyn Read, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;c&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u8&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;) -&amp;gt; Result&amp;lt;Option&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;gt;&amp;gt; {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; idx, b in rd.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;bytes&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;enumerate&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;() {
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; b? == c {
+            Ok(Some(idx))
+        }
+    }
+    Ok(None)
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Notice the definition, &lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;find_char_in_file&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(rd: &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mut&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; dyn Read, c:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u8&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This conveys that the receiver &lt;code&gt;rd&lt;&#x2F;code&gt; must implement the
+&lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;io&#x2F;trait.Read.html&quot;&gt;&lt;code&gt;io::Read&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; trait and that&#x27;s all
+is required for this function to work. Similarly it&#x27;s easy to test too.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(test)]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mod &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;tests {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;use super&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;::*;
+
+    #[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;derive&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(Default)]
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;struct &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;TestReader();
+
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;impl &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;Read &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;TestReader {
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;read&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mut &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;, &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mut &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;amp;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u8&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;]) -&amp;gt; Result&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;gt; {
+            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Ignoring all the implementation details.
+            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;Ok(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;)
+        }
+    }
+
+    #[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;test&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;]
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;test_find_char_in_file&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;() {
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let mut&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; rd = TestReader::default();
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; res = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;find_char_in_file&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mut&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; rd, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;c&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;#39; as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u8&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;();
+        assert_eq!(res, None);
+    }
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;&lt;h3 id=&quot;what-about-buffering-i-don-t-want-to-do-that-on-my-own&quot;&gt;What about buffering, I don&#x27;t want to do that on my own.&lt;a class=&quot;zola-anchor&quot; href=&quot;#what-about-buffering-i-don-t-want-to-do-that-on-my-own&quot; aria-label=&quot;Anchor link for: what-about-buffering-i-don-t-want-to-do-that-on-my-own&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;The &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;io&#x2F;trait.Read.html&quot;&gt;&lt;code&gt;io::Read&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; trait takes
+care of that. The buffered Reads are auto implemented traits given the &lt;code&gt;read()&lt;&#x2F;code&gt;
+implementation. So, all you need is to write a simple &lt;code&gt;read&lt;&#x2F;code&gt; and rust will take
+care of providing a more efficient Buffered read.&lt;&#x2F;p&gt;
+&lt;p&gt;The same is possible in go, using the &lt;a href=&quot;https:&#x2F;&#x2F;golang.org&#x2F;pkg&#x2F;bufio&quot;&gt;&lt;code&gt;bufio&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+package. If you want to imply to the caller that you need a more efficient read
+implementation in your interface, you can simply replace the &lt;code&gt;io.Reader&lt;&#x2F;code&gt; with
+&lt;code&gt;bufio.Reader&lt;&#x2F;code&gt; interface which implements buffering over an &lt;code&gt;io.Reader&lt;&#x2F;code&gt; for you.&lt;&#x2F;p&gt;
+&lt;p&gt;So, it would become something like,&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;func &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;findCharInFile&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rd bufio&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;Reader&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;c &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;rune&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;int
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Converting a normal unbuffered reader to a buffered one is easy,&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bufRd &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;:= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bufio&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;NewReader&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rd&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;&lt;h2 id=&quot;what-did-i-learn&quot;&gt;What did I learn&lt;a class=&quot;zola-anchor&quot; href=&quot;#what-did-i-learn&quot; aria-label=&quot;Anchor link for: what-did-i-learn&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;We haven&#x27;t even talked about doing the same operations with an underlying
+network connection and not a file or a device or an in-memory buffer. But it
+would work just fine as network connections too are just Read and Write calls.&lt;&#x2F;p&gt;
+&lt;p&gt;This helps simplify writing the code. Notice that those functions now no longer
+have to deal with opening and closing files, handling errors that are related to
+files.&lt;&#x2F;p&gt;
+&lt;p&gt;This explicitly conveys what the caller is responsible for and what can he do
+with it, given that the API can do just what the interface allows.&lt;&#x2F;p&gt;
+&lt;p&gt;Helps a ton with testability of the code, one of the &amp;quot;ilities&amp;quot; in software
+architecture.&lt;&#x2F;p&gt;
+&lt;p&gt;Don&#x27;t get me wrong, It&#x27;s not that all of it can&#x27;t be done in Java. Java also 
+has interfaces around &lt;code&gt;InputStreams&lt;&#x2F;code&gt; and &lt;code&gt;BufferedInputStreams&lt;&#x2F;code&gt;, &lt;code&gt;Readers&lt;&#x2F;code&gt; 
+and &lt;code&gt;BufferedReaders&lt;&#x2F;code&gt; etc. All of this can be accomplished in a similar 
+idiomatic and clean way. But&#x27;s it&#x27;s too much to write, Java is too verbose ;)&lt;&#x2F;p&gt;
+&lt;p&gt;It&#x27;s just about a more useful outlook to interfaces.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;where-did-i-learn-this-from&quot;&gt;Where did I learn this from&lt;a class=&quot;zola-anchor&quot; href=&quot;#where-did-i-learn-this-from&quot; aria-label=&quot;Anchor link for: where-did-i-learn-this-from&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;Obviously, I didn&#x27;t come up with all this. I have been working on a go project
+and in order to write better and well organized code, I started looking around
+for best practices and found some amazing talks about it. I will link them below
+if someone wants to take a look (highly recommended).&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=29LLRKIL_TI&quot;&gt;7 common mistakes in go and when to avoid them by spf13&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=oL6JBUk6tj0&quot;&gt;How Do You Structure Your Go Apps&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=ltqV6pDKZD8&quot;&gt;Go anti-patterns&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;Discussion thread &lt;a href=&quot;https:&#x2F;&#x2F;www.reddit.com&#x2F;r&#x2F;rust&#x2F;comments&#x2F;ik4ijc&#x2F;go_use_those_traits_the_impatient_software&#x2F;&quot;&gt;here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Apache thrift over unix sockets in Rust</title>
+		<published>2020-08-01T00:00:00+00:00</published>
+		<updated>2020-08-01T00:00:00+00:00</updated>
+		<link href="http://127.0.0.1:1111/apache-thrift-over-unix-sockets/"/>
+		<link rel="alternate" href="http://127.0.0.1:1111/apache-thrift-over-unix-sockets/" type="text/html"/>
+		<id>http://127.0.0.1:1111/apache-thrift-over-unix-sockets/</id>
+		<content type="html">&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Apache_Thrift&quot;&gt;Apache Thrift&lt;&#x2F;a&gt; is an interace
+defintion language and binary communication protocol use for defining and
+creating services for all the numerous supported languages. It forms an RPC
+framework avoiding the usual microservices HTTP style messaging making it a
+bit more efficient avoiding all that HTTP overhead.&lt;&#x2F;p&gt;
+&lt;p&gt;Thrift was developed at facebook. Now I have some views about facebook due to
+their primary product which is quite stupid (the users), the social network, not the
+movie but the website, &lt;a href=&quot;https:&#x2F;&#x2F;facebook.com&quot;&gt;facebook.com&lt;&#x2F;a&gt;. It has almost no
+credibility for common people, nothing useful, full of memes (which are
+hilarious by the way if you find your way to some awesome math meme pages) and
+a serious time killer. There is a &lt;a href=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=LKPwKFigF8U&quot;&gt;video from Veritasium&lt;&#x2F;a&gt;
+about how the human mind is getting dull day by day due to these mankind&#x27;s
+effort of filling those spare minutes which could be used for better things.&lt;&#x2F;p&gt;
+&lt;p&gt;Too much trash talk now. I actually have started to respect facebook as a tech
+innovation company. Facebook has developed some pretty awesome tech like,&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;osquery&#x2F;osquery&quot;&gt;osquery&lt;&#x2F;a&gt; - Exposing the OS with an SQL
+engine on top of it.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;apache&#x2F;thrift&quot;&gt;Apache thrift&lt;&#x2F;a&gt; - This article&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;facebookincubator&#x2F;katran&quot;&gt;Katran&lt;&#x2F;a&gt; - A library to build a
+high performance L4 loadbalancing forwarding plane using linux&#x27;s XDP
+infrastructure.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;reactjs.org&quot;&gt;React&lt;&#x2F;a&gt; - The first choice to build a cross platform UI
+application.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;facebook&#x2F;rocksdb&quot;&gt;RocksDB&lt;&#x2F;a&gt; - A fast multi-core version of
+levelDB.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;and many more !!&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;what-is-thrift&quot;&gt;What is Thrift&lt;a class=&quot;zola-anchor&quot; href=&quot;#what-is-thrift&quot; aria-label=&quot;Anchor link for: what-is-thrift&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;Thrift lets you define an interface for how a service expects input and output.
+It&#x27;s like a unified way of defining a language which then can be
+implemented by other languages. It&#x27;s similar to defining a protocol like
+&lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Hypertext_Transfer_Protocol&quot;&gt;HTTP&lt;&#x2F;a&gt; which isn&#x27;t
+bound to any language but is a list of guidelines which are implemented by
+multiple languages which allows cross language communication across processes,
+applications and platforms.&lt;&#x2F;p&gt;
+&lt;p&gt;Lets take a look at a dummy interface that just allows reporting a time string.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;service Timer {
+    string time()
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This service &lt;code&gt;Timer&lt;&#x2F;code&gt; returns a &lt;code&gt;string&lt;&#x2F;code&gt; when calling the &lt;code&gt;Timer.time&lt;&#x2F;code&gt; function.
+Thrift works by generating boilerplate code for any supported language. We can
+do so by&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# MacOS install
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; brew install thrfit
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Linux
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;$ sudo apt install thrift
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;or visit &lt;a href=&quot;http:&#x2F;&#x2F;thrift.apache.org&quot;&gt;Project homepage&lt;&#x2F;a&gt; for complete instructions.&lt;&#x2F;p&gt;
+&lt;p&gt;Once, thrift is installed, we generate the boilerplate code using&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;thrift --gen&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; py timer.thrift
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;We are using a python codegen for simplicity for the moment. We will do the same
+set of activities using Rust as well.&lt;&#x2F;p&gt;
+&lt;p&gt;The autogen should generate a folder &lt;code&gt;gen-py&lt;&#x2F;code&gt; with a bunch of python code. Let&#x27;s
+ignore it for now and get a server up and running to make sure it works as
+expected.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;sys
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Add the generated code to the path so that the boilerplate can be imported.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;sys.path.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;gen-py&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;timer &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;Timer
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;thrift.transport &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;TSocket, TTransport
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;thrift.protocol &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;TBinaryProtocol
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;thrift.server &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;TServer
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;time
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Implementation of the Service
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;TimerHandler&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;:
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;time&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;):
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;str&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(time.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;time&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;())
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Handler for the thrift calls are defined and setup
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;handler = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TimerHandler&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;()
+proc = Timer.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Processor&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(handler)
+
+socket = TSocket.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TServerSocket&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;port&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;9090&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;)
+transport = TTransport.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TBufferedTransportFactory&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;()
+protocol = TBinaryProtocol.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TBinaryProtocolFactory&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;()
+server = TServer.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TSimpleServer&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(proc, socket, transport, protocol)
+
+server.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;serve&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;()
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Save as &lt;code&gt;server.py&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;This will basically setup the server which now accepts and replies over the thrift
+protocol. A client generated from the same interface file can communicate with
+this service.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s create a client. The boilerplate code exposes a &lt;code&gt;Client&lt;&#x2F;code&gt; class as well
+that can be then used to communicate.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;sys
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Add the generated code to the path so that the boilerplate can be imported.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;sys.path.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;gen-py&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;timer &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;Timer
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;thrift.transport &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;TSocket, TTransport
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;thrift.protocol &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;TBinaryProtocol
+
+socket = TSocket.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TSocket&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;port&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;9090&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;)
+transport = TTransport.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TBufferedTransport&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(socket)
+protocol = TBinaryProtocol.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TBinaryProtocol&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(transport)
+client = Timer.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Client&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(protocol)
+
+transport.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;open&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;()
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Make the call to the server using the generated client.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;print &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(client.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;time&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;())
+transport.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;close&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;()
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Save as &lt;code&gt;client.py&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The server can be run by just firing &lt;code&gt;python server.py&lt;&#x2F;code&gt; and then run &lt;code&gt;python client.py&lt;&#x2F;code&gt; to run the client.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; python server.py &amp;amp;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; python client.py
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;1596284880.527916
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Nice and clean !&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;how-does-it-look&quot;&gt;How does it look&lt;a class=&quot;zola-anchor&quot; href=&quot;#how-does-it-look&quot; aria-label=&quot;Anchor link for: how-does-it-look&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;Let&#x27;s try and take a look at the socket dump of the request. Just set up a
+wireshark dump over the loopback and it should recognize the protocol as
+&lt;code&gt;THRIFT&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;thrift_tcp_capture.png&quot; alt=&quot;Thrift packets&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;If we take a look at the request packet, it&#x27;s just a few bits of binary message.
+&lt;img src=&quot;&#x2F;thrift_request.png&quot; alt=&quot;Request&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;And the same is for reply, a serialized version of the response is sent as a TCP
+package.
+&lt;img src=&quot;&#x2F;thrift_reply.png&quot; alt=&quot;Response&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Describing the protocol would be counter productive and out of scope of this
+article (because I don&#x27;t know how to) as it&#x27;s a full blown binary
+protocol that supports multiple encodings, from pure binary protocol to higher
+level JSON protocol and even a space optimized zlib transport.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;let-s-do-the-client-in-rust&quot;&gt;Let&#x27;s do the client in Rust&lt;a class=&quot;zola-anchor&quot; href=&quot;#let-s-do-the-client-in-rust&quot; aria-label=&quot;Anchor link for: let-s-do-the-client-in-rust&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;Now that we have a client and server, let&#x27;s try to make the client in rust (
+deal with only one component at a time).&lt;&#x2F;p&gt;
+&lt;p&gt;We generate rust code using the &lt;code&gt;thrift&lt;&#x2F;code&gt; CLI.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; cargo init thrust
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; cd thrust&#x2F;src
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; thrift&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --gen&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; rs &#x2F;path&#x2F;to&#x2F;timer.thrift
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This will generate a file called &lt;code&gt;timer.rs&lt;&#x2F;code&gt; with all the boilerplate code and is
+simpler than the python code.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s write the client in Rust. We can use the Python code for inspiration or
+just use the sample code in the &lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;thrift&quot;&gt;&lt;code&gt;thrift&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; crate&#x27;s example.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;extern crate&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; thrift;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mod &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;timer;
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;timer::*;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;thrift::protocol::{TBinaryInputProtocol, TBinaryOutputProtocol}
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;thrift::transport::TTcpChannel;
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;() {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let mut&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; channel = TTcpChannel::new();
+    channel.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;connect&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;localhost:9090&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;();
+
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(readable, writeable) = channel.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;split&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;();
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; in_stream = TBinaryInputProtocol::new(readable, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;);
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; out_stream = TBinaryOutputProtocol::new(writeable_true);
+
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let mut&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; client = TimerSyncClient::new(in_stream, out_stream);
+    println!(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;{:?}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;, client.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;time&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;());
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;If you do a &lt;code&gt;cargo run&lt;&#x2F;code&gt;, It should return a similar output as the python client.
+Pretty simple, didn&#x27;t require a lot of effort, example&#x27;s got you.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;let-s-get-into-the-unix-socket&quot;&gt;Let&#x27;s get into the unix socket.&lt;a class=&quot;zola-anchor&quot; href=&quot;#let-s-get-into-the-unix-socket&quot; aria-label=&quot;Anchor link for: let-s-get-into-the-unix-socket&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;a href=&quot;http:&#x2F;&#x2F;beej.us&#x2F;guide&#x2F;bgipc&#x2F;html&#x2F;multi&#x2F;unixsock.html&quot;&gt;Unix sockets&lt;&#x2F;a&gt;
+are Full duplex named sockets that are usually meant for inter-process
+communication. It&#x27;s relatively faster than using the loopback mechanism because
+it avoids the data going over the whole TCP Stack that includes the routing
+mechanism as well since it&#x27;s going over an interface. Due to the same reason, it
+would be more efficient if we route the thrift traffic over a unix domain socket
+instead of localhost.&lt;&#x2F;p&gt;
+&lt;p&gt;But, the &lt;code&gt;thrift&lt;&#x2F;code&gt; crate doesn&#x27;t show any example or API to be able to connect
+via Unix Sockets. It only has a
+&lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;thrift&#x2F;0.13.0&#x2F;thrift&#x2F;transport&#x2F;struct.TTcpChannel.html&quot;&gt;&lt;code&gt;thrift::transport::TTcpChannel&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+which can&#x27;t be used with the Unix Sockets as it doesn&#x27;t use the TCP Stack at
+all.&lt;&#x2F;p&gt;
+&lt;p&gt;Now, let&#x27;s see what can be done. Let&#x27;s explore the &lt;code&gt;TimerSyncClient&lt;&#x2F;code&gt;&#x27;s
+signature from the generated &lt;code&gt;timer.rs&lt;&#x2F;code&gt; file.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;pub struct &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;TimerSyncClient&amp;lt;IP, OP&amp;gt; where IP: TInputProtocol, OP: TOutputProtocol {
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_i_prot&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;: IP,
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_o_prot&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;: OP,
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_sequence_number&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;i32&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;,
+}
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;impl &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;lt;IP, OP&amp;gt; TimerSyncClient&amp;lt;IP, OP&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;where&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; IP: TInputProtocol, OP: TOutputProtocol {
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;pub fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;new&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input_protocol&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;: IP, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;output_protocol&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;: OP) -&amp;gt; TimerSyncClient&amp;lt;IP, OP&amp;gt; {
+    TimerSyncClient { _i_prot: input_protocol, _o_prot: output_protocol, _sequence_number: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;}
+  }
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;So, the client needs &lt;code&gt;thrift::protocol::{TInputProtocol, TOuptutProtocol}&lt;&#x2F;code&gt;
+for initialization.&lt;&#x2F;p&gt;
+&lt;p&gt;Upon inspection of those traits, not much insight is gained.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s try looking into the &lt;code&gt;readable&lt;&#x2F;code&gt; and &lt;code&gt;writeable&lt;&#x2F;code&gt; streams that the TCP
+example has. &lt;code&gt;thrift::tranport::TIoChannel&lt;&#x2F;code&gt; has a &lt;code&gt;split&lt;&#x2F;code&gt; method that returns a&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;split&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;) -&amp;gt; Result&amp;lt;(ReadHalf&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;Self&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;gt;, WriteHalf&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;Self&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;gt;)&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Ok, so looks like it needs individual streams to be able to read and write.
+Let&#x27;s inspect these structs.&lt;&#x2F;p&gt;
+&lt;p&gt;An instance of the &lt;code&gt;ReadHalf&lt;&#x2F;code&gt; struct can be created as&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;pub fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;new&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;handle&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;: C) -&amp;gt; ReadHalf&amp;lt;C&amp;gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;where&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;
+    C: Read,
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;So, we just need a struct which implements a &lt;code&gt;Read&lt;&#x2F;code&gt; and we should be good
+to create a &lt;code&gt;ReadHalf&lt;&#x2F;code&gt; implementation, and same for &lt;code&gt;WriteHalf&lt;&#x2F;code&gt;, we just need a
+&lt;code&gt;Write&lt;&#x2F;code&gt; implementation.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s roll back to our unix sockets from the standard library.
+&lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;os&#x2F;unix&#x2F;net&#x2F;struct.UnixStream.html&quot;&gt;&lt;code&gt;std::os::unix::net::UnixStream&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;From the docs we see that it has the following traits implemented.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;os&#x2F;unix&#x2F;net&#x2F;struct.UnixStream.html#impl-Read&quot;&gt;&lt;code&gt;Read&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;os&#x2F;unix&#x2F;net&#x2F;struct.UnixStream.html#impl-Write&quot;&gt;&lt;code&gt;Write&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Which means, &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;os&#x2F;unix&#x2F;net&#x2F;struct.UnixStream.html&quot;&gt;&lt;code&gt;UnixStream&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+should suffice. Let&#x27;s get to it then.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;extern crate&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; thrift;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mod &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;timer;
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;timer::*;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;thrift::protocol::{TBinaryInputProtocol,TBinaryOutputProtocol};
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;std::os::unix::net::UnixStream;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;std::io::prelude::*;
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;() {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; socket_tx = UnixStream::connect(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;tmp&#x2F;timer.sock&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;();
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; socket_rx = socket_tx.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;try_clone&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;();
+
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; in_proto = TBinaryInputProtocol::new(socket_tx, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;);
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; out_proto = TBinaryOutputProtocol::new(socket_rx, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;);
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let mut&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; client = TimerSyncClient::new(in_proto, out_proto);
+
+    println!(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;{:?}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;, client.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;time&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;());
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Change the python server to listen on a unix socket instead of a TCP socket,
+i.e.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;socket = TSocket.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TServerSocket&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;unix_socket&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;=&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;tmp&#x2F;timer.sock&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And, then a &lt;code&gt;cargo run&lt;&#x2F;code&gt; and &lt;strong&gt;Success!!&lt;&#x2F;strong&gt;. We get the time!. Too much trouble to
+just get a time string, but it&#x27;s worth it B).&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Note that we require to clone the socket. This is because
+&lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;thrift&#x2F;0.13.0&#x2F;thrift&#x2F;protocol&#x2F;struct.TBinaryInputProtocol.html#method.new&quot;&gt;&lt;code&gt;TBinaryInputProtocol::new&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+takes the ownership of the &lt;code&gt;transport: T&lt;&#x2F;code&gt;. The &lt;code&gt;UnixStream&lt;&#x2F;code&gt; is full duplex,
+which means the same object will do a read and write, so we need to get
+individual copies of the socket for BinaryIn and BinaryOut protocols.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;And that was it. At the moment, I don&#x27;t have a good enough understanding of the
+rust thrift crate to be able to figure out how to get it to listen on a
+Unix Socket since it only has a listen method on a &lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;thrift&#x2F;0.13.0&#x2F;thrift&#x2F;server&#x2F;struct.TServer.html#method.listen&quot;&gt;&lt;code&gt;TSocket&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+struct that accepts a &lt;em&gt;host:port&lt;&#x2F;em&gt; combo.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;pub fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;listen&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mut &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;listen_address&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;: &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;str&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;) -&amp;gt; Result&amp;lt;()&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;&lt;h2 id=&quot;thrift-server-over-tcp&quot;&gt;Thrift Server over TCP&lt;a class=&quot;zola-anchor&quot; href=&quot;#thrift-server-over-tcp&quot; aria-label=&quot;Anchor link for: thrift-server-over-tcp&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;As a consolation, just to make sure, the TCP server works, here is the
+implementation. Most of it can be taken from either the python code or
+&lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;thrift&#x2F;0.13.0&#x2F;thrift&#x2F;server&#x2F;struct.TServer.html#examples&quot;&gt;examples&lt;&#x2F;a&gt;
+in the &lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;thrift&quot;&gt;&lt;code&gt;thrift&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; crate.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;impl &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;TimerSyncHandler &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;TimerSyncHandlerImpl {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;handle_time&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;) -&amp;gt; thrift::Result&amp;lt;String&amp;gt; {
+        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;Ok(format!(
+            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;{:?}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;,
+            SystemTime::now().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;duration_since&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(SystemTime::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;UNIX_EPOCH&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;)
+        ));
+    }
+}
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;server&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;() {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; processor = TimerSyncProcessor::new(TimerSyncHandlerImpl {});
+
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; i_tr_fact: Box&amp;lt;TReadTransportFactory&amp;gt; = Box::new(TBufferedReadTransportFactory::new());
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; i_pr_fact: Box&amp;lt;TInputProtocolFactory&amp;gt; = Box::new(TBinaryInputProtocolFactory::new());
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; o_tr_fact: Box&amp;lt;TWriteTransportFactory&amp;gt; = Box::new(TBufferedWriteTransportFactory::new());
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; o_pr_fact: Box&amp;lt;TOutputProtocolFactory&amp;gt; = Box::new(TBinaryOutputProtocolFactory::new());
+
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let mut&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; server = TServer::new(i_tr_fact, i_pr_fact, o_tr_fact, o_pr_fact, processor, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;10&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;);
+    server.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;listen&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;localhost:9090&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;();
+}
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;() {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; t = thread::spawn(|| { &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;server&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(); });
+
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* client code *&#x2F;
+    &#x2F;&#x2F; The client will connect to the server, print the output and then
+    &#x2F;&#x2F; start listening for other connections.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;
+    t.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;join&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;();
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;For now, the client implementation using unix sockets is sufficient as the aim
+for this is to be able to communicate to &lt;code&gt;&#x2F;var&#x2F;osquery&#x2F;osquery.em&lt;&#x2F;code&gt; socket which
+I hope is a unix socket.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;Discussion thread &lt;a href=&quot;https:&#x2F;&#x2F;www.reddit.com&#x2F;r&#x2F;rust&#x2F;comments&#x2F;i70l4b&#x2F;apache_thrift_over_unix_sockets_in_rust&#x2F;&quot;&gt;here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Re-ally fast</title>
+		<published>2020-07-29T00:00:00+00:00</published>
+		<updated>2020-07-29T00:00:00+00:00</updated>
+		<link href="http://127.0.0.1:1111/re-ally-fast/"/>
+		<link rel="alternate" href="http://127.0.0.1:1111/re-ally-fast/" type="text/html"/>
+		<id>http://127.0.0.1:1111/re-ally-fast/</id>
+		<content type="html">&lt;p&gt;Lately I have been trying to get into the &lt;a href=&quot;https:&#x2F;&#x2F;www.rust-lang.org&quot;&gt;Rust&lt;&#x2F;a&gt;
+ecosystem to get a feel of the tools and the language. In the process I came
+across a few tools that I would highly recommend to try out.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;BurntSushi&#x2F;ripgrep&quot;&gt;ripgrep&lt;&#x2F;a&gt; - A blazing fast alternative to GNU grep&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;alacritty&#x2F;alacritty&quot;&gt;alacritty&lt;&#x2F;a&gt; - A GPU accelerated terminal emulator&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ogham&#x2F;exa&quot;&gt;exa&lt;&#x2F;a&gt; - A replacement for &lt;code&gt;ls&lt;&#x2F;code&gt; written in Rust&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;The tools &lt;code&gt;exa&lt;&#x2F;code&gt; is for a more pretty &lt;code&gt;ls&lt;&#x2F;code&gt;, may not appeal to everyone. Similar is the case
+for &lt;code&gt;alacritty&lt;&#x2F;code&gt;, it is intended to be used by people who are comfortable with &lt;code&gt;tmux&lt;&#x2F;code&gt; as it
+doesn&#x27;t have tabs, kind of a bummer but if you roll with tmux, it should not make any
+difference anyways.&lt;&#x2F;p&gt;
+&lt;p&gt;The tool that I am excited about is, &lt;code&gt;ripgrep&lt;&#x2F;code&gt; which is a crazy fast alternative for GNU grep.
+It has a lot more features than grep and the speed it chugs through text using regular expressions
+is amazing.&lt;&#x2F;p&gt;
+&lt;p&gt;A more detailed and in-depth explanation and benchmarks can be found at
+&lt;a href=&quot;https:&#x2F;&#x2F;blog.burntsushi.net&#x2F;ripgrep&#x2F;&quot;&gt;ripgrep is faster than {grep, ag, git grep, ucg, pt, sift}&lt;&#x2F;a&gt;
+which is blog entry from the creators.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;some-numbers&quot;&gt;Some numbers&lt;a class=&quot;zola-anchor&quot; href=&quot;#some-numbers&quot; aria-label=&quot;Anchor link for: some-numbers&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;Let&#x27;s first see ripgrep in action (so that there is some substance to my claims).&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;ripgrep.png&quot; alt=&quot;Destruction&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The above test is to do a case insensitive search on a text file which is close to
+1.2GB of size. The &lt;code&gt;grep&lt;&#x2F;code&gt; took more than 24s while &lt;code&gt;ripgrep&lt;&#x2F;code&gt; casually completed the search within
+half of a second which is just pure destruction in terms of speed. The &lt;code&gt;shasum&lt;&#x2F;code&gt; part is to make
+sure the output of both the tools are correct. I would definitely trust &lt;code&gt;grep&lt;&#x2F;code&gt; for it&#x27;s correctness
+and the above screenshot shows both produce the same output hashes, which means &lt;code&gt;ripgrep&lt;&#x2F;code&gt;&#x27;s output is
+also correct.&lt;&#x2F;p&gt;
+&lt;p&gt;Unless I stumbled upon a pair of texts that tend to produce the same &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;SHA-2&quot;&gt;SHA-256&lt;&#x2F;a&gt; hash.
+&lt;a href=&quot;https:&#x2F;&#x2F;shattered.io&#x2F;&quot;&gt;SHAttered&lt;&#x2F;a&gt; 256 times bada**!.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;what-s-up-with-ripgrep&quot;&gt;What&#x27;s up with ripgrep ?&lt;a class=&quot;zola-anchor&quot; href=&quot;#what-s-up-with-ripgrep&quot; aria-label=&quot;Anchor link for: what-s-up-with-ripgrep&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;restricted-but-fast-regex-library&quot;&gt;Restricted but fast regex library&lt;a class=&quot;zola-anchor&quot; href=&quot;#restricted-but-fast-regex-library&quot; aria-label=&quot;Anchor link for: restricted-but-fast-regex-library&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;A portion of the speed gain comes from not complying to the &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Perl_Compatible_Regular_Expressions&quot;&gt;PCRE&lt;&#x2F;a&gt;
+standards which supports all features including look-ahead and look-behind features.&lt;&#x2F;p&gt;
+&lt;p&gt;eg: If you try the following regex in Rust, it fails&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;extern crate&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; regex; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 1.3.9
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;regex::Regex;
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;() {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; haystack = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;world&amp;#39;s&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;;
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; re = Regex::new(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;\w+(?&amp;lt;!s)\b&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;();
+    println!(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;{}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;, re.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;is_match&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(haystack));
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;with the following error&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+regex parse error:
+    \w+(?&amp;lt;!s)\b
+       ^^^^
+error: look-around, including look-ahead and look-behind, is not supported
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;On the other hand, python3 implements look-ahead and look-back syntax.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;Python &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3.7.4 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(default, Oct &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;12 2019&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;18&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;55&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;28&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;)
+[Clang &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;11.0.0 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(clang-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1100.0.33.8&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;)] on darwin
+Type &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;help&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;copyright&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;credits&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot; or &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;license&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;more information.
+&amp;gt;&amp;gt;&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;re
+&amp;gt;&amp;gt;&amp;gt; t = re.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;compile&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\s\w&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;?&amp;lt;!&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;s)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;)
+&amp;gt;&amp;gt;&amp;gt; t.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;findall&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;hello world&amp;#39;s&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;)
+[&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; world&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;#39;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;&lt;h3 id=&quot;better-optimizations-to-the-literal-string-comparision&quot;&gt;Better optimizations to the literal string comparision&lt;a class=&quot;zola-anchor&quot; href=&quot;#better-optimizations-to-the-literal-string-comparision&quot; aria-label=&quot;Anchor link for: better-optimizations-to-the-literal-string-comparision&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;Regex being a general purpose search mechanism can be slow and can be beaten by classical
+string search algorithms like &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Boyer%E2%80%93Moore_string_search_algorithm&quot;&gt;Boyer-Moore&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;The regular brute-force string searches or the python &lt;code&gt;in&lt;&#x2F;code&gt; keyword work by traversing the haystack until it finds
+the first character of the needle, then it extracts the substring of the length of the needle and then matches. If
+the string does not match, increment to the next char in the haystack and continue.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;gt;&amp;gt;&amp;gt; needle=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;rust&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;
+&amp;gt;&amp;gt;&amp;gt; haystack=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;searching for rust lang&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;
+&amp;gt;&amp;gt;&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;i &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;range&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(haystack) - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(needle) + &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;):
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;haystack[i: i + &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(needle)] == needle:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...             &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;print &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Found at&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;&amp;quot;, i)
+...
+Found at &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;14
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This can be seen as aligning the needle in all possible ways against the haystack and then
+comparing to see which one matches perfectly. Something like&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;A N P A N M A N -
+P A N - - - - - -
+- P A N - - - - -
+- - P A N - - - -
+- - - P A N - - -
+- - - - P A N - -
+- - - - - P A N -
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;What Boyer-Moore does is, with some pre-computation magic, it will try to find
+the best positions that needs to actually be tested. It does so by finding the
+byte offsets at which the last byte of the needle matches the haystack. If the
+last byte does not match, there is no point visiting the chars before that byte
+offset in that alignment. This search of &amp;quot;candidates&amp;quot; is done by &lt;a href=&quot;https:&#x2F;&#x2F;man7.org&#x2F;linux&#x2F;man-pages&#x2F;man3&#x2F;memchr.3.html&quot;&gt;&lt;code&gt;memchr&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+which can find the first position of a char in a memory area. The fancy thing
+about &lt;code&gt;memchr&lt;&#x2F;code&gt; is that, it compiles down to &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;SIMD&quot;&gt;SMID&lt;&#x2F;a&gt;
+instruction.&lt;&#x2F;p&gt;
+&lt;p&gt;This means that it can find the &lt;em&gt;search candidates&lt;&#x2F;em&gt; really fast due to vectorized
+instructions. The &lt;code&gt;regex&lt;&#x2F;code&gt; crate gwill go to great lengths to extract literal strings
+from the regular expressions and then find &lt;em&gt;search candidates&lt;&#x2F;em&gt; in order to minimise
+the regex search time.&lt;&#x2F;p&gt;
+&lt;p&gt;Most of the tools search for a needle in a haystack that is made up of lines of text,
+i.e. delimited lines. The &lt;code&gt;regex&lt;&#x2F;code&gt; crate will find the lines that may match and
+then run the full regex search on it saving a lot of time from the regex overhead.&lt;&#x2F;p&gt;
+&lt;p&gt;For multiple literals, i.e. &lt;code&gt;&amp;quot;you|me&amp;quot;&lt;&#x2F;code&gt;, the &lt;code&gt;regex&lt;&#x2F;code&gt; crate will use plain Aho-Corasick
+or a vectorized algorithm called &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;BurntSushi&#x2F;aho-corasick&#x2F;blob&#x2F;master&#x2F;src&#x2F;packed&#x2F;teddy&#x2F;runtime.rs&quot;&gt;Teddy&lt;&#x2F;a&gt;
+when enabled.&lt;&#x2F;p&gt;
+&lt;p&gt;To be honest, I don&#x27;t understand a lot of it. I will try and implement the Boyer-Moore algorithm
+someday maybe to get a better understanding of what is going on.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;substring-search-algorithms&quot;&gt;Substring search algorithms&lt;a class=&quot;zola-anchor&quot; href=&quot;#substring-search-algorithms&quot; aria-label=&quot;Anchor link for: substring-search-algorithms&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;a href=&quot;https:&#x2F;&#x2F;cp-algorithms.com&#x2F;string&#x2F;z-function.html&quot;&gt;z-algorithm&lt;&#x2F;a&gt; is a pretty good choice
+which requires &lt;code&gt;O(n + m)&lt;&#x2F;code&gt; worst case time and space if the needle and the haystack don&#x27;t change.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;If there are a lot of needles to search from a small number of haystacks, probably a
+&lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Trie&quot;&gt;Trie&lt;&#x2F;a&gt; would be more suited. This will not scale
+for a large number of haystacks as all of the tries will be needed to be present in memory
+at the same time which is not possible. For example, in the above 1.2G exmaple, having
+that amound of storage occupied all the time may not be necessary.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;If the needle isn&#x27;t changing and there are a lot of haystacks, some algorithm that
+pre-processes the needle might help, just like Aho-Corasick or Boyer-Moore.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;disclaimer&quot;&gt;Disclaimer&lt;a class=&quot;zola-anchor&quot; href=&quot;#disclaimer&quot; aria-label=&quot;Anchor link for: disclaimer&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;All of this is shamelessly ripped off of the &lt;a href=&quot;https:&#x2F;&#x2F;blog.burntsushi.net&#x2F;ripgrep&#x2F;&quot;&gt;Burntsushi&#x2F;ripgrep&lt;&#x2F;a&gt;
+blog and it&#x27;s highly recommended to read that if you need a clearer picture.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Boredom during COVID19</title>
+		<published>2020-07-26T00:00:00+00:00</published>
+		<updated>2020-07-26T00:00:00+00:00</updated>
+		<link href="http://127.0.0.1:1111/boredom-during-covid19/"/>
+		<link rel="alternate" href="http://127.0.0.1:1111/boredom-during-covid19/" type="text/html"/>
+		<id>http://127.0.0.1:1111/boredom-during-covid19/</id>
+		<content type="html">&lt;p&gt;After weeks of hunting for something to do (which is actually on-and-off) and
+on absolutely no demand, I will be &lt;em&gt;trying&lt;&#x2F;em&gt; to write my experiences and fears 
+as a software engineer, or anything that I have learnt or learning. Also, it
+will let me use this site a personal cache of things that I have learnt and i
+know where to look instead of doing all of the research again.&lt;&#x2F;p&gt;
+&lt;p&gt;This may turn into such a disaster that people at 
+&lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;ARPANET&quot;&gt;ARPA&lt;&#x2F;a&gt; may start contemplating about 
+their work !&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;disclaimer&quot;&gt;Disclaimer&lt;a class=&quot;zola-anchor&quot; href=&quot;#disclaimer&quot; aria-label=&quot;Anchor link for: disclaimer&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;these-entries-are-more-like-logs-and-not-meant-for-technical-depth-or-accuracy&quot;&gt;These entries are more like logs and not meant for technical depth or accuracy&lt;a class=&quot;zola-anchor&quot; href=&quot;#these-entries-are-more-like-logs-and-not-meant-for-technical-depth-or-accuracy&quot; aria-label=&quot;Anchor link for: these-entries-are-more-like-logs-and-not-meant-for-technical-depth-or-accuracy&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;These blog entries would be more like logs and not meant for technical depth 
+on any matter mentioned in the blog and may not guarantee correctness of the 
+subject matter. If someone feels like correcting me and get a feeling 
+&amp;quot;Should I tell him&amp;quot;, please raise an Issue&#x2F;PR to whatever place these 
+blogs will be hosted, that will help me learn.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;these-entries-may-not-have-a-structure-essense-that-is-understandable-to-living-creatures&quot;&gt;These entries may not have a structure&#x2F;essense that is understandable to living creatures&lt;a class=&quot;zola-anchor&quot; href=&quot;#these-entries-may-not-have-a-structure-essense-that-is-understandable-to-living-creatures&quot; aria-label=&quot;Anchor link for: these-entries-may-not-have-a-structure-essense-that-is-understandable-to-living-creatures&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;From what I know about my writing skills, the logs may be highly asynchronous,
+hence all of it may not make sense. It would seem more like a tsunami of
+thoughts and me struggling to write all of it down.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;some-entries-may-go-beyond-the-general-comfort-levels-of-depth&quot;&gt;Some entries may go beyond the general comfort levels of depth&lt;a class=&quot;zola-anchor&quot; href=&quot;#some-entries-may-go-beyond-the-general-comfort-levels-of-depth&quot; aria-label=&quot;Anchor link for: some-entries-may-go-beyond-the-general-comfort-levels-of-depth&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;Some entries may dig deep into some seemingly obvious things or just that I 
+was under some rock and didn&#x27;t know about it. It could be like a story to 
+the Aha! moment of me discovering something new that everyone in the world 
+knew about.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;the-blog-may-contain-stuff-that-you-would-never-want-to-use&quot;&gt;The blog may contain stuff that you would never want to use&lt;a class=&quot;zola-anchor&quot; href=&quot;#the-blog-may-contain-stuff-that-you-would-never-want-to-use&quot; aria-label=&quot;Anchor link for: the-blog-may-contain-stuff-that-you-would-never-want-to-use&quot;&gt;🔗&lt;&#x2F;a&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;The entries may contain my experience of learning something new by building 
+it, inspired by 
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;danistefanovic&#x2F;build-your-own-x&quot;&gt;danistefanovic&#x2F;build-your-own-x&lt;&#x2F;a&gt;.
+Which means, the content of the entry describing something may be present at
+a different place at a might higher quality. If I refer those resource, 
+they will be linked as references.&lt;&#x2F;p&gt;
+&lt;p&gt;With that being said, we may be in a safe place to begin.&lt;&#x2F;p&gt;
+</content>
+	</entry>
+</feed>

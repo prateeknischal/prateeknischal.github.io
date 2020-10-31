@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="referrer" content="no-referrer">
+
+        <!-- Enable responsiveness on mobile devices-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+
+        <title>Re-ally fast | The Impatient Software Engineer</title>
+<meta property="og:title" content="Re-ally fast | The Impatient Software Engineer" />
+<meta name="twitter:title" content="Re-ally fast | The Impatient Software Engineer" />
+
+        
+
+        <meta property="og:site_name" content="The Impatient Software Engineer" />
+        <meta property="og:url" content="http:&#x2F;&#x2F;127.0.0.1:1111" />
+
+        
+
+
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;base.css" />
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;fontawesome.css" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;brands.css" rel="stylesheet">
+        <link href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;fontawesome&#x2F;solid.css" rel="stylesheet">
+
+        <link rel='icon' type='image/x-icon' href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;favicon.ico" />
+
+        <link rel="alternate" type="application/atom+xml" title="The Impatient Software Engineer" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;atom.xml">
+
+        
+
+    </head>
+    <body>
+        <a href="#main" class="skip-link p-screen-reader-text">Skip to content</a>
+        <header class="l-header">
+            <h1 class="c-title p-title"><a href="http:&#x2F;&#x2F;127.0.0.1:1111" class="p-title__link">The Impatient Software Engineer</a></h1>
+            </header>
+
+        <main id="main" class="l-main">
+            
+<article class="p-article">
+    <header>
+        <h1>Re-ally fast</h1>
+        <div>
+            <div class="c-time">
+
+                <time datetime="2020-07-29">
+                    2020-07-29
+                </time>
+                
+                 - (6 min read)
+            </div>
+        </div>
+    </header>
+    
+    <section id="js-article" class="p-article__body">
+        
+    <p>Lately I have been trying to get into the <a href="https://www.rust-lang.org">Rust</a>
+ecosystem to get a feel of the tools and the language. In the process I came
+across a few tools that I would highly recommend to try out.</p>
+<ul>
+<li><a href="https://github.com/BurntSushi/ripgrep">ripgrep</a> - A blazing fast alternative to GNU grep</li>
+<li><a href="https://github.com/alacritty/alacritty">alacritty</a> - A GPU accelerated terminal emulator</li>
+<li><a href="https://github.com/ogham/exa">exa</a> - A replacement for <code>ls</code> written in Rust</li>
+</ul>
+<p>The tools <code>exa</code> is for a more pretty <code>ls</code>, may not appeal to everyone. Similar is the case
+for <code>alacritty</code>, it is intended to be used by people who are comfortable with <code>tmux</code> as it
+doesn't have tabs, kind of a bummer but if you roll with tmux, it should not make any
+difference anyways.</p>
+<p>The tool that I am excited about is, <code>ripgrep</code> which is a crazy fast alternative for GNU grep.
+It has a lot more features than grep and the speed it chugs through text using regular expressions
+is amazing.</p>
+<p>A more detailed and in-depth explanation and benchmarks can be found at
+<a href="https://blog.burntsushi.net/ripgrep/">ripgrep is faster than {grep, ag, git grep, ucg, pt, sift}</a>
+which is blog entry from the creators.</p>
+<h2 id="some-numbers">Some numbers<a class="zola-anchor" href="#some-numbers" aria-label="Anchor link for: some-numbers">🔗</a></h2>
+<p>Let's first see ripgrep in action (so that there is some substance to my claims).</p>
+<p><img src="/ripgrep.png" alt="Destruction" /></p>
+<p>The above test is to do a case insensitive search on a text file which is close to
+1.2GB of size. The <code>grep</code> took more than 24s while <code>ripgrep</code> casually completed the search within
+half of a second which is just pure destruction in terms of speed. The <code>shasum</code> part is to make
+sure the output of both the tools are correct. I would definitely trust <code>grep</code> for it's correctness
+and the above screenshot shows both produce the same output hashes, which means <code>ripgrep</code>'s output is
+also correct.</p>
+<p>Unless I stumbled upon a pair of texts that tend to produce the same <a href="https://en.wikipedia.org/wiki/SHA-2">SHA-256</a> hash.
+<a href="https://shattered.io/">SHAttered</a> 256 times bada**!.</p>
+<h2 id="what-s-up-with-ripgrep">What's up with ripgrep ?<a class="zola-anchor" href="#what-s-up-with-ripgrep" aria-label="Anchor link for: what-s-up-with-ripgrep">🔗</a></h2>
+<h3 id="restricted-but-fast-regex-library">Restricted but fast regex library<a class="zola-anchor" href="#restricted-but-fast-regex-library" aria-label="Anchor link for: restricted-but-fast-regex-library">🔗</a></h3>
+<p>A portion of the speed gain comes from not complying to the <a href="https://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions">PCRE</a>
+standards which supports all features including look-ahead and look-behind features.</p>
+<p>eg: If you try the following regex in Rust, it fails</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#b48ead;">extern crate</span><span style="color:#c0c5ce;"> regex; </span><span style="color:#65737e;">// 1.3.9
+
+</span><span style="color:#b48ead;">use </span><span style="color:#c0c5ce;">regex::Regex;
+
+</span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">() {
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> haystack = &quot;</span><span style="color:#a3be8c;">world&#39;s</span><span style="color:#c0c5ce;">&quot;;
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> re = Regex::new(</span><span style="color:#b48ead;">r</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">\w+(?&lt;!s)\b</span><span style="color:#c0c5ce;">&quot;).</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">();
+    println!(&quot;</span><span style="color:#d08770;">{}</span><span style="color:#c0c5ce;">&quot;, re.</span><span style="color:#96b5b4;">is_match</span><span style="color:#c0c5ce;">(haystack));
+}
+</span></code></pre>
+<p>with the following error</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+regex parse error:
+    \w+(?&lt;!s)\b
+       ^^^^
+error: look-around, including look-ahead and look-behind, is not supported
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</span></code></pre>
+<p>On the other hand, python3 implements look-ahead and look-back syntax.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">Python </span><span style="color:#d08770;">3.7.4 </span><span style="color:#c0c5ce;">(default, Oct </span><span style="color:#d08770;">12 2019</span><span style="color:#c0c5ce;">, </span><span style="color:#d08770;">18</span><span style="color:#c0c5ce;">:</span><span style="color:#d08770;">55</span><span style="color:#c0c5ce;">:</span><span style="color:#d08770;">28</span><span style="color:#c0c5ce;">)
+[Clang </span><span style="color:#d08770;">11.0.0 </span><span style="color:#c0c5ce;">(clang-</span><span style="color:#d08770;">1100.0.33.8</span><span style="color:#c0c5ce;">)] on darwin
+Type &quot;</span><span style="color:#a3be8c;">help</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">copyright</span><span style="color:#c0c5ce;">&quot;, &quot;</span><span style="color:#a3be8c;">credits</span><span style="color:#c0c5ce;">&quot; or &quot;</span><span style="color:#a3be8c;">license</span><span style="color:#c0c5ce;">&quot; </span><span style="color:#b48ead;">for </span><span style="color:#c0c5ce;">more information.
+&gt;&gt;&gt; </span><span style="color:#b48ead;">import </span><span style="color:#c0c5ce;">re
+&gt;&gt;&gt; t = re.</span><span style="color:#bf616a;">compile</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">r</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#d08770;">\s\w</span><span style="color:#c0c5ce;">+</span><span style="color:#a3be8c;">(</span><span style="color:#d08770;">?&lt;!</span><span style="color:#a3be8c;">s)</span><span style="color:#b48ead;">\b</span><span style="color:#c0c5ce;">&quot;)
+&gt;&gt;&gt; t.</span><span style="color:#bf616a;">findall</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">hello world&#39;s</span><span style="color:#c0c5ce;">&quot;)
+[&#39;</span><span style="color:#a3be8c;"> world</span><span style="color:#c0c5ce;">&#39;]
+</span></code></pre><h3 id="better-optimizations-to-the-literal-string-comparision">Better optimizations to the literal string comparision<a class="zola-anchor" href="#better-optimizations-to-the-literal-string-comparision" aria-label="Anchor link for: better-optimizations-to-the-literal-string-comparision">🔗</a></h3>
+<p>Regex being a general purpose search mechanism can be slow and can be beaten by classical
+string search algorithms like <a href="https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string_search_algorithm">Boyer-Moore</a>.</p>
+<p>The regular brute-force string searches or the python <code>in</code> keyword work by traversing the haystack until it finds
+the first character of the needle, then it extracts the substring of the length of the needle and then matches. If
+the string does not match, increment to the next char in the haystack and continue.</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">&gt;&gt;&gt; needle=&quot;</span><span style="color:#a3be8c;">rust</span><span style="color:#c0c5ce;">&quot;
+&gt;&gt;&gt; haystack=&quot;</span><span style="color:#a3be8c;">searching for rust lang</span><span style="color:#c0c5ce;">&quot;
+&gt;&gt;&gt; </span><span style="color:#b48ead;">for </span><span style="color:#c0c5ce;">i </span><span style="color:#b48ead;">in </span><span style="color:#96b5b4;">range</span><span style="color:#c0c5ce;">(</span><span style="color:#96b5b4;">len</span><span style="color:#c0c5ce;">(haystack) - </span><span style="color:#96b5b4;">len</span><span style="color:#c0c5ce;">(needle) + </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">):
+</span><span style="color:#d08770;">...     </span><span style="color:#b48ead;">if </span><span style="color:#c0c5ce;">haystack[i: i + </span><span style="color:#96b5b4;">len</span><span style="color:#c0c5ce;">(needle)] == needle:
+</span><span style="color:#d08770;">...             </span><span style="color:#96b5b4;">print </span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">Found at</span><span style="color:#c0c5ce;">&quot;, i)
+...
+Found at </span><span style="color:#d08770;">14
+</span></code></pre>
+<p>This can be seen as aligning the needle in all possible ways against the haystack and then
+comparing to see which one matches perfectly. Something like</p>
+<pre style="background-color:#2b303b;">
+<code><span style="color:#c0c5ce;">A N P A N M A N -
+P A N - - - - - -
+- P A N - - - - -
+- - P A N - - - -
+- - - P A N - - -
+- - - - P A N - -
+- - - - - P A N -
+</span></code></pre>
+<p>What Boyer-Moore does is, with some pre-computation magic, it will try to find
+the best positions that needs to actually be tested. It does so by finding the
+byte offsets at which the last byte of the needle matches the haystack. If the
+last byte does not match, there is no point visiting the chars before that byte
+offset in that alignment. This search of &quot;candidates&quot; is done by <a href="https://man7.org/linux/man-pages/man3/memchr.3.html"><code>memchr</code></a>
+which can find the first position of a char in a memory area. The fancy thing
+about <code>memchr</code> is that, it compiles down to <a href="https://en.wikipedia.org/wiki/SIMD">SMID</a>
+instruction.</p>
+<p>This means that it can find the <em>search candidates</em> really fast due to vectorized
+instructions. The <code>regex</code> crate gwill go to great lengths to extract literal strings
+from the regular expressions and then find <em>search candidates</em> in order to minimise
+the regex search time.</p>
+<p>Most of the tools search for a needle in a haystack that is made up of lines of text,
+i.e. delimited lines. The <code>regex</code> crate will find the lines that may match and
+then run the full regex search on it saving a lot of time from the regex overhead.</p>
+<p>For multiple literals, i.e. <code>&quot;you|me&quot;</code>, the <code>regex</code> crate will use plain Aho-Corasick
+or a vectorized algorithm called <a href="https://github.com/BurntSushi/aho-corasick/blob/master/src/packed/teddy/runtime.rs">Teddy</a>
+when enabled.</p>
+<p>To be honest, I don't understand a lot of it. I will try and implement the Boyer-Moore algorithm
+someday maybe to get a better understanding of what is going on.</p>
+<h3 id="substring-search-algorithms">Substring search algorithms<a class="zola-anchor" href="#substring-search-algorithms" aria-label="Anchor link for: substring-search-algorithms">🔗</a></h3>
+<ul>
+<li>
+<p>The <a href="https://cp-algorithms.com/string/z-function.html">z-algorithm</a> is a pretty good choice
+which requires <code>O(n + m)</code> worst case time and space if the needle and the haystack don't change.</p>
+</li>
+<li>
+<p>If there are a lot of needles to search from a small number of haystacks, probably a
+<a href="https://en.wikipedia.org/wiki/Trie">Trie</a> would be more suited. This will not scale
+for a large number of haystacks as all of the tries will be needed to be present in memory
+at the same time which is not possible. For example, in the above 1.2G exmaple, having
+that amound of storage occupied all the time may not be necessary.</p>
+</li>
+<li>
+<p>If the needle isn't changing and there are a lot of haystacks, some algorithm that
+pre-processes the needle might help, just like Aho-Corasick or Boyer-Moore.</p>
+</li>
+</ul>
+<h3 id="disclaimer">Disclaimer<a class="zola-anchor" href="#disclaimer" aria-label="Anchor link for: disclaimer">🔗</a></h3>
+<blockquote>
+<p>All of this is shamelessly ripped off of the <a href="https://blog.burntsushi.net/ripgrep/">Burntsushi/ripgrep</a>
+blog and it's highly recommended to read that if you need a clearer picture.</p>
+</blockquote>
+
+
+    </section>
+    <footer>
+        <nav class="c-pagination p-pagination">
+            <div class="c-pagination__ctrl">
+                <div class="c-pagination__newer">
+                    <a href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;apache-thrift-over-unix-sockets&#x2F;">Apache thrift over unix sockets in Rust</a>
+                </div>
+                <div class="c-pagination__older">
+                    <a href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;boredom-during-covid19&#x2F;">Boredom during COVID19</a>
+                </div>
+            </div>
+        </nav>
+    </footer>
+</article>
+        </main>
+
+     
+      <footer class="l-footer">
+          <p class="p-copyright">
+              
+              
+    Copyleft <a href='https://github.com/prateeknischal'>prateeknischal</a> 2020
+
+          </p>
+      </footer>
+
+       
+      <link rel="stylesheet" href="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;css&#x2F;katex.min.css">
+      <script defer src="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;js&#x2F;katex.min.js"></script>
+      <script defer src="http:&#x2F;&#x2F;127.0.0.1:1111&#x2F;js&#x2F;mathtex-script-type.min.js"></script>
+    <script src="/livereload.js?port=1025&amp;mindelay=10"></script></body>
+</html>
+            
