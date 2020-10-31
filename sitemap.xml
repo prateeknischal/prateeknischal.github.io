@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://prateeknischal.github.io/</loc>
+    </url>
+    <url>
+        <loc>https://prateeknischal.github.io/apache-thrift-over-unix-sockets/</loc>
+        <lastmod>2020-08-01</lastmod>
+    </url>
+    <url>
+        <loc>https://prateeknischal.github.io/boredom-during-covid19/</loc>
+        <lastmod>2020-07-26</lastmod>
+    </url>
+    <url>
+        <loc>https://prateeknischal.github.io/go-use-those-traits/</loc>
+        <lastmod>2020-08-30</lastmod>
+    </url>
+    <url>
+        <loc>https://prateeknischal.github.io/i-c-and-so-does-rust/</loc>
+        <lastmod>2020-09-08</lastmod>
+    </url>
+    <url>
+        <loc>https://prateeknischal.github.io/page/1/</loc>
+    </url>
+    <url>
+        <loc>https://prateeknischal.github.io/pre-commit-workflow/</loc>
+        <lastmod>2020-11-01</lastmod>
+    </url>
+    <url>
+        <loc>https://prateeknischal.github.io/re-ally-fast/</loc>
+        <lastmod>2020-07-29</lastmod>
+    </url>
+</urlset>
