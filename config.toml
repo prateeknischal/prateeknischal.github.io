@@ -50,6 +50,9 @@ paginate = 10
   # Copyright
   copyrightStartYear = "2020"
 
+  # favicon
+  favicon = "img/favicon.ico"
+
   # Open Graph & Twitter Card variables
   # You can also set description and images in post front matter individually
   description = "A minimal Hugo theme with nice theme color."
