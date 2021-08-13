@@ -39,8 +39,8 @@
 </h2>
 <div class="post-item post-meta">
 <span><i class="iconfont icon-today-sharp"></i>&nbsp;2021-08-12</span>
-<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;3455 words</span>
-<span><i class="iconfont icon-time-sharp"></i>&nbsp;17 minutes</span>
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;3229 words</span>
+<span><i class="iconfont icon-time-sharp"></i>&nbsp;16 minutes</span>
 <span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
 </div>
 <div class="post-content markdown-body">
@@ -49,7 +49,7 @@
 <img class=img-zoomable src=https://i.imgur.com/aowiN2p.png alt="bad ssl">
 </p>
 <p>As a fix, you would have been recommended to go to the advanced option in this error and accept the risk and allow the website to work. Your browser may still warn you by displaying the lock on the ominbar of your website as red or unsafe, but you choose to ignore it and not deal with it.</p>
-<p>Why do you see this error? Browsers don&rsquo;t do a very good job of explaining the error upfront. Only if you go on the <a href=https://www.youtube.com/watch?vdQw4w9WgXcQ target=_blank>Learn more</a> link, you might hope to get some more information about the error. Sometimes it may confuse you more.</p>
+<p>Why do you see this error? Browsers don&rsquo;t do a very good job of explaining the error upfront. Only if you go on the <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target=_blank>Learn more</a> link, you might hope to get some more information about the error. Sometimes it may confuse you more.</p>
 <h2 id=what-does-the-above-error-mean>What does the above error mean</h2>
 <p>The error message says <code>NET::ERR_CERT_INVALID</code>, but what does that mean. It&rsquo;s doesn&rsquo;t tell what&rsquo;s invalid and why. If you <a href=https://self-signed.badssl.com/ target=_blank>venture more</a> and click on the error, you will be presented with this information.</p>
 <pre><code>Subject: *.badssl.com
@@ -64,40 +64,35 @@ MIIDeTCCAmGgAwIBAgIJAPziuikCTox4MA0GCSqGSIb3DQEBCwUAMGIxCzAJBgNV
 EVA0pmzIzgBg+JIe3PdRy27T0asgQW/F4TY61Yk=
 -----END CERTIFICATE-----
 </code></pre>
-<p>What are these terms and what is a <code>CERTIFICATE</code>. Before we understand what the error is, let&rsquo;s take a look at what are the things and what are they supposed to be.</p>
-<h2 id=history-of-the-internet>History of the internet</h2>
-<p>In the early days, internet used to be an academic place. One of the earliest implementation of the &ldquo;internet&rdquo; (inter connected networks) was the <a href=https://en.wikipedia.org/wiki/ARPANET target=_blank>ARPANET</a> which was a Defense project, i.e. the US military. A few campuses across the US were connected to this network and it allowed them to talk to each other over the &ldquo;network&rdquo;.</p>
-<p>Once this technology was made public, people started experimenting with it to share information. This slowly developed into information served in pretty pages with the development of World Wide Web. There is a long history between how internet transformed and how WWW was developed by <a href=https://en.wikipedia.org/wiki/Tim_Berners-Lee target=_blank>Sir Tim Berners-Lee</a>.</p>
-<p>WWW (loosely referred as internet in this post) became a place to share information. Due to the nature of communication, anyone who was connected to the network could talk to other people on the network, it became a ground for moving sensitive information. People started moving money on the network in the form of goods. Now, you wouldn&rsquo;t want anyone to &ldquo;intercept&rdquo; that payment intended for someone else after all the information is just a bunch of electrical signals moving around wires. You could just tap into it and evesdrop.</p>
-<p>There was a requirement of providing a secure channel between 2 parties exchanging sensitive information over an inherently insecure channel.</p>
-<h2 id=what-did-we-do-to-protect-the-internet>What did we do to protect the internet</h2>
-<p>A very simple way to protect the data flowing on the networks is to encrypt it. Encrypting something implies that the data, using a secret or <strong>key</strong>, is reversibly transformed into a different form (gibberish) which does not make sense to anyone who is not involved in the process (It isn&rsquo;t so simple, but let&rsquo;s not diverge).</p>
-<p>The earliest attempt to provide a secure conduit over an insecure channel was <a href=https://security.stackexchange.com/questions/41658/what-was-ssl-1-0 target=_blank>SSL 1.0</a> which didn&rsquo;t even see the light of day. Let&rsquo;s just say it wasn&rsquo;t very secure.</p>
-<p>Then came multiple revisions of the technology which tried to improve upon it and prove stronger guarantees for protecting the data from an evesdropper. They were <a href=https://www-archive.mozilla.org/projects/security/pki/nss/ssl/draft02.html target=_blank>SSL v2</a>, <a href=https://datatracker.ietf.org/doc/html/rfc6101 target=_blank>SSL v3</a> and then finally SSL was retired in favour of <a href=https://www.ietf.org/rfc/rfc2246.txt target=_blank>TLS v1</a> which was prevalent for a very long time. As time went by, flaws were found in the TLS v1 protocol was updated to <a href=https://datatracker.ietf.org/doc/html/rfc4346 target=_blank>TLS v1.1</a> and then <a href=https://datatracker.ietf.org/doc/html/rfc5246 target=_blank>TLS v1.2</a> which is the most used protocol. <a href=https://datatracker.ietf.org/doc/html/rfc8446 target=_blank>TLS v1.3</a> offers stronger security and faster performance over the older version and is being adopted by the general public.</p>
-<p>What do these protocols mean? They are standards on how to protect the data on the network. They mainly rely on encrypting the data using algorithms like <a href=https://en.wikipedia.org/wiki/Advanced_Encryption_Standard target=_blank>AES</a>.</p>
-<p>There is a problem though. AES is a <strong>symmetric</strong> encryption algorithm. This means, the same <strong>key</strong> is used for encrypting and decrypting the data. Between 2 parties that are thousands of miles apart, how do we agree on a key and what happens if one of them leaks the key. Turns out that encrypting the data safely is not that big a problem than arriving at a common key to do so.</p>
+<p>This shows a bunch of information which may not make sense. What is a <code>subject</code>, <code>CERTIFICATE</code>, the gibberish between the markers?</p>
+<h2 id=how-is-information-protected-on-the-internet>How is information protected on the internet</h2>
+<p>Internet in the early days was open for anyone to view and by that I mean, anyone could read the communication between 2 parties. This is not ok when you are transferring sensitive information, something like bank transactions. To safeguard the traffic on the wire, we started to encrypt the traffic which could only be decrypted by the 2 communicating parties. In order to <a href=https://en.wikipedia.org/wiki/Encryption target=_blank>encrypt</a> the information, we need some secret that is known only to the involved parties. Actually there are some requirements that you should look for</p>
+<ul>
+<li>Two parties could talk securely over and insecure channel</li>
+<li>Both the parties could identify and verify each other</li>
+</ul>
 <h2 id=enters-asymmetric-encryption>Enters Asymmetric encryption</h2>
 <p>Asymmetric encryption is a scheme involving a key which consists of 2 parts, a public and a private part. The private part should be protected by the owner and the public part can be distributed to everyone. A public key can be used to encrypt information which can only be decrypted by the corresponding private key.</p>
-<p>Now everyone can have their own key pairs and use it to share information on an insecure channel. If Alice wants to share information with Bob, Alice can encrypt is using Bob&rsquo;s public key and send it over the wire and only Bob could use his private key to decrypt it and make sense of it.</p>
+<p>Now everyone can have their own key pairs and use it to share information on an insecure channel. If Alice wants to share information with Bob, Alice can encrypt is using Bob&rsquo;s public key and send it over the wire and only Bob could use his private key to decrypt it and make sense of it. This solves the first requirement.</p>
 <p>This constitues <a href=https://en.wikipedia.org/wiki/Public-key_cryptography target=_blank>Public key cryptography</a> which provided 2 features</p>
 <ul>
 <li>Public key encryption - Encryption happens using a public key (available to all) and decryption happens using a private key (owned by a single entity).</li>
 <li>Digital signature - A methematically proven method to prove ownership of the private key without exposing anything.</li>
 </ul>
-<p>There is still a problem, they are not authenticated, which means, Alice is sharing information securely with <em>someone</em>. There is no way to prove that it&rsquo;s Bob unless they are aware of each other&rsquo;s public keys before hand which is not practical when there are so many people to talk to.</p>
+<p>There is still a problem, they haven&rsquo;t shared or proven their identity, which means, Alice is sharing information securely with <em>someone</em>. There is no way to prove that it&rsquo;s Bob unless they are aware of each other&rsquo;s public keys before hand which is not practical when there are so many people to talk to.</p>
 <p>This problem is <em>managed</em> by the <a href=https://en.wikipedia.org/wiki/Public_key_infrastructure target=_blank>Public Key Infrastructure</a>. It allows to put identity to public keys.</p>
 <h2 id=public-key-infrastructure>Public Key Infrastructure</h2>
-<p>Public key infrastructure is a system of vetting a public keys by a trusted third party. For example, between Alice, Bob and Charlie, if both Alice and Bob trust Charlie, they are going to trust Charlie&rsquo;s word on which public keys belong to whom. Charlie here will be termed as a <a href=https://en.wikipedia.org/wiki/Certificate_authority target=_blank>Certificate Authority</a>.</p>
+<p>Public key infrastructure is a system of vetting a public keys by a trusted third party. For example, between Alice, Bob and Charlie, if both Alice and Bob trust Charlie, they are going to trust Charlie&rsquo;s word on which public keys belong to whom. Charlie here will be termed as a <a href=https://en.wikipedia.org/wiki/Certificate_authority target=_blank>Certificate Authority</a> or an <strong>Issuer</strong> in this context.</p>
 <p>Technically it&rsquo;s a chicken an egg problem, how do you trust Charlie without meeting them. But that&rsquo;s a topic for another day.</p>
 <h2 id=back-to-the-original-problem>Back to the original problem</h2>
 <p>Notice the error message on the image, It says,</p>
 <pre><code>Subject: *.badssl.com
 Issuer: *.badssl.com
 </code></pre>
-<p>Chrome does not <strong>trust</strong> <code>*.badssl.com</code>, so it&rsquo;s not going to trust anything vetted by it and hence is rejecting the connection.</p>
+<p>Chrome does not <strong>trust</strong> <code>*.badssl.com</code> as an <strong>Issuer</strong>, so it&rsquo;s not going to trust anything vetted by it and hence is rejecting the connection.</p>
 <h2 id=whats-that-strange-blob-of-text-below-it>What&rsquo;s that strange blob of text below it</h2>
-<p>PKI puts identity to a public key. But how does it do that? Remember how the is a common trusted third party. The third party <em>digitally signs</em> the identity of the private key holder and their public key and distributes it to everyone who wants it.</p>
-<p>The <code>CERTIFICATE</code> is to <strong>certify</strong> the identity of the owner of the private part of the public key. You may choose to trust or not trust the third party who is vouching for this certification.</p>
+<p>PKI provides a way to attach an identity to a public key. But how does it do that? Remember how the is a common trusted third party. The third party <em>digitally signs</em> the identity of the private key holder and their public key and distributes it to everyone who wants it.</p>
+<p>The <code>CERTIFICATE</code> is a public document to identify the owner of the private part of the public key. You may choose to trust or not trust the third party who is vouching for this certification.</p>
 <p>Into the weeds, how do we actually make sense of the strange blob. Here&rsquo;s how</p>
 <pre><code>echo &quot;-----BEGIN CERTIFICATE-----
 MIIDeTCCAmGgAwIBAgIJAPziuikCTox4MA0GCSqGSIb3DQEBCwUAMGIxCzAJBgNV
@@ -155,16 +150,16 @@ EVA0pmzIzgBg+JIe3PdRy27T0asgQW/F4TY61Yk=
 <p>Notice the following things</p>
 <ul>
 <li>Serial Number: The unique identifier for the certificate with the issuer</li>
-<li>Issuer: The full name of who issued (vetted) the public key</li>
+<li>Issuer: The identity of who vetted the public key</li>
 <li>Subject: The identity of how owns the private key</li>
 <li>Subject Public key: The actual public key which is vetted</li>
 <li>Signature Algorithm: The algorithm used to sign the identity and public key information</li>
 <li>Validity: The dates for which this identity is considered valid</li>
 </ul>
-<p>This is an <a href=https://en.wikipedia.org/wiki/RSA_%28cryptosystem%29 target=_blank>RSA</a> style keypair. So the public key has a Modulus and an Exponent. These values can be use to encrypt a message.</p>
-<p>The signature Algorithm is the algorithm used to <em>digitally sign</em> the information in the certificate so that anyone can verify the validity of the certificate. This verification is done by the public key of the Issuer or the trusted third party who we already trust as posses their public key.</p>
+<p>This is an <a href=https://en.wikipedia.org/wiki/RSA_%28cryptosystem%29 target=_blank>RSA</a> keypair. So the public key has a Modulus and an Exponent. These values can be use to encrypt a message.</p>
+<p>The signature Algorithm is the algorithm used to <em>digitally sign</em> the information in the certificate so that anyone can verify the validity of the certificate. This verification is done by the public key of the Issuer or the trusted third party who we already trust.</p>
 <h2 id=how-does-a-trusted-certificate-look-like>How does a trusted certificate look like</h2>
-<p>This is a certificate that I don&rsquo;t trust, but how does a certificate look like that I trust.</p>
+<p>The certificate above is a certificate that I don&rsquo;t trust, but how does a certificate look like that I trust. Let&rsquo;s see what <a href=http://www.google.com target=_blank>www.google.com</a> presents when we try to connect to it.</p>
 <pre><code>echo | openssl s_client -connect www.google.com:443 2&gt;/dev/null \
      | openssl x509 -noout -text
 </code></pre>
@@ -225,7 +220,7 @@ EVA0pmzIzgBg+JIe3PdRy27T0asgQW/F4TY61Yk=
             ---SNIPPED---
          45:b0:52:39
 </code></pre>
-<p>This certificate has a lot more information about the identity of the <code>Subject</code> and what this key is allowed to do.</p>
+<p>This certificate has a lot more information about the the <code>Subject</code> and what this key is allowed to do.</p>
 <h2 id=a-scary-view-of-the-certificate>A scary view of the certificate</h2>
 <p>Try the following commands</p>
 <pre><code class="language-bash=">echo | openssl s_client -connect www.google.com:443 2&gt;/dev/null \
@@ -244,11 +239,12 @@ echo | openssl s_client -connect www.google.com:443 2&gt;/dev/null \
 <li>There can be a lot depding on what domains you are issuing them for</li>
 <li>You will have to deal with pesky errors from browsers and clients setting to ignore SSL verification everywhere which isn&rsquo;t ideal.</li>
 </ul>
-<p>Since, you control your development environment, why not just become the <strong>Certificate Authority</strong> and use it to issue all certificates. You trust just one certificate and any certificate issued by that third part (which is you) is automatically trusted by your clients.</p>
+<p>Since you control your development environment and is confined to your development environment, why not just become the <strong>Certificate Authority</strong> and use it to issue all your dev certificates. You trust just one certificate once and any certificate issued by that third party (which is you) is automatically trusted by your clients.</p>
 <p>Ok, easier said than. How do I issue my own Certificate Authority.</p>
 <blockquote>
 <p>As they say, Hold my beer!</p>
 </blockquote>
+<p>Note: If you want to follow along, then you will require <a href=https://golang.org/dl/ target=_blank>Golang</a> version 1.12 or above.</p>
 <pre><code class="language-bash="># Assuming you have Golang installed
 
 git clone https://github.com/square/certstrap
@@ -287,11 +283,11 @@ Created out/domain.com.crl
     --country IN --organization Domain --organizational-unit NewTeam
 </code></pre>
 <p><strong>Note</strong>: Make sure to have the Common Name in the <code>--domain</code> flag since Chrome will reject if the CN is not part of the SAN attributes as <a href=https://myarch.com/mandatory-certificate-extensions/ target=_blank>browsers no longer trust the CN field alone</a>.</p>
-<p>The above command is going to generate 2 files</p>
+<p>The above command is going to generate 2 files.</p>
 <pre><code>Created out/foo.domain.com.key
 Created out/foo.domain.com.csr
 </code></pre>
-<p>One of them is an RSA private key and the other is a CSR or a Certificate Signing Request. This is like a form you fill up and ask the Certificate Authority to certify. The CA may do it&rsquo;s own additional checks to make sure the information is correct. In this case, since we are the CA, we know it&rsquo;s trustworthy. So, we certify by signing it using the CA key like below</p>
+<p>One of them is an RSA private key and the other is a CSR or a Certificate Signing Request. This is like a form you fill up and ask the Certificate Authority to certify. A real CA may do it&rsquo;s own verification to make sure the information is correct. In this case, since we are the CA, we know it&rsquo;s trustworthy. So, we certify by signing it using the CA key like below</p>
 <pre><code class="language-bash=">certstrap sign foo.domain.com \
     --CA domain.com \
     --expires &quot;3 months&quot;
@@ -332,9 +328,9 @@ DONE
 <li><code>C = US, O = Google Trust Services LLC, CN = GTS CA 1C3</code> another layer of intermediate issuer CA</li>
 <li><code>CN = *.google.com</code> the final leaf certificate for the server</li>
 </ul>
-<h2 id=what-are-certificates-made-of>What are certificates made of</h2>
+<h2 id=what-does-a-certificate-contain>What does a certificate contain</h2>
 <p>Now that you have seen how to make a simple certificate chain, let&rsquo;s see what each item in a sample certificate mean.
-Looking at the google.com certificate,</p>
+Looking at the <a href=http://www.google.com target=_blank>www.google.com</a> certificate,</p>
 <ul>
 <li><strong>Version</strong> denotes the certificate structure, version 3 is the <a href=https://en.wikipedia.org/wiki/X.509 target=_blank><code>x509v3</code></a> type of certificate.</li>
 <li><strong>Serial Number</strong> notes the unique identifier for the certificate. This can be same for 2 different issuers but can&rsquo;t be same for any 2 certificate for a single issuer.</li>
@@ -408,8 +404,14 @@ Looking at the google.com certificate,</p>
 </li>
 </ul>
 </li>
-<li><strong>Signature Algorithm</strong> this time defines what signature algorithm is used and what is it&rsquo;s value.
-=</li>
+<li><strong>Signature Algorithm</strong> this time defines what signature algorithm is used and what is it&rsquo;s value.</li>
+</ul>
+<p>This by no means is an exhaustive list of what can a certificate contain. In theory, a certificate is just a container and can contain any information you like. For a simple local development use case, this article should take you far enough to not worry about it later.</p>
+<p>For any usecase that requires exposing your applications over the public internet or with a large group of people, I would highly recommend to use a more &ldquo;professional&rdquo; and battle tested CA. Some of them are</p>
+<ul>
+<li><a href=https://letsencrypt.org/ target=_blank>Let&rsquo;s Encrypt</a> the most popular production-ready and free CA</li>
+<li><a href=https://github.com/cloudflare/cfssl target=_blank>Cloudflare cfssl</a> an opensource CA which could be ideal for a staging style scenario</li>
+<li>Then there are always native CAs for the cloud environment like the <a href=https://aws.amazon.com/certificate-manager/private-certificate-authority/ target=_blank>Amazon CA</a>, <a href=https://pki.goog/ target=_blank>Google Trust Services</a>, <a href=https://www.globalsign.com/en-in target=_blank>Global Sign</a> and many more.</li>
 </ul>
 </div>
 </article>
@@ -455,8 +457,7 @@ Looking at the google.com certificate,</p>
 <ul>
 <li><a href=#why-do-you-remember-certificates>Why do you remember certificates</a></li>
 <li><a href=#what-does-the-above-error-mean>What does the above error mean</a></li>
-<li><a href=#history-of-the-internet>History of the internet</a></li>
-<li><a href=#what-did-we-do-to-protect-the-internet>What did we do to protect the internet</a></li>
+<li><a href=#how-is-information-protected-on-the-internet>How is information protected on the internet</a></li>
 <li><a href=#enters-asymmetric-encryption>Enters Asymmetric encryption</a></li>
 <li><a href=#public-key-infrastructure>Public Key Infrastructure</a></li>
 <li><a href=#back-to-the-original-problem>Back to the original problem</a></li>
@@ -472,7 +473,7 @@ Looking at the google.com certificate,</p>
 </li>
 <li><a href=#make-your-system-trust-your-ca>Make your system trust your CA</a></li>
 <li><a href=#the-issuer-heirarchy>The issuer heirarchy</a></li>
-<li><a href=#what-are-certificates-made-of>What are certificates made of</a></li>
+<li><a href=#what-does-a-certificate-contain>What does a certificate contain</a></li>
 </ul>
 </nav></div>
 </aside>
@@ -526,8 +527,7 @@ Looking at the google.com certificate,</p>
 <ul>
 <li><a href=#why-do-you-remember-certificates>Why do you remember certificates</a></li>
 <li><a href=#what-does-the-above-error-mean>What does the above error mean</a></li>
-<li><a href=#history-of-the-internet>History of the internet</a></li>
-<li><a href=#what-did-we-do-to-protect-the-internet>What did we do to protect the internet</a></li>
+<li><a href=#how-is-information-protected-on-the-internet>How is information protected on the internet</a></li>
 <li><a href=#enters-asymmetric-encryption>Enters Asymmetric encryption</a></li>
 <li><a href=#public-key-infrastructure>Public Key Infrastructure</a></li>
 <li><a href=#back-to-the-original-problem>Back to the original problem</a></li>
@@ -543,7 +543,7 @@ Looking at the google.com certificate,</p>
 </li>
 <li><a href=#make-your-system-trust-your-ca>Make your system trust your CA</a></li>
 <li><a href=#the-issuer-heirarchy>The issuer heirarchy</a></li>
-<li><a href=#what-are-certificates-made-of>What are certificates made of</a></li>
+<li><a href=#what-does-a-certificate-contain>What does a certificate contain</a></li>
 </ul>
 </nav>
 </div>
