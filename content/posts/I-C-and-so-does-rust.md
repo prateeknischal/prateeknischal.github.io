@@ -1,7 +1,7 @@
 ---
 title: "I C and .so Does Rust"
 description: "Calling C functions from rust using ffi"
-date: 2021-09-08T01:03:26+05:30
+date: 2020-09-08T01:03:26+05:30
 ---
 
 Distributing software is a tricky thing. If you want to share the functionality
