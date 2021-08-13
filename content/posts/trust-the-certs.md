@@ -10,7 +10,7 @@ As an IT professional, you might have come across this error while browsing site
 
 As a fix, you would have been recommended to go to the advanced option in this error and accept the risk and allow the website to work. Your browser may still warn you by displaying the lock on the ominbar of your website as red or unsafe, but you choose to ignore it and not deal with it.
 
-Why do you see this error? Browsers don't do a very good job of explaining the error upfront. Only if you go on the [Learn more](https://www.youtube.com/watch?vdQw4w9WgXcQ) link, you might hope to get some more information about the error. Sometimes it may confuse you more.
+Why do you see this error? Browsers don't do a very good job of explaining the error upfront. Only if you go on the [Learn more](https://www.youtube.com/watch?v=dQw4w9WgXcQ) link, you might hope to get some more information about the error. Sometimes it may confuse you more.
 
 ## What does the above error mean
 The error message says `NET::ERR_CERT_INVALID`, but what does that mean. It's doesn't tell what's invalid and why. If you [venture more](https://self-signed.badssl.com/) and click on the error, you will be presented with this information.
@@ -27,46 +27,31 @@ MIIDeTCCAmGgAwIBAgIJAPziuikCTox4MA0GCSqGSIb3DQEBCwUAMGIxCzAJBgNV
 EVA0pmzIzgBg+JIe3PdRy27T0asgQW/F4TY61Yk=
 -----END CERTIFICATE-----
 ```
-What are these terms and what is a `CERTIFICATE`. Before we understand what the error is, let's take a look at what are the things and what are they supposed to be.
+This shows a bunch of information which may not make sense. What is a `subject`, `CERTIFICATE`, the gibberish between the markers?
 
-## History of the internet
-In the early days, internet used to be an academic place. One of the earliest implementation of the "internet" (inter connected networks) was the [ARPANET](https://en.wikipedia.org/wiki/ARPANET) which was a Defense project, i.e. the US military. A few campuses across the US were connected to this network and it allowed them to talk to each other over the "network".
+## How is information protected on the internet
 
-Once this technology was made public, people started experimenting with it to share information. This slowly developed into information served in pretty pages with the development of World Wide Web. There is a long history between how internet transformed and how WWW was developed by [Sir Tim Berners-Lee](https://en.wikipedia.org/wiki/Tim_Berners-Lee).
-
-WWW (loosely referred as internet in this post) became a place to share information. Due to the nature of communication, anyone who was connected to the network could talk to other people on the network, it became a ground for moving sensitive information. People started moving money on the network in the form of goods. Now, you wouldn't want anyone to "intercept" that payment intended for someone else after all the information is just a bunch of electrical signals moving around wires. You could just tap into it and evesdrop.
-
-There was a requirement of providing a secure channel between 2 parties exchanging sensitive information over an inherently insecure channel.
-
-## What did we do to protect the internet
-
-A very simple way to protect the data flowing on the networks is to encrypt it. Encrypting something implies that the data, using a secret or **key**, is reversibly transformed into a different form (gibberish) which does not make sense to anyone who is not involved in the process (It isn't so simple, but let's not diverge).
-
-The earliest attempt to provide a secure conduit over an insecure channel was [SSL 1.0](https://security.stackexchange.com/questions/41658/what-was-ssl-1-0) which didn't even see the light of day. Let's just say it wasn't very secure.
-
-Then came multiple revisions of the technology which tried to improve upon it and prove stronger guarantees for protecting the data from an evesdropper. They were [SSL v2](https://www-archive.mozilla.org/projects/security/pki/nss/ssl/draft02.html), [SSL v3](https://datatracker.ietf.org/doc/html/rfc6101) and then finally SSL was retired in favour of [TLS v1](https://www.ietf.org/rfc/rfc2246.txt) which was prevalent for a very long time. As time went by, flaws were found in the TLS v1 protocol was updated to [TLS v1.1](https://datatracker.ietf.org/doc/html/rfc4346) and then [TLS v1.2](https://datatracker.ietf.org/doc/html/rfc5246) which is the most used protocol. [TLS v1.3](https://datatracker.ietf.org/doc/html/rfc8446) offers stronger security and faster performance over the older version and is being adopted by the general public.
-
-What do these protocols mean? They are standards on how to protect the data on the network. They mainly rely on encrypting the data using algorithms like [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard).
-
-There is a problem though. AES is a **symmetric** encryption algorithm. This means, the same **key** is used for encrypting and decrypting the data. Between 2 parties that are thousands of miles apart, how do we agree on a key and what happens if one of them leaks the key. Turns out that encrypting the data safely is not that big a problem than arriving at a common key to do so.
+Internet in the early days was open for anyone to view and by that I mean, anyone could read the communication between 2 parties. This is not ok when you are transferring sensitive information, something like bank transactions. To safeguard the traffic on the wire, we started to encrypt the traffic which could only be decrypted by the 2 communicating parties. In order to [encrypt](https://en.wikipedia.org/wiki/Encryption) the information, we need some secret that is known only to the involved parties. Actually there are some requirements that you should look for
+* Two parties could talk securely over and insecure channel
+* Both the parties could identify and verify each other
 
 ## Enters Asymmetric encryption
 
 Asymmetric encryption is a scheme involving a key which consists of 2 parts, a public and a private part. The private part should be protected by the owner and the public part can be distributed to everyone. A public key can be used to encrypt information which can only be decrypted by the corresponding private key.
 
-Now everyone can have their own key pairs and use it to share information on an insecure channel. If Alice wants to share information with Bob, Alice can encrypt is using Bob's public key and send it over the wire and only Bob could use his private key to decrypt it and make sense of it.
+Now everyone can have their own key pairs and use it to share information on an insecure channel. If Alice wants to share information with Bob, Alice can encrypt is using Bob's public key and send it over the wire and only Bob could use his private key to decrypt it and make sense of it. This solves the first requirement.
 
 This constitues [Public key cryptography](https://en.wikipedia.org/wiki/Public-key_cryptography) which provided 2 features
 * Public key encryption - Encryption happens using a public key (available to all) and decryption happens using a private key (owned by a single entity).
 * Digital signature - A methematically proven method to prove ownership of the private key without exposing anything.
 
-There is still a problem, they are not authenticated, which means, Alice is sharing information securely with _someone_. There is no way to prove that it's Bob unless they are aware of each other's public keys before hand which is not practical when there are so many people to talk to.
+There is still a problem, they haven't shared or proven their identity, which means, Alice is sharing information securely with _someone_. There is no way to prove that it's Bob unless they are aware of each other's public keys before hand which is not practical when there are so many people to talk to.
 
 This problem is _managed_ by the [Public Key Infrastructure](https://en.wikipedia.org/wiki/Public_key_infrastructure). It allows to put identity to public keys.
 
 ## Public Key Infrastructure
 
-Public key infrastructure is a system of vetting a public keys by a trusted third party. For example, between Alice, Bob and Charlie, if both Alice and Bob trust Charlie, they are going to trust Charlie's word on which public keys belong to whom. Charlie here will be termed as a [Certificate Authority](https://en.wikipedia.org/wiki/Certificate_authority).
+Public key infrastructure is a system of vetting a public keys by a trusted third party. For example, between Alice, Bob and Charlie, if both Alice and Bob trust Charlie, they are going to trust Charlie's word on which public keys belong to whom. Charlie here will be termed as a [Certificate Authority](https://en.wikipedia.org/wiki/Certificate_authority) or an **Issuer** in this context.
 
 Technically it's a chicken an egg problem, how do you trust Charlie without meeting them. But that's a topic for another day.
 
@@ -76,12 +61,12 @@ Notice the error message on the image, It says,
 Subject: *.badssl.com
 Issuer: *.badssl.com
 ```
-Chrome does not **trust** `*.badssl.com`, so it's not going to trust anything vetted by it and hence is rejecting the connection.
+Chrome does not **trust** `*.badssl.com` as an **Issuer**, so it's not going to trust anything vetted by it and hence is rejecting the connection.
 
 ## What's that strange blob of text below it
-PKI puts identity to a public key. But how does it do that? Remember how the is a common trusted third party. The third party _digitally signs_ the identity of the private key holder and their public key and distributes it to everyone who wants it.
+PKI provides a way to attach an identity to a public key. But how does it do that? Remember how the is a common trusted third party. The third party _digitally signs_ the identity of the private key holder and their public key and distributes it to everyone who wants it.
 
-The `CERTIFICATE` is to **certify** the identity of the owner of the private part of the public key. You may choose to trust or not trust the third party who is vouching for this certification.
+The `CERTIFICATE` is a public document to identify the owner of the private part of the public key. You may choose to trust or not trust the third party who is vouching for this certification.
 
 Into the weeds, how do we actually make sense of the strange blob. Here's how
 ```
@@ -142,19 +127,19 @@ Certificate:
 Notice the following things
 
 * Serial Number: The unique identifier for the certificate with the issuer
-* Issuer: The full name of who issued (vetted) the public key
+* Issuer: The identity of who vetted the public key
 * Subject: The identity of how owns the private key
 * Subject Public key: The actual public key which is vetted
 * Signature Algorithm: The algorithm used to sign the identity and public key information
 * Validity: The dates for which this identity is considered valid
 
-This is an [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)) style keypair. So the public key has a Modulus and an Exponent. These values can be use to encrypt a message.
+This is an [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)) keypair. So the public key has a Modulus and an Exponent. These values can be use to encrypt a message.
 
-The signature Algorithm is the algorithm used to _digitally sign_ the information in the certificate so that anyone can verify the validity of the certificate. This verification is done by the public key of the Issuer or the trusted third party who we already trust as posses their public key.
+The signature Algorithm is the algorithm used to _digitally sign_ the information in the certificate so that anyone can verify the validity of the certificate. This verification is done by the public key of the Issuer or the trusted third party who we already trust.
 
 ## How does a trusted certificate look like
 
-This is a certificate that I don't trust, but how does a certificate look like that I trust.
+The certificate above is a certificate that I don't trust, but how does a certificate look like that I trust. Let's see what www.google.com presents when we try to connect to it.
 ```
 echo | openssl s_client -connect www.google.com:443 2>/dev/null \
      | openssl x509 -noout -text
@@ -218,7 +203,7 @@ Certificate:
          45:b0:52:39
 ```
 
-This certificate has a lot more information about the identity of the `Subject` and what this key is allowed to do.
+This certificate has a lot more information about the the `Subject` and what this key is allowed to do.
 
 ## A scary view of the certificate
 
@@ -242,11 +227,13 @@ Using self signed certificates can be a pain for 2 reasons
 - There can be a lot depding on what domains you are issuing them for
 - You will have to deal with pesky errors from browsers and clients setting to ignore SSL verification everywhere which isn't ideal.
 
-Since, you control your development environment, why not just become the **Certificate Authority** and use it to issue all certificates. You trust just one certificate and any certificate issued by that third part (which is you) is automatically trusted by your clients.
+Since you control your development environment and is confined to your development environment, why not just become the **Certificate Authority** and use it to issue all your dev certificates. You trust just one certificate once and any certificate issued by that third party (which is you) is automatically trusted by your clients.
 
 Ok, easier said than. How do I issue my own Certificate Authority.
 
 >As they say, Hold my beer!
+
+Note: If you want to follow along, then you will require [Golang](https://golang.org/dl/) version 1.12 or above.
 
 ```bash=
 # Assuming you have Golang installed
@@ -297,12 +284,12 @@ certstrap request-cert \
 ```
 **Note**: Make sure to have the Common Name in the `--domain` flag since Chrome will reject if the CN is not part of the SAN attributes as [browsers no longer trust the CN field alone](https://myarch.com/mandatory-certificate-extensions/).
 
-The above command is going to generate 2 files
+The above command is going to generate 2 files.
 ```
 Created out/foo.domain.com.key
 Created out/foo.domain.com.csr
 ```
-One of them is an RSA private key and the other is a CSR or a Certificate Signing Request. This is like a form you fill up and ask the Certificate Authority to certify. The CA may do it's own additional checks to make sure the information is correct. In this case, since we are the CA, we know it's trustworthy. So, we certify by signing it using the CA key like below
+One of them is an RSA private key and the other is a CSR or a Certificate Signing Request. This is like a form you fill up and ask the Certificate Authority to certify. A real CA may do it's own verification to make sure the information is correct. In this case, since we are the CA, we know it's trustworthy. So, we certify by signing it using the CA key like below
 
 ```bash=
 certstrap sign foo.domain.com \
@@ -353,10 +340,10 @@ Notice how the server presents 4 certificates,
 * `C = US, O = Google Trust Services LLC, CN = GTS CA 1C3` another layer of intermediate issuer CA
 * `CN = *.google.com` the final leaf certificate for the server
 
-## What are certificates made of
+## What does a certificate contain
 
 Now that you have seen how to make a simple certificate chain, let's see what each item in a sample certificate mean.
-Looking at the google.com certificate,
+Looking at the www.google.com certificate,
 
 * **Version** denotes the certificate structure, version 3 is the [`x509v3`](https://en.wikipedia.org/wiki/X.509) type of certificate.
 * **Serial Number** notes the unique identifier for the certificate. This can be same for 2 different issuers but can't be same for any 2 certificate for a single issuer.
@@ -404,4 +391,10 @@ Looking at the google.com certificate,
         }
         ```
 * **Signature Algorithm** this time defines what signature algorithm is used and what is it's value.
-=
+
+This by no means is an exhaustive list of what can a certificate contain. In theory, a certificate is just a container and can contain any information you like. For a simple local development use case, this article should take you far enough to not worry about it later.
+
+For any usecase that requires exposing your applications over the public internet or with a large group of people, I would highly recommend to use a more "professional" and battle tested CA. Some of them are
+* [Let's Encrypt](https://letsencrypt.org/) the most popular production-ready and free CA
+* [Cloudflare cfssl](https://github.com/cloudflare/cfssl) an opensource CA which could be ideal for a staging style scenario
+* Then there are always native CAs for the cloud environment like the [Amazon CA](https://aws.amazon.com/certificate-manager/private-certificate-authority/), [Google Trust Services](https://pki.goog/), [Global Sign](https://www.globalsign.com/en-in) and many more.
