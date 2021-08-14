@@ -15,6 +15,8 @@ defaultContentLanguage = "en"  # For HTML page, now support: en, zh-hans, zh-han
 summaryLength = 100 # Custom summary length, add <!--more--> in post file to custom split point
 paginate = 10
 
+googleAnalytics = "G-W9Z8MHH4V6"
+
 [outputFormats]
   [outputFormats.SearchIndex]
     isPlainText = true
