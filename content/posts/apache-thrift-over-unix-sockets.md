@@ -187,16 +187,16 @@ extern crate thrift;
 mod timer;
 
 use timer::*;
-use thrift::protocol::{TBinaryInputProtocol, TBinaryOutputProtocol}
+use thrift::protocol::{TBinaryInputProtocol, TBinaryOutputProtocol};
 use thrift::transport::TTcpChannel;
 
 fn main() {
     let mut channel = TTcpChannel::new();
-    channel.connect("localhost:9090").unwrap();
+    channel.open("localhost:9090").unwrap();
 
     let (readable, writeable) = channel.split().unwrap();
     let in_stream = TBinaryInputProtocol::new(readable, true);
-    let out_stream = TBinaryOutputProtocol::new(writeable_true);
+    let out_stream = TBinaryOutputProtocol::new(writeable, true);
 
     let mut client = TimerSyncClient::new(in_stream, out_stream);
     println!("{:?}", client.time());
@@ -359,5 +359,8 @@ for this is to be able to communicate to `/var/osquery/osquery.em` socket which
 I hope is a unix socket.
 
 ---
+Thanks to [/u/miraunpajaro](https://www.reddit.com/user/miraunpajaro) for
+pointing out mistakes in the article.
+
 Discussion thread [here](https://www.reddit.com/r/rust/comments/i70l4b/apache_thrift_over_unix_sockets_in_rust/)
 
