@@ -44,7 +44,7 @@
 </h2>
 <div class="post-item post-meta">
 <span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-08-01</span>
-<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;1633 words</span>
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;1634 words</span>
 <span><i class="iconfont icon-time-sharp"></i>&nbsp;8 minutes</span>
 <span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
 </div>
@@ -202,16 +202,16 @@ just use the sample code in the <a href=https://docs.rs/thrift target=_blank><co
 mod timer;
 
 use timer::*;
-use thrift::protocol::{TBinaryInputProtocol, TBinaryOutputProtocol}
+use thrift::protocol::{TBinaryInputProtocol, TBinaryOutputProtocol};
 use thrift::transport::TTcpChannel;
 
 fn main() {
     let mut channel = TTcpChannel::new();
-    channel.connect(&quot;localhost:9090&quot;).unwrap();
+    channel.open(&quot;localhost:9090&quot;).unwrap();
 
     let (readable, writeable) = channel.split().unwrap();
     let in_stream = TBinaryInputProtocol::new(readable, true);
-    let out_stream = TBinaryOutputProtocol::new(writeable_true);
+    let out_stream = TBinaryOutputProtocol::new(writeable, true);
 
     let mut client = TimerSyncClient::new(in_stream, out_stream);
     println!(&quot;{:?}&quot;, client.time());
