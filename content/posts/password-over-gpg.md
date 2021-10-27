@@ -365,4 +365,4 @@ me to run around like a crazy noob, please feel free to use the reddit link. Thi
 was more of a reverse engineering style of journey without reading the source or
 much about GPG.
 
-Discussion link:
+Discussion link: [/r/Infosec passwords over GnuPG](https://www.reddit.com/r/Infosec/comments/qh2yoq/passwords_over_gnupg/)
