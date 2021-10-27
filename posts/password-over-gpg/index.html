@@ -44,8 +44,8 @@
 </h2>
 <div class="post-item post-meta">
 <span><i class="iconfont icon-today-sharp"></i>&nbsp;2021-10-27</span>
-<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;1887 words</span>
-<span><i class="iconfont icon-time-sharp"></i>&nbsp;9 minutes</span>
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2048 words</span>
+<span><i class="iconfont icon-time-sharp"></i>&nbsp;10 minutes</span>
 <span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
 </div>
 <div class="post-content markdown-body">
@@ -322,6 +322,39 @@ replaced the <code>pass</code> command with the following in <code>~/.bash_profi
 <p>And, voila, it works almost as good as pass but only for decryption!
 The only downside is that it won&rsquo;t honor the GPG password
 cache and will ask for the GPG key&rsquo;s password.</p>
+<h2 id=transfer-my-passwords>Transfer my passwords</h2>
+<p>Now that we have a way to manually push passwords into pass, we could now insert
+passwords from other stores. For example, I was trying to import logins from my
+Firefox browsers which has a convenient way to export all logins into a CSV
+file. That CSV file can be cleaned and then a simple export <code>gpg</code> command should
+work.</p>
+<pre><code class=language-sh>insert_password() {
+    website=$1;shift;
+    username=$1;shift;
+    password=$1;shift;
+
+    echo $password &gt; /tmp/pass.txt
+    folder=&quot;~/.password-store/$website&quot;
+    mkdir -p $folder
+    output=&quot;$folder/$username.gpg&quot;
+
+    rm -f $output
+    gpg --encrypt -o $output \
+        -r &quot;Foo bar &lt;foo@bar.com&gt;&quot; \
+        /tmp/pass.txt
+}
+</code></pre>
+<p>This function can be called from within a script as</p>
+<pre><code class=language-bash>insert_password &quot;example.com&quot; &quot;username&quot; &quot;password&quot;
+</code></pre>
+<p>And would serve as a batch update.</p>
+<h2 id=community-plugins>Community plugins</h2>
+<p><code>pass</code> is a really extensible tool and allows users to write extensions for it
+to add more functionality. The repo
+<a href=https://github.com/tijn/awesome-password-store target=_blank><code>tijn/awesome-password-store</code></a>
+has a list of community built extensions which provide some interesting
+functionality, including the one for bulk importing, GUI interfaces, browser
+plugins and much more.</p>
 <h2 id=note-to-the-readers>Note to the readers</h2>
 <p>In case something is very obvious about GPG that I didn&rsquo;t understand which lead
 me to run around like a crazy noob, please feel free to use the reddit link. This
@@ -399,6 +432,8 @@ much about GPG.</p>
 <li><a href=#the-breakthrough>The breakthrough</a></li>
 </ul>
 </li>
+<li><a href=#transfer-my-passwords>Transfer my passwords</a></li>
+<li><a href=#community-plugins>Community plugins</a></li>
 <li><a href=#note-to-the-readers>Note to the readers</a></li>
 </ul>
 </nav></div>
@@ -480,6 +515,8 @@ much about GPG.</p>
 <li><a href=#the-breakthrough>The breakthrough</a></li>
 </ul>
 </li>
+<li><a href=#transfer-my-passwords>Transfer my passwords</a></li>
+<li><a href=#community-plugins>Community plugins</a></li>
 <li><a href=#note-to-the-readers>Note to the readers</a></li>
 </ul>
 </nav>
