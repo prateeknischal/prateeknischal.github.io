@@ -250,7 +250,7 @@ to the same git repo and pull.
 
 ```bash
 $ pass init "same-gpg-key-id"
-$ pass git remote add https://github.com/foo/bar
+$ pass git remote add origin https://github.com/foo/bar
 $ pass git pull origin master
 ```
 
@@ -358,6 +358,46 @@ And, voila, it works almost as good as pass but only for decryption!
 The only downside is that it won't honor the GPG password
 cache and will ask for the GPG key's password.
 
+## Transfer my passwords
+
+Now that we have a way to manually push passwords into pass, we could now insert
+passwords from other stores. For example, I was trying to import logins from my
+Firefox browsers which has a convenient way to export all logins into a CSV
+file. That CSV file can be cleaned and then a simple export `gpg` command should
+work.
+
+```sh
+insert_password() {
+    website=$1;shift;
+    username=$1;shift;
+    password=$1;shift;
+
+    echo $password > /tmp/pass.txt
+    folder="~/.password-store/$website"
+    mkdir -p $folder
+    output="$folder/$username.gpg"
+
+    rm -f $output
+    gpg --encrypt -o $output \
+        -r "Foo bar <foo@bar.com>" \
+        /tmp/pass.txt
+}
+```
+This function can be called from within a script as
+```bash
+insert_password "example.com" "username" "password"
+```
+And would serve as a batch update.
+
+## Community plugins
+
+`pass` is a really extensible tool and allows users to write extensions for it
+to add more functionality. The repo
+[`tijn/awesome-password-store`](https://github.com/tijn/awesome-password-store)
+has a list of community built extensions which provide some interesting
+functionality, including the one for bulk importing, GUI interfaces, browser
+plugins and much more.
+
 ## Note to the readers
 
 In case something is very obvious about GPG that I didn't understand which lead
@@ -365,4 +405,4 @@ me to run around like a crazy noob, please feel free to use the reddit link. Thi
 was more of a reverse engineering style of journey without reading the source or
 much about GPG.
 
-Discussion link: [/r/Infosec passwords over GnuPG](https://www.reddit.com/r/Infosec/comments/qh2yoq/passwords_over_gnupg/)
+Discussion link: [/r/cybersecurity passwords over GnuPG](https://www.reddit.com/r/cybersecurity/comments/qhjfqv/passwords_over_gnupg/)
