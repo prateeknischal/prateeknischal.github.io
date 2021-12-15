@@ -398,3 +398,6 @@ For any usecase that requires exposing your applications over the public interne
 * [Let's Encrypt](https://letsencrypt.org/) the most popular production-ready and free CA
 * [Cloudflare cfssl](https://github.com/cloudflare/cfssl) an opensource CA which could be ideal for a staging style scenario
 * Then there are always native CAs for the cloud environment like the [Amazon CA](https://aws.amazon.com/certificate-manager/private-certificate-authority/), [Google Trust Services](https://pki.goog/), [Global Sign](https://www.globalsign.com/en-in) and many more.
+
+Discussion thread
+[here](https://www.reddit.com/r/cybersecurity/comments/p47kza/what_are_certificates_made_of_the_noob_version/)
