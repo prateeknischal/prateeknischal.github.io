@@ -1,261 +1,51 @@
-<!doctype html><html lang=en>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=HandheldFriendly content="True">
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=generator content="Hugo 0.90.1">
-<link rel=apple-touch-icon sizes=180x180 href=img/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=img/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=img/favicon-16x16.png>
-<link rel=manifest href=img/site.webmanifest>
-<meta name=msapplication-TileColor content="#da532c">
-<meta name=theme-color content="#ffffff">
-<title>Posts - The Impatient Software Engineer</title>
-<meta name=author content="Prateek">
-<meta name=description content="A minimal Hugo theme with nice theme color.">
-<link rel=alternate type=application/rss+xml href=https://prateeknischal.github.io/posts/index.xml title="The Impatient Software Engineer">
-<meta property="og:title" content="Posts">
-<meta name=twitter:title content="Posts">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://prateeknischal.github.io/posts/"><meta property="og:image" content="https://prateeknischal.github.io/img/og.png">
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://prateeknischal.github.io/img/og.png"><meta property="og:updated_time" content="2021-10-27T21:04:22+05:30">
-<link rel=stylesheet href=https://prateeknischal.github.io/assets/css/fuji.min.css>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-W9Z8MHH4V6')</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
-</head>
-<body data-theme=dark data-theme-auto=false>
-<script data-cfasync=false>var fujiThemeData=localStorage.getItem('fuji_data-theme');fujiThemeData?fujiThemeData!=='auto'&&document.body.setAttribute('data-theme',fujiThemeData==='dark'?'dark':'light'):localStorage.setItem('fuji_data-theme','auto')</script>
-<head>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
-<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-W9Z8MHH4V6',{anonymize_ip:!1})}</script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','G-W9Z8MHH4V6','auto'),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-</head>
-<main>
-<div class="container-lg clearfix">
-<div class="col-12 col-md-9 float-left content">
-<div class=post>
-<h2 class="post-item post-title">
-<a href=https://prateeknischal.github.io/posts/password-over-gpg/>Passwords Over GnuPG</a>
-</h2>
-<div class="post-item post-meta">
-<span><i class="iconfont icon-today-sharp"></i>&nbsp;2021-10-27</span>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=HandheldFriendly content="True"><meta http-equiv=x-ua-compatible content="IE=edge"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=generator content="Hugo 0.101.0"><link rel=apple-touch-icon sizes=180x180 href=img/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=img/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=img/favicon-16x16.png><link rel=manifest href=img/site.webmanifest><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"><title>Posts - The Impatient Software Engineer</title><meta name=author content="Prateek"><meta name=description content="A minimal Hugo theme with nice theme color."><link rel=alternate type=application/rss+xml href=https://prateeknischal.github.io/posts/index.xml title="The Impatient Software Engineer"><meta property="og:title" content="Posts"><meta name=twitter:title content="Posts"><meta property="og:type" content="website"><meta property="og:url" content="https://prateeknischal.github.io/posts/"><meta property="og:image" content="https://prateeknischal.github.io/img/og.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://prateeknischal.github.io/img/og.png"><meta property="og:updated_time" content="2022-08-27T15:52:24+05:30"><link rel=stylesheet href=https://prateeknischal.github.io/assets/css/fuji.min.css><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-W9Z8MHH4V6")</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script></head><body data-theme=dark data-theme-auto=false><script data-cfasync=false>var fujiThemeData=localStorage.getItem("fuji_data-theme");fujiThemeData?fujiThemeData!=="auto"&&document.body.setAttribute("data-theme",fujiThemeData==="dark"?"dark":"light"):localStorage.setItem("fuji_data-theme","auto")</script><head><script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-W9Z8MHH4V6",{anonymize_ip:!1})}</script><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-W9Z8MHH4V6","auto"),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></head><main><div class="container-lg clearfix"><div class="col-12 col-md-9 float-left content"><div class=post><h2 class="post-item post-title"><a href=https://prateeknischal.github.io/posts/video-curation-001/>Video Curation Series #001</a></h2><div class="post-item post-meta"><span><i class="iconfont icon-today-sharp"></i>&nbsp;2022-08-27</span>
+<span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;310 words</span>
+<span><i class="iconfont icon-time-sharp"></i>&nbsp;2 minutes</span>
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;<a href=/tags/video>video</a>&nbsp;<a href=/tags/listen>listen</a>&nbsp;</span></div><div class="post-item post-summary markdown-body">Async I/O, the zig way Watch zig&rsquo;s take on how to implement the async await paradigm without coloring functions, i.e. without adding special behavior or arguments to the functions. How to write async functions without caring what runtime is going to behave as, evented or blocking. Andrew speaks until the 35 minute mark.
+Watchtime ~35 minutes
+John Carmack x Lex Fridman Listen to the inspiring journey of John Carmack with gamedev. Definitely watch the sections until 3:08:02 mark.
+Watchtime ~3 hrs
+If this is too much, have a crack at, Watchtime ~30-40 minutes
+How to be a great programmer | John Carmack Best Programming setup and IDE | John Carmack Best Programming Language | John Carmack Programmers aren&rsquo;t productive anymore - Jonathan Blow A nice and short clip.</div></div><div class=post><h2 class="post-item post-title"><a href=https://prateeknischal.github.io/posts/password-over-gpg/>Passwords Over GnuPG</a></h2><div class="post-item post-meta"><span><i class="iconfont icon-today-sharp"></i>&nbsp;2021-10-27</span>
 <span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2048 words</span>
 <span><i class="iconfont icon-time-sharp"></i>&nbsp;10 minutes</span>
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
-</div>
-<div class="post-item post-summary markdown-body">
-Passwords are dangerous Identity on a multi-tenant service, at some point in time, requires you to prove your identity in some form. Passwords are supposed to be restricted knowledge which should be possessed by only a single person. That&rsquo;s the ideal case and is also true in some cases. With the expanding online lives of humans and dependence on multi-tenant platforms, it&rsquo;s becoming harder and harder for humans to keep track of that &ldquo;restricted&rdquo; knowledge. It&rsquo;s a very risky practice to use the same passwords at multiple locations for obvious reasons. In case one platform is compromised, by extension, the other is too.
-</div>
-</div>
-<div class=post>
-<h2 class="post-item post-title">
-<a href=https://prateeknischal.github.io/posts/trust-the-certs/>Trust the Certs</a>
-</h2>
-<div class="post-item post-meta">
-<span><i class="iconfont icon-today-sharp"></i>&nbsp;2021-08-12</span>
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span></div><div class="post-item post-summary markdown-body">Passwords are dangerous Identity on a multi-tenant service, at some point in time, requires you to prove your identity in some form. Passwords are supposed to be restricted knowledge which should be possessed by only a single person. That&rsquo;s the ideal case and is also true in some cases. With the expanding online lives of humans and dependence on multi-tenant platforms, it&rsquo;s becoming harder and harder for humans to keep track of that &ldquo;restricted&rdquo; knowledge. It&rsquo;s a very risky practice to use the same passwords at multiple locations for obvious reasons. In case one platform is compromised, by extension, the other is too.</div></div><div class=post><h2 class="post-item post-title"><a href=https://prateeknischal.github.io/posts/trust-the-certs/>Trust the Certs</a></h2><div class="post-item post-meta"><span><i class="iconfont icon-today-sharp"></i>&nbsp;2021-08-12</span>
 <span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;3232 words</span>
 <span><i class="iconfont icon-time-sharp"></i>&nbsp;16 minutes</span>
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
-</div>
-<div class="post-item post-summary markdown-body">
-Why do you remember certificates As an IT professional, you might have come across this error while browsing sites of setting up your local development environment. As a fix, you would have been recommended to go to the advanced option in this error and accept the risk and allow the website to work. Your browser may still warn you by displaying the lock on the ominbar of your website as red or unsafe, but you choose to ignore it and not deal with it.
-Why do you see this error? Browsers don&rsquo;t do a very good job of explaining the error upfront.
-</div>
-</div>
-<div class=post>
-<h2 class="post-item post-title">
-<a href=https://prateeknischal.github.io/posts/pre-commit-workflow/>Test before you Go and Commit</a>
-</h2>
-<div class="post-item post-meta">
-<span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-11-01</span>
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span></div><div class="post-item post-summary markdown-body">Why do you remember certificates As an IT professional, you might have come across this error while browsing sites of setting up your local development environment. As a fix, you would have been recommended to go to the advanced option in this error and accept the risk and allow the website to work. Your browser may still warn you by displaying the lock on the ominbar of your website as red or unsafe, but you choose to ignore it and not deal with it.
+Why do you see this error? Browsers don&rsquo;t do a very good job of explaining the error upfront.</div></div><div class=post><h2 class="post-item post-title"><a href=https://prateeknischal.github.io/posts/pre-commit-workflow/>Test before you Go and Commit</a></h2><div class="post-item post-meta"><span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-11-01</span>
 <span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;889 words</span>
 <span><i class="iconfont icon-time-sharp"></i>&nbsp;5 minutes</span>
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
-</div>
-<div class="post-item post-summary markdown-body">
-There is a certain confidence boost when you see that message &ldquo;All tests pass&rdquo;, unless you are like me and get lazy, skimping on writing good tests for your logic. There are a lot of tools integrated with github, gitlab and probably other git interfaces that run a set of pre-defined tasks before potentially allowing you to raise a PR or mark it safe for merge. For the uninitiated, it&rsquo;s know as CI or continuous integration tools. For example,
-Azure pipelines Github actions CicleCI TravisCI What if you could run those tests, lint checks and other stuff before you push your commit and realize it&rsquo;s going to fail in your CI pipeline and make you look like a n00b.
-</div>
-</div>
-<div class=post>
-<h2 class="post-item post-title">
-<a href=https://prateeknischal.github.io/posts/i-c-and-so-does-rust/>I C and .so Does Rust</a>
-</h2>
-<div class="post-item post-meta">
-<span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-09-08</span>
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span></div><div class="post-item post-summary markdown-body">There is a certain confidence boost when you see that message &ldquo;All tests pass&rdquo;, unless you are like me and get lazy, skimping on writing good tests for your logic. There are a lot of tools integrated with github, gitlab and probably other git interfaces that run a set of pre-defined tasks before potentially allowing you to raise a PR or mark it safe for merge. For the uninitiated, it&rsquo;s know as CI or continuous integration tools. For example,
+Azure pipelines Github actions CicleCI TravisCI What if you could run those tests, lint checks and other stuff before you push your commit and realize it&rsquo;s going to fail in your CI pipeline and make you look like a n00b.</div></div><div class=post><h2 class="post-item post-title"><a href=https://prateeknischal.github.io/posts/i-c-and-so-does-rust/>I C and .so Does Rust</a></h2><div class="post-item post-meta"><span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-09-08</span>
 <span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2113 words</span>
 <span><i class="iconfont icon-time-sharp"></i>&nbsp;10 minutes</span>
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
-</div>
-<div class="post-item post-summary markdown-body">
-Distributing software is a tricky thing. If you want to share the functionality with someone you may share the source with them and give them the build instructions and it would all play out good. But that may not be the case if the source is a different language and the consumer is using a different language. For example, there are a lot of libraries that use common functionalities like openssl for crypto operations or network libraries or packages like zlib just because they are reliable and have been tested for years on speed and correctness. You might not want to translate it in the language of your choice.
-</div>
-</div>
-<div class=post>
-<h2 class="post-item post-title">
-<a href=https://prateeknischal.github.io/posts/go-use-those-traits/>Go Use Those Traits</a>
-</h2>
-<div class="post-item post-meta">
-<span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-08-30</span>
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span></div><div class="post-item post-summary markdown-body">Distributing software is a tricky thing. If you want to share the functionality with someone you may share the source with them and give them the build instructions and it would all play out good. But that may not be the case if the source is a different language and the consumer is using a different language. For example, there are a lot of libraries that use common functionalities like openssl for crypto operations or network libraries or packages like zlib just because they are reliable and have been tested for years on speed and correctness. You might not want to translate it in the language of your choice.</div></div><div class=post><h2 class="post-item post-title"><a href=https://prateeknischal.github.io/posts/go-use-those-traits/>Go Use Those Traits</a></h2><div class="post-item post-meta"><span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-08-30</span>
 <span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;1854 words</span>
 <span><i class="iconfont icon-time-sharp"></i>&nbsp;9 minutes</span>
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
-</div>
-<div class="post-item post-summary markdown-body">
-Interfaces were popularized by Java but originally came from Objective-C (source).Until a few days ago I did not realize how powerful they were. In my opinion, interfaces have been potrayed in an incomplete manner by all the tutorials. The key idea is correct but it limits the thinking of what it can be used for.
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span></div><div class="post-item post-summary markdown-body">Interfaces were popularized by Java but originally came from Objective-C (source).Until a few days ago I did not realize how powerful they were. In my opinion, interfaces have been potrayed in an incomplete manner by all the tutorials. The key idea is correct but it limits the thinking of what it can be used for.
 I am sure everyone who has written some form of object oriented language would know this example.
-public interface Animal { public String speak(); } public class Cat implements Animal { public String speak() { return "I am a God !"; } } public class Dog implements Animal { public String speak() { return "Where's my hooman !
-</div>
-</div>
-<div class=post>
-<h2 class="post-item post-title">
-<a href=https://prateeknischal.github.io/posts/apache-thrift-over-unix-sockets/>Apache Thrift Over Unix Sockets in Rust</a>
-</h2>
-<div class="post-item post-meta">
-<span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-08-01</span>
+public interface Animal { public String speak(); } public class Cat implements Animal { public String speak() { return "I am a God !"; } } public class Dog implements Animal { public String speak() { return "Where's my hooman !</div></div><div class=post><h2 class="post-item post-title"><a href=https://prateeknischal.github.io/posts/apache-thrift-over-unix-sockets/>Apache Thrift Over Unix Sockets in Rust</a></h2><div class="post-item post-meta"><span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-08-01</span>
 <span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;1644 words</span>
 <span><i class="iconfont icon-time-sharp"></i>&nbsp;8 minutes</span>
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
-</div>
-<div class="post-item post-summary markdown-body">
-Apache Thrift is an interace defintion language and binary communication protocol use for defining and creating services for all the numerous supported languages. It forms an RPC framework avoiding the usual microservices HTTP style messaging making it a bit more efficient avoiding all that HTTP overhead.
-Thrift was developed at facebook. Now I have some views about facebook due to their primary product which is quite stupid (the users), the social network, not the movie but the website, facebook.com. It has almost no credibility for common people, nothing useful, full of memes (which are hilarious by the way if you find your way to some awesome math meme pages) and a serious time killer.
-</div>
-</div>
-<div class=post>
-<h2 class="post-item post-title">
-<a href=https://prateeknischal.github.io/posts/re-ally-fast/>Re-ally Fast</a>
-</h2>
-<div class="post-item post-meta">
-<span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-07-29</span>
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span></div><div class="post-item post-summary markdown-body">Apache Thrift is an interace defintion language and binary communication protocol use for defining and creating services for all the numerous supported languages. It forms an RPC framework avoiding the usual microservices HTTP style messaging making it a bit more efficient avoiding all that HTTP overhead.
+Thrift was developed at facebook. Now I have some views about facebook due to their primary product which is quite stupid (the users), the social network, not the movie but the website, facebook.com. It has almost no credibility for common people, nothing useful, full of memes (which are hilarious by the way if you find your way to some awesome math meme pages) and a serious time killer.</div></div><div class=post><h2 class="post-item post-title"><a href=https://prateeknischal.github.io/posts/re-ally-fast/>Re-ally Fast</a></h2><div class="post-item post-meta"><span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-07-29</span>
 <span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;1034 words</span>
 <span><i class="iconfont icon-time-sharp"></i>&nbsp;5 minutes</span>
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
-</div>
-<div class="post-item post-summary markdown-body">
-Lately I have been trying to get into the Rust ecosystem to get a feel of the tools and the language. In the process I came across a few tools that I would highly recommend to try out.
-ripgrep - A blazing fast alternative to GNU grep alacritty - A GPU accelerated terminal emulator exa - A replacement for ls written in Rust The tools exa is for a more pretty ls, may not appeal to everyone. Similar is the case for alacritty, it is intended to be used by people who are comfortable with tmux as it doesn&rsquo;t have tabs, kind of a bummer but if you roll with tmux, it should not make any difference anyways.
-</div>
-</div>
-<div class=post>
-<h2 class="post-item post-title">
-<a href=https://prateeknischal.github.io/posts/boredem-during-covid19/>Boredom during COVID19</a>
-</h2>
-<div class="post-item post-meta">
-<span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-07-26</span>
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span></div><div class="post-item post-summary markdown-body">Lately I have been trying to get into the Rust ecosystem to get a feel of the tools and the language. In the process I came across a few tools that I would highly recommend to try out.
+ripgrep - A blazing fast alternative to GNU grep alacritty - A GPU accelerated terminal emulator exa - A replacement for ls written in Rust The tools exa is for a more pretty ls, may not appeal to everyone. Similar is the case for alacritty, it is intended to be used by people who are comfortable with tmux as it doesn&rsquo;t have tabs, kind of a bummer but if you roll with tmux, it should not make any difference anyways.</div></div><div class=post><h2 class="post-item post-title"><a href=https://prateeknischal.github.io/posts/boredem-during-covid19/>Boredom during COVID19</a></h2><div class="post-item post-meta"><span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-07-26</span>
 <span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;346 words</span>
 <span><i class="iconfont icon-time-sharp"></i>&nbsp;2 minutes</span>
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
-</div>
-<div class="post-item post-summary markdown-body">
-After weeks of hunting for something to do (which is actually on-and-off) and on absolutely no demand, I will be trying to write my experiences and fears as a software engineer, or anything that I have learnt or learning. Also, it will let me use this site a personal cache of things that I have learnt and i know where to look instead of doing all of the research again.
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span></div><div class="post-item post-summary markdown-body">After weeks of hunting for something to do (which is actually on-and-off) and on absolutely no demand, I will be trying to write my experiences and fears as a software engineer, or anything that I have learnt or learning. Also, it will let me use this site a personal cache of things that I have learnt and i know where to look instead of doing all of the research again.
 This may turn into such a disaster that people at ARPA may start contemplating about their work !
-Disclaimer These entries are more like logs and not meant for technical depth or accuracy These blog entries would be more like logs and not meant for technical depth on any matter mentioned in the blog and may not guarantee correctness of the subject matter.
-</div>
-</div>
-</div>
-<aside class="col-12 col-md-3 float-left sidebar">
-<div class="sidebar-item sidebar-pages">
-<h3>Pages</h3>
-<ul>
-<li>
-<a href=/posts>Home</a>
-</li>
-<li>
-<a href=/about/>About</a>
-</li>
-<li>
-<a href=/index.xml>RSS</a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-links">
-<h3>Links</h3>
-<ul>
-<li>
-<a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a>
-</li>
-<li>
-<a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-tags">
-<h3>Tags</h3>
-<div>
-</div>
-</div>
-</aside>
-</div>
-<div class=btn>
-<div class=btn-menu id=btn-menu>
-<i class="iconfont icon-grid-sharp"></i>
-</div>
-<div class=btn-toggle-mode>
-<i class="iconfont icon-contrast-sharp"></i>
-</div>
-<div class=btn-scroll-top>
-<i class="iconfont icon-chevron-up-circle-sharp"></i>
-</div>
-</div>
-<aside class=sidebar-mobile style=display:none>
-<div class=sidebar-wrapper>
-<div class="sidebar-item sidebar-pages">
-<h3>Pages</h3>
-<ul>
-<li>
-<a href=/posts>Home</a>
-</li>
-<li>
-<a href=/about/>About</a>
-</li>
-<li>
-<a href=/index.xml>RSS</a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-links">
-<h3>Links</h3>
-<ul>
-<li>
-<a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a>
-</li>
-<li>
-<a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-tags">
-<h3>Tags</h3>
-<div>
-</div>
-</div>
-<div class="sidebar-item sidebar-toc">
-<h3>Table of Contents</h3>
-</div>
-</div>
-</aside>
-</main>
-<footer>
-<div class="container-lg clearfix">
-<div class="col-12 footer">
-<span>&copy; 2020-2021
+Disclaimer These entries are more like logs and not meant for technical depth or accuracy These blog entries would be more like logs and not meant for technical depth on any matter mentioned in the blog and may not guarantee correctness of the subject matter.</div></div></div><aside class="col-12 col-md-3 float-left sidebar"><div class="sidebar-item sidebar-pages"><h3>Pages</h3><ul><li><a href=/posts>Home</a></li><li><a href=/about/>About</a></li><li><a href=/index.xml>RSS</a></li></ul></div><div class="sidebar-item sidebar-links"><h3>Links</h3><ul><li><a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a></li><li><a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a></li></ul></div><div class="sidebar-item sidebar-tags"><h3>Tags</h3><div><span><a href=/tags/listen/>listen</a></span>
+<span><a href=/tags/video/>video</a></span></div></div></aside></div><div class=btn><div class=btn-menu id=btn-menu><i class="iconfont icon-grid-sharp"></i></div><div class=btn-toggle-mode><i class="iconfont icon-contrast-sharp"></i></div><div class=btn-scroll-top><i class="iconfont icon-chevron-up-circle-sharp"></i></div></div><aside class=sidebar-mobile style=display:none><div class=sidebar-wrapper><div class="sidebar-item sidebar-pages"><h3>Pages</h3><ul><li><a href=/posts>Home</a></li><li><a href=/about/>About</a></li><li><a href=/index.xml>RSS</a></li></ul></div><div class="sidebar-item sidebar-links"><h3>Links</h3><ul><li><a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a></li><li><a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a></li></ul></div><div class="sidebar-item sidebar-tags"><h3>Tags</h3><div><span><a href=/tags/listen/>listen</a></span>
+<span><a href=/tags/video/>video</a></span></div></div><div class="sidebar-item sidebar-toc"><h3>Table of Contents</h3></div></div></aside></main><footer><div class="container-lg clearfix"><div class="col-12 footer"><span>&copy; 2020-2022
 <a href=https://prateeknischal.github.io>Prateek</a>
 | <a href=https://github.com/prateeknischal/prateeknischal.github.io>Source code</a>
-| Powered by <a href=https://github.com/dsrkafuu/hugo-theme-fuji/ target=_blank>Fuji-v2</a> & <a href=https://gohugo.io/ target=_blank>Hugo</a>
-</span>
-</div>
-</div>
-</footer>
-<script defer src=https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js></script>
+| Powered by <a href=https://github.com/dsrkafuu/hugo-theme-fuji/ target=_blank>Fuji-v2</a> & <a href=https://gohugo.io/ target=_blank>Hugo</a></span></div></div></footer><script defer src=https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js></script>
-<script defer src=/assets/js/fuji.min.js></script>
-</body>
-</html>
+<script defer src=/assets/js/fuji.min.js></script></body></html>

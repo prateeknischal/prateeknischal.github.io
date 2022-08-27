@@ -1,90 +1,24 @@
-<!doctype html><html lang=en>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=HandheldFriendly content="True">
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=generator content="Hugo 0.90.1">
-<link rel=apple-touch-icon sizes=180x180 href=img/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=img/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=img/favicon-16x16.png>
-<link rel=manifest href=img/site.webmanifest>
-<meta name=msapplication-TileColor content="#da532c">
-<meta name=theme-color content="#ffffff">
-<title>Re-ally Fast - The Impatient Software Engineer</title>
-<meta name=author content="Prateek">
-<meta name=description content="The praise ripgrep deserves">
-<meta property="og:title" content="Re-ally Fast">
-<meta name=twitter:title content="Re-ally Fast">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://prateeknischal.github.io/posts/re-ally-fast/"><meta property="og:description" content="The praise ripgrep deserves">
-<meta name=twitter:description content="The praise ripgrep deserves"><meta property="og:image" content="https://prateeknischal.github.io/img/og.png">
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://prateeknischal.github.io/img/og.png"><meta property="article:published_time" content="2020-07-29T01:00:53+05:30"><meta property="article:modified_time" content="2020-07-29T01:00:53+05:30">
-<link rel=stylesheet href=https://prateeknischal.github.io/assets/css/fuji.min.css>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-W9Z8MHH4V6')</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
-</head>
-<body data-theme=dark data-theme-auto=false>
-<script data-cfasync=false>var fujiThemeData=localStorage.getItem('fuji_data-theme');fujiThemeData?fujiThemeData!=='auto'&&document.body.setAttribute('data-theme',fujiThemeData==='dark'?'dark':'light'):localStorage.setItem('fuji_data-theme','auto')</script>
-<head>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
-<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-W9Z8MHH4V6',{anonymize_ip:!1})}</script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','G-W9Z8MHH4V6','auto'),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-</head>
-<main>
-<div class="container-lg clearfix">
-<div class="col-12 col-md-9 float-left content">
-<article>
-<h2 class="post-item post-title">
-<a href=https://prateeknischal.github.io/posts/re-ally-fast/>Re-ally Fast</a>
-</h2>
-<div class="post-item post-meta">
-<span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-07-29</span>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=HandheldFriendly content="True"><meta http-equiv=x-ua-compatible content="IE=edge"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=generator content="Hugo 0.101.0"><link rel=apple-touch-icon sizes=180x180 href=img/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=img/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=img/favicon-16x16.png><link rel=manifest href=img/site.webmanifest><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"><title>Re-ally Fast - The Impatient Software Engineer</title><meta name=author content="Prateek"><meta name=description content="The praise ripgrep deserves"><meta property="og:title" content="Re-ally Fast"><meta name=twitter:title content="Re-ally Fast"><meta property="og:type" content="article"><meta property="og:url" content="https://prateeknischal.github.io/posts/re-ally-fast/"><meta property="og:description" content="The praise ripgrep deserves"><meta name=twitter:description content="The praise ripgrep deserves"><meta property="og:image" content="https://prateeknischal.github.io/img/og.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://prateeknischal.github.io/img/og.png"><meta property="article:published_time" content="2020-07-29T01:00:53+05:30"><meta property="article:modified_time" content="2020-07-29T01:00:53+05:30"><link rel=stylesheet href=https://prateeknischal.github.io/assets/css/fuji.min.css><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-W9Z8MHH4V6")</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script></head><body data-theme=dark data-theme-auto=false><script data-cfasync=false>var fujiThemeData=localStorage.getItem("fuji_data-theme");fujiThemeData?fujiThemeData!=="auto"&&document.body.setAttribute("data-theme",fujiThemeData==="dark"?"dark":"light"):localStorage.setItem("fuji_data-theme","auto")</script><head><script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-W9Z8MHH4V6",{anonymize_ip:!1})}</script><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-W9Z8MHH4V6","auto"),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></head><main><div class="container-lg clearfix"><div class="col-12 col-md-9 float-left content"><article><h2 class="post-item post-title"><a href=https://prateeknischal.github.io/posts/re-ally-fast/>Re-ally Fast</a></h2><div class="post-item post-meta"><span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-07-29</span>
 <span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;1034 words</span>
 <span><i class="iconfont icon-time-sharp"></i>&nbsp;5 minutes</span>
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
-</div>
-<div class="post-content markdown-body">
-<p>Lately I have been trying to get into the <a href=https://www.rust-lang.org target=_blank>Rust</a>
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span></div><div class="post-content markdown-body"><p>Lately I have been trying to get into the <a href=https://www.rust-lang.org target=_blank>Rust</a>
 ecosystem to get a feel of the tools and the language. In the process I came
-across a few tools that I would highly recommend to try out.</p>
-<ul>
-<li><a href=https://github.com/BurntSushi/ripgrep target=_blank>ripgrep</a> - A blazing fast alternative to GNU grep</li>
-<li><a href=https://github.com/alacritty/alacritty target=_blank>alacritty</a> - A GPU accelerated terminal emulator</li>
-<li><a href=https://github.com/ogham/exa target=_blank>exa</a> - A replacement for <code>ls</code> written in Rust</li>
-</ul>
-<p>The tools <code>exa</code> is for a more pretty <code>ls</code>, may not appeal to everyone. Similar is the case
+across a few tools that I would highly recommend to try out.</p><ul><li><a href=https://github.com/BurntSushi/ripgrep target=_blank>ripgrep</a> - A blazing fast alternative to GNU grep</li><li><a href=https://github.com/alacritty/alacritty target=_blank>alacritty</a> - A GPU accelerated terminal emulator</li><li><a href=https://github.com/ogham/exa target=_blank>exa</a> - A replacement for <code>ls</code> written in Rust</li></ul><p>The tools <code>exa</code> is for a more pretty <code>ls</code>, may not appeal to everyone. Similar is the case
 for <code>alacritty</code>, it is intended to be used by people who are comfortable with <code>tmux</code> as it
 doesn&rsquo;t have tabs, kind of a bummer but if you roll with tmux, it should not make any
-difference anyways.</p>
-<p>The tool that I am excited about is, <code>ripgrep</code> which is a crazy fast alternative for GNU grep.
+difference anyways.</p><p>The tool that I am excited about is, <code>ripgrep</code> which is a crazy fast alternative for GNU grep.
 It has a lot more features than grep and the speed it chugs through text using regular expressions
-is amazing.</p>
-<p>A more detailed and in-depth explanation and benchmarks can be found at
+is amazing.</p><p>A more detailed and in-depth explanation and benchmarks can be found at
 <a href=https://blog.burntsushi.net/ripgrep/ target=_blank>ripgrep is faster than {grep, ag, git grep, ucg, pt, sift}</a>
-which is blog entry from the creators.</p>
-<h2 id=some-numbers>Some numbers</h2>
-<p>Let&rsquo;s first see ripgrep in action (so that there is some substance to my claims).</p>
-<p><img class=img-zoomable src=/ripgrep.png alt=Destruction>
-</p>
-<p>The above test is to do a case insensitive search on a text file which is close to
+which is blog entry from the creators.</p><h2 id=some-numbers>Some numbers</h2><p>Let&rsquo;s first see ripgrep in action (so that there is some substance to my claims).</p><p><img class=img-zoomable src=/ripgrep.png alt=Destruction></p><p>The above test is to do a case insensitive search on a text file which is close to
 1.2GB of size. The <code>grep</code> took more than 24s while <code>ripgrep</code> casually completed the search within
 half of a second which is just pure destruction in terms of speed. The <code>shasum</code> part is to make
 sure the output of both the tools are correct. I would definitely trust <code>grep</code> for it&rsquo;s correctness
 and the above screenshot shows both produce the same output hashes, which means <code>ripgrep</code>&rsquo;s output is
-also correct.</p>
-<p>Unless I stumbled upon a pair of texts that tend to produce the same <a href=https://en.wikipedia.org/wiki/SHA-2 target=_blank>SHA-256</a> hash.
-<a href=https://shattered.io/ target=_blank>SHAttered</a> 256 times bada**!.</p>
-<h2 id=whats-up-with-ripgrep->What&rsquo;s up with ripgrep ?</h2>
-<h3 id=restricted-but-fast-regex-library>Restricted but fast regex library</h3>
-<p>A portion of the speed gain comes from not complying to the <a href=https://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions target=_blank>PCRE</a>
-standards which supports all features including look-ahead and look-behind features.</p>
-<p>eg: If you try the following regex in Rust, it fails</p>
-<pre><code class=language-rust>extern crate regex; // 1.3.9
+also correct.</p><p>Unless I stumbled upon a pair of texts that tend to produce the same <a href=https://en.wikipedia.org/wiki/SHA-2 target=_blank>SHA-256</a> hash.
+<a href=https://shattered.io/ target=_blank>SHAttered</a> 256 times bada**!.</p><h2 id=whats-up-with-ripgrep->What&rsquo;s up with ripgrep ?</h2><h3 id=restricted-but-fast-regex-library>Restricted but fast regex library</h3><p>A portion of the speed gain comes from not complying to the <a href=https://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions target=_blank>PCRE</a>
+standards which supports all features including look-ahead and look-behind features.</p><p>eg: If you try the following regex in Rust, it fails</p><pre><code class=language-rust>extern crate regex; // 1.3.9
 
 use regex::Regex;
 
@@ -93,223 +27,66 @@ fn main() {
     let re = Regex::new(r&quot;\w+(?&lt;!s)\b&quot;).unwrap();
     println!(&quot;{}&quot;, re.is_match(haystack));
 }
-</code></pre>
-<p>with the following error</p>
-<pre><code>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</code></pre><p>with the following error</p><pre><code>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 regex parse error:
     \w+(?&lt;!s)\b
        ^^^^
 error: look-around, including look-ahead and look-behind, is not supported
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-</code></pre>
-<p>On the other hand, python3 implements look-ahead and look-back syntax.</p>
-<pre><code class=language-py>Python 3.7.4 (default, Oct 12 2019, 18:55:28)
+</code></pre><p>On the other hand, python3 implements look-ahead and look-back syntax.</p><pre><code class=language-py>Python 3.7.4 (default, Oct 12 2019, 18:55:28)
 [Clang 11.0.0 (clang-1100.0.33.8)] on darwin
 Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
 &gt;&gt;&gt; import re
 &gt;&gt;&gt; t = re.compile(r&quot;\s\w+(?&lt;!s)\b&quot;)
 &gt;&gt;&gt; t.findall(&quot;hello world's&quot;)
 [' world']
-</code></pre>
-<h3 id=better-optimizations-to-the-literal-string-comparision>Better optimizations to the literal string comparision</h3>
-<p>Regex being a general purpose search mechanism can be slow and can be beaten by classical
-string search algorithms like <a href=https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string_search_algorithm target=_blank>Boyer-Moore</a>.</p>
-<p>The regular brute-force string searches or the python <code>in</code> keyword work by traversing the haystack until it finds
+</code></pre><h3 id=better-optimizations-to-the-literal-string-comparision>Better optimizations to the literal string comparision</h3><p>Regex being a general purpose search mechanism can be slow and can be beaten by classical
+string search algorithms like <a href=https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string_search_algorithm target=_blank>Boyer-Moore</a>.</p><p>The regular brute-force string searches or the python <code>in</code> keyword work by traversing the haystack until it finds
 the first character of the needle, then it extracts the substring of the length of the needle and then matches. If
-the string does not match, increment to the next char in the haystack and continue.</p>
-<pre><code class=language-py>&gt;&gt;&gt; needle=&quot;rust&quot;
+the string does not match, increment to the next char in the haystack and continue.</p><pre><code class=language-py>&gt;&gt;&gt; needle=&quot;rust&quot;
 &gt;&gt;&gt; haystack=&quot;searching for rust lang&quot;
 &gt;&gt;&gt; for i in range(len(haystack) - len(needle) + 1):
 ...     if haystack[i: i + len(needle)] == needle:
 ...             print (&quot;Found at&quot;, i)
 ...
 Found at 14
-</code></pre>
-<p>This can be seen as aligning the needle in all possible ways against the haystack and then
-comparing to see which one matches perfectly. Something like</p>
-<pre><code>A N P A N M A N -
+</code></pre><p>This can be seen as aligning the needle in all possible ways against the haystack and then
+comparing to see which one matches perfectly. Something like</p><pre><code>A N P A N M A N -
 P A N - - - - - -
 - P A N - - - - -
 - - P A N - - - -
 - - - P A N - - -
 - - - - P A N - -
 - - - - - P A N -
-</code></pre>
-<p>What Boyer-Moore does is, with some pre-computation magic, it will try to find
+</code></pre><p>What Boyer-Moore does is, with some pre-computation magic, it will try to find
 the best positions that needs to actually be tested. It does so by finding the
 byte offsets at which the last byte of the needle matches the haystack. If the
 last byte does not match, there is no point visiting the chars before that byte
 offset in that alignment. This search of &ldquo;candidates&rdquo; is done by <a href=https://man7.org/linux/man-pages/man3/memchr.3.html target=_blank><code>memchr</code></a>
 which can find the first position of a char in a memory area. The fancy thing
 about <code>memchr</code> is that, it compiles down to <a href=https://en.wikipedia.org/wiki/SIMD target=_blank>SMID</a>
-instruction.</p>
-<p>This means that it can find the <em>search candidates</em> really fast due to vectorized
+instruction.</p><p>This means that it can find the <em>search candidates</em> really fast due to vectorized
 instructions. The <code>regex</code> crate gwill go to great lengths to extract literal strings
 from the regular expressions and then find <em>search candidates</em> in order to minimise
-the regex search time.</p>
-<p>Most of the tools search for a needle in a haystack that is made up of lines of text,
+the regex search time.</p><p>Most of the tools search for a needle in a haystack that is made up of lines of text,
 i.e. delimited lines. The <code>regex</code> crate will find the lines that may match and
-then run the full regex search on it saving a lot of time from the regex overhead.</p>
-<p>For multiple literals, i.e. <code>"you|me"</code>, the <code>regex</code> crate will use plain Aho-Corasick
+then run the full regex search on it saving a lot of time from the regex overhead.</p><p>For multiple literals, i.e. <code>"you|me"</code>, the <code>regex</code> crate will use plain Aho-Corasick
 or a vectorized algorithm called <a href=https://github.com/BurntSushi/aho-corasick/blob/master/src/packed/teddy/runtime.rs target=_blank>Teddy</a>
-when enabled.</p>
-<p>To be honest, I don&rsquo;t understand a lot of it. I will try and implement the Boyer-Moore algorithm
-someday maybe to get a better understanding of what is going on.</p>
-<h3 id=substring-search-algorithms>Substring search algorithms</h3>
-<ul>
-<li>
-<p>The <a href=https://cp-algorithms.com/string/z-function.html target=_blank>z-algorithm</a> is a pretty good choice
-which requires <code>O(n + m)</code> worst case time and space if the needle and the haystack don&rsquo;t change.</p>
-</li>
-<li>
-<p>If there are a lot of needles to search from a small number of haystacks, probably a
+when enabled.</p><p>To be honest, I don&rsquo;t understand a lot of it. I will try and implement the Boyer-Moore algorithm
+someday maybe to get a better understanding of what is going on.</p><h3 id=substring-search-algorithms>Substring search algorithms</h3><ul><li><p>The <a href=https://cp-algorithms.com/string/z-function.html target=_blank>z-algorithm</a> is a pretty good choice
+which requires <code>O(n + m)</code> worst case time and space if the needle and the haystack don&rsquo;t change.</p></li><li><p>If there are a lot of needles to search from a small number of haystacks, probably a
 <a href=https://en.wikipedia.org/wiki/Trie target=_blank>Trie</a> would be more suited. This will not scale
 for a large number of haystacks as all of the tries will be needed to be present in memory
 at the same time which is not possible. For example, in the above 1.2G exmaple, having
-that amound of storage occupied all the time may not be necessary.</p>
-</li>
-<li>
-<p>If the needle isn&rsquo;t changing and there are a lot of haystacks, some algorithm that
-pre-processes the needle might help, just like Aho-Corasick or Boyer-Moore.</p>
-</li>
-</ul>
-<h3 id=disclaimer>Disclaimer</h3>
-<blockquote>
-<p>All of this is shamelessly ripped off of the <a href=https://blog.burntsushi.net/ripgrep/ target=_blank>Burntsushi/ripgrep</a>
-blog and it&rsquo;s highly recommended to read that if you need a clearer picture.</p>
-</blockquote>
-</div>
-</article>
-<div class="license markdown-body">
-<blockquote>
-<p>Unless otherwise noted, the content of this site is licensed under <a rel=license href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>CC BY-NC-SA 4.0</a>.</p>
-</blockquote>
-</div>
-</div>
-<aside class="col-12 col-md-3 float-left sidebar">
-<div class="sidebar-item sidebar-pages">
-<h3>Pages</h3>
-<ul>
-<li>
-<a href=/posts>Home</a>
-</li>
-<li>
-<a href=/about/>About</a>
-</li>
-<li>
-<a href=/index.xml>RSS</a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-links">
-<h3>Links</h3>
-<ul>
-<li>
-<a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a>
-</li>
-<li>
-<a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-tags">
-<h3>Tags</h3>
-<div>
-</div>
-</div>
-<div class="sidebar-item sidebar-toc">
-<h3>Table of Contents</h3><nav id=TableOfContents>
-<ul>
-<li><a href=#some-numbers>Some numbers</a></li>
-<li><a href=#whats-up-with-ripgrep->What&rsquo;s up with ripgrep ?</a>
-<ul>
-<li><a href=#restricted-but-fast-regex-library>Restricted but fast regex library</a></li>
-<li><a href=#better-optimizations-to-the-literal-string-comparision>Better optimizations to the literal string comparision</a></li>
-<li><a href=#substring-search-algorithms>Substring search algorithms</a></li>
-<li><a href=#disclaimer>Disclaimer</a></li>
-</ul>
-</li>
-</ul>
-</nav></div>
-</aside>
-</div>
-<div class=btn>
-<div class=btn-menu id=btn-menu>
-<i class="iconfont icon-grid-sharp"></i>
-</div>
-<div class=btn-toggle-mode>
-<i class="iconfont icon-contrast-sharp"></i>
-</div>
-<div class=btn-scroll-top>
-<i class="iconfont icon-chevron-up-circle-sharp"></i>
-</div>
-</div>
-<aside class=sidebar-mobile style=display:none>
-<div class=sidebar-wrapper>
-<div class="sidebar-item sidebar-pages">
-<h3>Pages</h3>
-<ul>
-<li>
-<a href=/posts>Home</a>
-</li>
-<li>
-<a href=/about/>About</a>
-</li>
-<li>
-<a href=/index.xml>RSS</a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-links">
-<h3>Links</h3>
-<ul>
-<li>
-<a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a>
-</li>
-<li>
-<a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-tags">
-<h3>Tags</h3>
-<div>
-</div>
-</div>
-<div class="sidebar-item sidebar-toc">
-<h3>Table of Contents</h3>
-<nav id=TableOfContents>
-<ul>
-<li><a href=#some-numbers>Some numbers</a></li>
-<li><a href=#whats-up-with-ripgrep->What&rsquo;s up with ripgrep ?</a>
-<ul>
-<li><a href=#restricted-but-fast-regex-library>Restricted but fast regex library</a></li>
-<li><a href=#better-optimizations-to-the-literal-string-comparision>Better optimizations to the literal string comparision</a></li>
-<li><a href=#substring-search-algorithms>Substring search algorithms</a></li>
-<li><a href=#disclaimer>Disclaimer</a></li>
-</ul>
-</li>
-</ul>
-</nav>
-</div>
-</div>
-</aside>
-</main>
-<footer>
-<div class="container-lg clearfix">
-<div class="col-12 footer">
-<span>&copy; 2020-2021
+that amound of storage occupied all the time may not be necessary.</p></li><li><p>If the needle isn&rsquo;t changing and there are a lot of haystacks, some algorithm that
+pre-processes the needle might help, just like Aho-Corasick or Boyer-Moore.</p></li></ul><h3 id=disclaimer>Disclaimer</h3><blockquote><p>All of this is shamelessly ripped off of the <a href=https://blog.burntsushi.net/ripgrep/ target=_blank>Burntsushi/ripgrep</a>
+blog and it&rsquo;s highly recommended to read that if you need a clearer picture.</p></blockquote></div></article><div class="license markdown-body"><blockquote><p>Unless otherwise noted, the content of this site is licensed under <a rel=license href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>CC BY-NC-SA 4.0</a>.</p></blockquote></div></div><aside class="col-12 col-md-3 float-left sidebar"><div class="sidebar-item sidebar-pages"><h3>Pages</h3><ul><li><a href=/posts>Home</a></li><li><a href=/about/>About</a></li><li><a href=/index.xml>RSS</a></li></ul></div><div class="sidebar-item sidebar-links"><h3>Links</h3><ul><li><a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a></li><li><a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a></li></ul></div><div class="sidebar-item sidebar-tags"><h3>Tags</h3><div><span><a href=/tags/listen/>listen</a></span>
+<span><a href=/tags/video/>video</a></span></div></div><div class="sidebar-item sidebar-toc"><h3>Table of Contents</h3><nav id=TableOfContents><ul><li><a href=#some-numbers>Some numbers</a></li><li><a href=#whats-up-with-ripgrep->What&rsquo;s up with ripgrep ?</a><ul><li><a href=#restricted-but-fast-regex-library>Restricted but fast regex library</a></li><li><a href=#better-optimizations-to-the-literal-string-comparision>Better optimizations to the literal string comparision</a></li><li><a href=#substring-search-algorithms>Substring search algorithms</a></li><li><a href=#disclaimer>Disclaimer</a></li></ul></li></ul></nav></div></aside></div><div class=btn><div class=btn-menu id=btn-menu><i class="iconfont icon-grid-sharp"></i></div><div class=btn-toggle-mode><i class="iconfont icon-contrast-sharp"></i></div><div class=btn-scroll-top><i class="iconfont icon-chevron-up-circle-sharp"></i></div></div><aside class=sidebar-mobile style=display:none><div class=sidebar-wrapper><div class="sidebar-item sidebar-pages"><h3>Pages</h3><ul><li><a href=/posts>Home</a></li><li><a href=/about/>About</a></li><li><a href=/index.xml>RSS</a></li></ul></div><div class="sidebar-item sidebar-links"><h3>Links</h3><ul><li><a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a></li><li><a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a></li></ul></div><div class="sidebar-item sidebar-tags"><h3>Tags</h3><div><span><a href=/tags/listen/>listen</a></span>
+<span><a href=/tags/video/>video</a></span></div></div><div class="sidebar-item sidebar-toc"><h3>Table of Contents</h3><nav id=TableOfContents><ul><li><a href=#some-numbers>Some numbers</a></li><li><a href=#whats-up-with-ripgrep->What&rsquo;s up with ripgrep ?</a><ul><li><a href=#restricted-but-fast-regex-library>Restricted but fast regex library</a></li><li><a href=#better-optimizations-to-the-literal-string-comparision>Better optimizations to the literal string comparision</a></li><li><a href=#substring-search-algorithms>Substring search algorithms</a></li><li><a href=#disclaimer>Disclaimer</a></li></ul></li></ul></nav></div></div></aside></main><footer><div class="container-lg clearfix"><div class="col-12 footer"><span>&copy; 2020-2022
 <a href=https://prateeknischal.github.io>Prateek</a>
 | <a href=https://github.com/prateeknischal/prateeknischal.github.io>Source code</a>
-| Powered by <a href=https://github.com/dsrkafuu/hugo-theme-fuji/ target=_blank>Fuji-v2</a> & <a href=https://gohugo.io/ target=_blank>Hugo</a>
-</span>
-</div>
-</div>
-</footer>
-<script defer src=https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js></script>
+| Powered by <a href=https://github.com/dsrkafuu/hugo-theme-fuji/ target=_blank>Fuji-v2</a> & <a href=https://gohugo.io/ target=_blank>Hugo</a></span></div></div></footer><script defer src=https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js></script>
-<script defer src=/assets/js/fuji.min.js></script>
-</body>
-</html>
+<script defer src=/assets/js/fuji.min.js></script></body></html>

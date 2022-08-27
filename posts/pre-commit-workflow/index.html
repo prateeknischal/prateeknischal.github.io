@@ -1,76 +1,20 @@
-<!doctype html><html lang=en>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=HandheldFriendly content="True">
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=generator content="Hugo 0.90.1">
-<link rel=apple-touch-icon sizes=180x180 href=img/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=img/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=img/favicon-16x16.png>
-<link rel=manifest href=img/site.webmanifest>
-<meta name=msapplication-TileColor content="#da532c">
-<meta name=theme-color content="#ffffff">
-<title>Test before you Go and Commit - The Impatient Software Engineer</title>
-<meta name=author content="Prateek">
-<meta name=description content="Improve your go workflow using pre-commit githooks">
-<meta property="og:title" content="Test before you Go and Commit">
-<meta name=twitter:title content="Test before you Go and Commit">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://prateeknischal.github.io/posts/pre-commit-workflow/"><meta property="og:description" content="Improve your go workflow using pre-commit githooks">
-<meta name=twitter:description content="Improve your go workflow using pre-commit githooks"><meta property="og:image" content="https://prateeknischal.github.io/img/og.png">
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://prateeknischal.github.io/img/og.png"><meta property="article:published_time" content="2020-11-01T01:04:22+05:30"><meta property="article:modified_time" content="2020-11-01T01:04:22+05:30">
-<link rel=stylesheet href=https://prateeknischal.github.io/assets/css/fuji.min.css>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-W9Z8MHH4V6')</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
-</head>
-<body data-theme=dark data-theme-auto=false>
-<script data-cfasync=false>var fujiThemeData=localStorage.getItem('fuji_data-theme');fujiThemeData?fujiThemeData!=='auto'&&document.body.setAttribute('data-theme',fujiThemeData==='dark'?'dark':'light'):localStorage.setItem('fuji_data-theme','auto')</script>
-<head>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
-<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-W9Z8MHH4V6',{anonymize_ip:!1})}</script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','G-W9Z8MHH4V6','auto'),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-</head>
-<main>
-<div class="container-lg clearfix">
-<div class="col-12 col-md-9 float-left content">
-<article>
-<h2 class="post-item post-title">
-<a href=https://prateeknischal.github.io/posts/pre-commit-workflow/>Test before you Go and Commit</a>
-</h2>
-<div class="post-item post-meta">
-<span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-11-01</span>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=HandheldFriendly content="True"><meta http-equiv=x-ua-compatible content="IE=edge"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=generator content="Hugo 0.101.0"><link rel=apple-touch-icon sizes=180x180 href=img/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=img/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=img/favicon-16x16.png><link rel=manifest href=img/site.webmanifest><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"><title>Test before you Go and Commit - The Impatient Software Engineer</title><meta name=author content="Prateek"><meta name=description content="Improve your go workflow using pre-commit githooks"><meta property="og:title" content="Test before you Go and Commit"><meta name=twitter:title content="Test before you Go and Commit"><meta property="og:type" content="article"><meta property="og:url" content="https://prateeknischal.github.io/posts/pre-commit-workflow/"><meta property="og:description" content="Improve your go workflow using pre-commit githooks"><meta name=twitter:description content="Improve your go workflow using pre-commit githooks"><meta property="og:image" content="https://prateeknischal.github.io/img/og.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://prateeknischal.github.io/img/og.png"><meta property="article:published_time" content="2020-11-01T01:04:22+05:30"><meta property="article:modified_time" content="2020-11-01T01:04:22+05:30"><link rel=stylesheet href=https://prateeknischal.github.io/assets/css/fuji.min.css><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-W9Z8MHH4V6")</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script></head><body data-theme=dark data-theme-auto=false><script data-cfasync=false>var fujiThemeData=localStorage.getItem("fuji_data-theme");fujiThemeData?fujiThemeData!=="auto"&&document.body.setAttribute("data-theme",fujiThemeData==="dark"?"dark":"light"):localStorage.setItem("fuji_data-theme","auto")</script><head><script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-W9Z8MHH4V6",{anonymize_ip:!1})}</script><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-W9Z8MHH4V6","auto"),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></head><main><div class="container-lg clearfix"><div class="col-12 col-md-9 float-left content"><article><h2 class="post-item post-title"><a href=https://prateeknischal.github.io/posts/pre-commit-workflow/>Test before you Go and Commit</a></h2><div class="post-item post-meta"><span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-11-01</span>
 <span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;889 words</span>
 <span><i class="iconfont icon-time-sharp"></i>&nbsp;5 minutes</span>
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
-</div>
-<div class="post-content markdown-body">
-<p>There is a certain confidence boost when you see that message &ldquo;All tests pass&rdquo;,
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span></div><div class="post-content markdown-body"><p>There is a certain confidence boost when you see that message &ldquo;All tests pass&rdquo;,
 unless you are like me and get lazy, skimping on writing good tests for your
 logic. There are a lot of tools integrated with github, gitlab and probably
 other git interfaces that run a set of pre-defined tasks before potentially
 allowing you to raise a PR or mark it safe for merge. For the uninitiated, it&rsquo;s
 know as <a href=https://en.wikipedia.org/wiki/Continuous_integration target=_blank>CI or continuous
 integration</a> tools. For
-example,</p>
-<ul>
-<li><a href=https://github.com/marketplace/azure-pipelines target=_blank>Azure pipelines</a></li>
-<li><a href=https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions target=_blank>Github actions</a></li>
-<li><a href=https://github.com/circleci target=_blank>CicleCI</a></li>
-<li><a href=https://travis-ci.org/ target=_blank>TravisCI</a></li>
-</ul>
-<p>What if you could run those tests, lint checks and other stuff before you push
+example,</p><ul><li><a href=https://github.com/marketplace/azure-pipelines target=_blank>Azure pipelines</a></li><li><a href=https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions target=_blank>Github actions</a></li><li><a href=https://github.com/circleci target=_blank>CicleCI</a></li><li><a href=https://travis-ci.org/ target=_blank>TravisCI</a></li></ul><p>What if you could run those tests, lint checks and other stuff before you push
 your commit and realize it&rsquo;s going to fail in your CI pipeline and make you look
-like a n00b. Wouldn&rsquo;t that be great !</p>
-<p>Unfortunately, there aren&rsquo;t a lot of tools that do the same for plain old git, I
+like a n00b. Wouldn&rsquo;t that be great !</p><p>Unfortunately, there aren&rsquo;t a lot of tools that do the same for plain old git, I
 mean locally in your development environment. There is one for nodejs, called
 the <a href=https://www.npmjs.com/package/pre-commit target=_blank>pre-commit</a>, but let&rsquo;s ignore
-that since we are gophers here.</p>
-<p>There is a project
+that since we are gophers here.</p><p>There is a project
 <a href=https://github.com/pre-commit/pre-commit target=_blank>pre-commit/pre-commit</a> that can be
 used to manage a wide variety of pre-commit stuff and in a pretty way. It looks
 really good ! The only gripe that I have with it (highly personal) is it needs a
@@ -79,15 +23,10 @@ then you run into their dependencies and versions and give up. The most painful
 transition for me has been <code>python2.x</code> to <code>python3.x</code>. So, I try to avoid python
 until <code>python3</code> is an adopted standard and the only version present in all of my
 machines. If that&rsquo;s not a concern for you, then feel free to use the pre-commit
-project. It will probably suit your needs much better.</p>
-<p>If you share similar thoughts as me or don&rsquo;t have anything better to do than
-reading this, let&rsquo;s see how these things are implemented.</p>
-<h3 id=hooks-all-over-the-place>Hooks all over the place</h3>
-<p>I can feel the incoming disappointment. Git, the vanilla thing has something
+project. It will probably suit your needs much better.</p><p>If you share similar thoughts as me or don&rsquo;t have anything better to do than
+reading this, let&rsquo;s see how these things are implemented.</p><h3 id=hooks-all-over-the-place>Hooks all over the place</h3><p>I can feel the incoming disappointment. Git, the vanilla thing has something
 called <a href=https://git-scm.com/docs/githooks target=_blank>githooks</a> at different stages that
-you can use to hook in and run your stuff.</p>
-<p>Let&rsquo;s try something !</p>
-<pre><code class=language-bash>$ git clone https://github.com/cloudmarker/cloudmarker.git
+you can use to hook in and run your stuff.</p><p>Let&rsquo;s try something !</p><pre><code class=language-bash>$ git clone https://github.com/cloudmarker/cloudmarker.git
 $ exa --tree cloudmarker/.git/hooks
 .git/hooks
 ├── applypatch-msg.sample
@@ -101,23 +40,17 @@ $ exa --tree cloudmarker/.git/hooks
 ├── pre-receive.sample
 ├── prepare-commit-msg.sample
 └── update.sample
-</code></pre>
-<p>Notice the
+</code></pre><p>Notice the
 <a href=https://github.com/git/git/blob/master/templates/hooks--pre-commit.sample target=_blank><code>pre-commit.sample</code></a>
 file. It has a sample defintion that could be run before the commit, as the name
 suggests. What if we create a file <code>pre-commit</code> with the scripts that we need to
-run, tests, lints, checks, print xkcd, whatever be it.</p>
-<p>That script would get called before you try and commit and the commit would fail
+run, tests, lints, checks, print xkcd, whatever be it.</p><p>That script would get called before you try and commit and the commit would fail
 if the script exited with a non-zero error code, thus preventing you from your
-impulsive force pushes.</p>
-<h3 id=make-it-more-manageable><em>make</em> it more manageable</h3>
-<p>This is a file present in the <code>.git</code> folder that is not under version control, so
+impulsive force pushes.</p><h3 id=make-it-more-manageable><em>make</em> it more manageable</h3><p>This is a file present in the <code>.git</code> folder that is not under version control, so
 how do you manage it better. If the commands or workflow changes in between, you
-would have to keep updating the script manually which is not what we want.</p>
-<p>One way to do it is, softlinks. Create a softlink to your version controlled
+would have to keep updating the script manually which is not what we want.</p><p>One way to do it is, softlinks. Create a softlink to your version controlled
 script file and make the pre-commit hook to point your script. A sample project
-structure that you make want to follow.</p>
-<pre><code class=language-bash>$ exa --tree --level 1 .
+structure that you make want to follow.</p><pre><code class=language-bash>$ exa --tree --level 1 .
 .
 ├── go.mod
 ├── go.sum
@@ -125,20 +58,14 @@ structure that you make want to follow.</p>
 ├── main_test.go
 ├── Makefile
 └── .pre-commit
-</code></pre>
-<p>The project contains a version controlled file called <code>.pre-commit</code> (a dotfile
+</code></pre><p>The project contains a version controlled file called <code>.pre-commit</code> (a dotfile
 to keep the folder view clean) which will contain your commands that you may
-need to run.</p>
-<p>The first time setup can be automated using your favourite tools. Let&rsquo;s try to
+need to run.</p><p>The first time setup can be automated using your favourite tools. Let&rsquo;s try to
 do something using <a href=https://www.gnu.org/software/make/manual/make.html target=_blank><code>gnu make</code></a>
-(which is <strong>not</strong> my favourite).</p>
-<p>Contents of the <code>.pre-commit</code>.</p>
-<pre><code class=language-sh>#/bin/bash
+(which is <strong>not</strong> my favourite).</p><p>Contents of the <code>.pre-commit</code>.</p><pre><code class=language-sh>#/bin/bash
 ./.git/hooks/pre-commit.sample
 make pre-commit
-</code></pre>
-<p>The make target.</p>
-<pre><code class=language-make>pre-commit:
+</code></pre><p>The make target.</p><pre><code class=language-make>pre-commit:
     @go test ./...
     @go fmt ./...
     @goimports -w .
@@ -156,158 +83,27 @@ deps:
     @echo &quot;Setting up pre-commit hook&quot;
     @ln -snf ../../.pre-commit .git/hooks/pre-commit
     @chmod +x .pre-commit
-</code></pre>
-<p>Notice the <code>deps</code> target that downloads all the tools that I am using in my
+</code></pre><p>Notice the <code>deps</code> target that downloads all the tools that I am using in my
 pre-commit flow and then sets a softlink to the git hooks pointing to the
-relative path of the <code>.pre-commit</code> file.</p>
-<p>This may seem a bit annoying (to have an indirection from the pre-commit file to
+relative path of the <code>.pre-commit</code> file.</p><p>This may seem a bit annoying (to have an indirection from the pre-commit file to
 the makefile) but it gives you a minimal pre-commit file and all of dependencies
 and complexities are captured and controlled from a single place which is your
-build mechanism, <code>make</code> in this case,</p>
-<h3 id=using-this-workflow>Using this workflow</h3>
-<p>To setup this workflow, you could just do</p>
-<pre><code class=language-bash>$ make deps
-</code></pre>
-<p>And you are all set with the dependencies for your project and the git hook as
+build mechanism, <code>make</code> in this case,</p><h3 id=using-this-workflow>Using this workflow</h3><p>To setup this workflow, you could just do</p><pre><code class=language-bash>$ make deps
+</code></pre><p>And you are all set with the dependencies for your project and the git hook as
 well. The next time you try a commit, it will run the whole <code>pre-commit</code> target
-and break your commit if have messed something up automatically.</p>
-<p>I like this because it&rsquo;s minimal (has it&rsquo;s own downsides) and does not require
+and break your commit if have messed something up automatically.</p><p>I like this because it&rsquo;s minimal (has it&rsquo;s own downsides) and does not require
 installing any extra tools or libraries other than what you anyways need (make
 is usually present on most unix systems). If your project is large and this is
 not enough, I would recommend going with a more verbose and configurable tool,
 but for small project, this should be familiar enough. I have seen people
-customize their makefiles to extremes, so maybe that&rsquo;s all they need.</p>
-<hr>
-<p>Discussion thread:
-<a href=https://www.reddit.com/r/golang/comments/jlqht8/a_minimal_precommit_go_workflow/ target=_blank>here</a></p>
-</div>
-</article>
-<div class="license markdown-body">
-<blockquote>
-<p>Unless otherwise noted, the content of this site is licensed under <a rel=license href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>CC BY-NC-SA 4.0</a>.</p>
-</blockquote>
-</div>
-</div>
-<aside class="col-12 col-md-3 float-left sidebar">
-<div class="sidebar-item sidebar-pages">
-<h3>Pages</h3>
-<ul>
-<li>
-<a href=/posts>Home</a>
-</li>
-<li>
-<a href=/about/>About</a>
-</li>
-<li>
-<a href=/index.xml>RSS</a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-links">
-<h3>Links</h3>
-<ul>
-<li>
-<a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a>
-</li>
-<li>
-<a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-tags">
-<h3>Tags</h3>
-<div>
-</div>
-</div>
-<div class="sidebar-item sidebar-toc">
-<h3>Table of Contents</h3><nav id=TableOfContents>
-<ul>
-<li>
-<ul>
-<li><a href=#hooks-all-over-the-place>Hooks all over the place</a></li>
-<li><a href=#make-it-more-manageable><em>make</em> it more manageable</a></li>
-<li><a href=#using-this-workflow>Using this workflow</a></li>
-</ul>
-</li>
-</ul>
-</nav></div>
-</aside>
-</div>
-<div class=btn>
-<div class=btn-menu id=btn-menu>
-<i class="iconfont icon-grid-sharp"></i>
-</div>
-<div class=btn-toggle-mode>
-<i class="iconfont icon-contrast-sharp"></i>
-</div>
-<div class=btn-scroll-top>
-<i class="iconfont icon-chevron-up-circle-sharp"></i>
-</div>
-</div>
-<aside class=sidebar-mobile style=display:none>
-<div class=sidebar-wrapper>
-<div class="sidebar-item sidebar-pages">
-<h3>Pages</h3>
-<ul>
-<li>
-<a href=/posts>Home</a>
-</li>
-<li>
-<a href=/about/>About</a>
-</li>
-<li>
-<a href=/index.xml>RSS</a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-links">
-<h3>Links</h3>
-<ul>
-<li>
-<a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a>
-</li>
-<li>
-<a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-tags">
-<h3>Tags</h3>
-<div>
-</div>
-</div>
-<div class="sidebar-item sidebar-toc">
-<h3>Table of Contents</h3>
-<nav id=TableOfContents>
-<ul>
-<li>
-<ul>
-<li><a href=#hooks-all-over-the-place>Hooks all over the place</a></li>
-<li><a href=#make-it-more-manageable><em>make</em> it more manageable</a></li>
-<li><a href=#using-this-workflow>Using this workflow</a></li>
-</ul>
-</li>
-</ul>
-</nav>
-</div>
-</div>
-</aside>
-</main>
-<footer>
-<div class="container-lg clearfix">
-<div class="col-12 footer">
-<span>&copy; 2020-2021
+customize their makefiles to extremes, so maybe that&rsquo;s all they need.</p><hr><p>Discussion thread:
+<a href=https://www.reddit.com/r/golang/comments/jlqht8/a_minimal_precommit_go_workflow/ target=_blank>here</a></p></div></article><div class="license markdown-body"><blockquote><p>Unless otherwise noted, the content of this site is licensed under <a rel=license href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>CC BY-NC-SA 4.0</a>.</p></blockquote></div></div><aside class="col-12 col-md-3 float-left sidebar"><div class="sidebar-item sidebar-pages"><h3>Pages</h3><ul><li><a href=/posts>Home</a></li><li><a href=/about/>About</a></li><li><a href=/index.xml>RSS</a></li></ul></div><div class="sidebar-item sidebar-links"><h3>Links</h3><ul><li><a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a></li><li><a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a></li></ul></div><div class="sidebar-item sidebar-tags"><h3>Tags</h3><div><span><a href=/tags/listen/>listen</a></span>
+<span><a href=/tags/video/>video</a></span></div></div><div class="sidebar-item sidebar-toc"><h3>Table of Contents</h3><nav id=TableOfContents><ul><li><ul><li><a href=#hooks-all-over-the-place>Hooks all over the place</a></li><li><a href=#make-it-more-manageable><em>make</em> it more manageable</a></li><li><a href=#using-this-workflow>Using this workflow</a></li></ul></li></ul></nav></div></aside></div><div class=btn><div class=btn-menu id=btn-menu><i class="iconfont icon-grid-sharp"></i></div><div class=btn-toggle-mode><i class="iconfont icon-contrast-sharp"></i></div><div class=btn-scroll-top><i class="iconfont icon-chevron-up-circle-sharp"></i></div></div><aside class=sidebar-mobile style=display:none><div class=sidebar-wrapper><div class="sidebar-item sidebar-pages"><h3>Pages</h3><ul><li><a href=/posts>Home</a></li><li><a href=/about/>About</a></li><li><a href=/index.xml>RSS</a></li></ul></div><div class="sidebar-item sidebar-links"><h3>Links</h3><ul><li><a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a></li><li><a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a></li></ul></div><div class="sidebar-item sidebar-tags"><h3>Tags</h3><div><span><a href=/tags/listen/>listen</a></span>
+<span><a href=/tags/video/>video</a></span></div></div><div class="sidebar-item sidebar-toc"><h3>Table of Contents</h3><nav id=TableOfContents><ul><li><ul><li><a href=#hooks-all-over-the-place>Hooks all over the place</a></li><li><a href=#make-it-more-manageable><em>make</em> it more manageable</a></li><li><a href=#using-this-workflow>Using this workflow</a></li></ul></li></ul></nav></div></div></aside></main><footer><div class="container-lg clearfix"><div class="col-12 footer"><span>&copy; 2020-2022
 <a href=https://prateeknischal.github.io>Prateek</a>
 | <a href=https://github.com/prateeknischal/prateeknischal.github.io>Source code</a>
-| Powered by <a href=https://github.com/dsrkafuu/hugo-theme-fuji/ target=_blank>Fuji-v2</a> & <a href=https://gohugo.io/ target=_blank>Hugo</a>
-</span>
-</div>
-</div>
-</footer>
-<script defer src=https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js></script>
+| Powered by <a href=https://github.com/dsrkafuu/hugo-theme-fuji/ target=_blank>Fuji-v2</a> & <a href=https://gohugo.io/ target=_blank>Hugo</a></span></div></div></footer><script defer src=https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js></script>
-<script defer src=/assets/js/fuji.min.js></script>
-</body>
-</html>
+<script defer src=/assets/js/fuji.min.js></script></body></html>

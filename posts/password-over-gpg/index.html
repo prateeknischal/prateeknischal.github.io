@@ -1,56 +1,8 @@
-<!doctype html><html lang=en>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=HandheldFriendly content="True">
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=generator content="Hugo 0.90.1">
-<link rel=apple-touch-icon sizes=180x180 href=img/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=img/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=img/favicon-16x16.png>
-<link rel=manifest href=img/site.webmanifest>
-<meta name=msapplication-TileColor content="#da532c">
-<meta name=theme-color content="#ffffff">
-<title>Passwords Over GnuPG - The Impatient Software Engineer</title>
-<meta name=author content="Prateek">
-<meta name=description content="Manage your passwords using gpg and git">
-<meta property="og:title" content="Passwords Over GnuPG">
-<meta name=twitter:title content="Passwords Over GnuPG">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://prateeknischal.github.io/posts/password-over-gpg/"><meta property="og:description" content="Manage your passwords using gpg and git">
-<meta name=twitter:description content="Manage your passwords using gpg and git"><meta property="og:image" content="https://prateeknischal.github.io/img/og.png">
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://prateeknischal.github.io/img/og.png"><meta property="article:published_time" content="2021-10-27T21:04:22+05:30"><meta property="article:modified_time" content="2021-10-27T21:04:22+05:30">
-<link rel=stylesheet href=https://prateeknischal.github.io/assets/css/fuji.min.css>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-W9Z8MHH4V6')</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
-</head>
-<body data-theme=dark data-theme-auto=false>
-<script data-cfasync=false>var fujiThemeData=localStorage.getItem('fuji_data-theme');fujiThemeData?fujiThemeData!=='auto'&&document.body.setAttribute('data-theme',fujiThemeData==='dark'?'dark':'light'):localStorage.setItem('fuji_data-theme','auto')</script>
-<head>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
-<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-W9Z8MHH4V6',{anonymize_ip:!1})}</script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','G-W9Z8MHH4V6','auto'),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-</head>
-<main>
-<div class="container-lg clearfix">
-<div class="col-12 col-md-9 float-left content">
-<article>
-<h2 class="post-item post-title">
-<a href=https://prateeknischal.github.io/posts/password-over-gpg/>Passwords Over GnuPG</a>
-</h2>
-<div class="post-item post-meta">
-<span><i class="iconfont icon-today-sharp"></i>&nbsp;2021-10-27</span>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=HandheldFriendly content="True"><meta http-equiv=x-ua-compatible content="IE=edge"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=generator content="Hugo 0.101.0"><link rel=apple-touch-icon sizes=180x180 href=img/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=img/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=img/favicon-16x16.png><link rel=manifest href=img/site.webmanifest><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"><title>Passwords Over GnuPG - The Impatient Software Engineer</title><meta name=author content="Prateek"><meta name=description content="Manage your passwords using gpg and git"><meta property="og:title" content="Passwords Over GnuPG"><meta name=twitter:title content="Passwords Over GnuPG"><meta property="og:type" content="article"><meta property="og:url" content="https://prateeknischal.github.io/posts/password-over-gpg/"><meta property="og:description" content="Manage your passwords using gpg and git"><meta name=twitter:description content="Manage your passwords using gpg and git"><meta property="og:image" content="https://prateeknischal.github.io/img/og.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://prateeknischal.github.io/img/og.png"><meta property="article:published_time" content="2021-10-27T21:04:22+05:30"><meta property="article:modified_time" content="2021-10-27T21:04:22+05:30"><link rel=stylesheet href=https://prateeknischal.github.io/assets/css/fuji.min.css><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-W9Z8MHH4V6")</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script></head><body data-theme=dark data-theme-auto=false><script data-cfasync=false>var fujiThemeData=localStorage.getItem("fuji_data-theme");fujiThemeData?fujiThemeData!=="auto"&&document.body.setAttribute("data-theme",fujiThemeData==="dark"?"dark":"light"):localStorage.setItem("fuji_data-theme","auto")</script><head><script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-W9Z8MHH4V6",{anonymize_ip:!1})}</script><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-W9Z8MHH4V6","auto"),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></head><main><div class="container-lg clearfix"><div class="col-12 col-md-9 float-left content"><article><h2 class="post-item post-title"><a href=https://prateeknischal.github.io/posts/password-over-gpg/>Passwords Over GnuPG</a></h2><div class="post-item post-meta"><span><i class="iconfont icon-today-sharp"></i>&nbsp;2021-10-27</span>
 <span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2048 words</span>
 <span><i class="iconfont icon-time-sharp"></i>&nbsp;10 minutes</span>
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
-</div>
-<div class="post-content markdown-body">
-<h2 id=passwords-are-dangerous>Passwords are dangerous</h2>
-<p>Identity on a multi-tenant service, at some point in time, requires you to prove
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span></div><div class="post-content markdown-body"><h2 id=passwords-are-dangerous>Passwords are dangerous</h2><p>Identity on a multi-tenant service, at some point in time, requires you to prove
 your identity in some form. Passwords are supposed to be restricted knowledge
 which should be possessed by only a single person. That&rsquo;s the ideal case and is
 also true in some cases. With the expanding online lives of humans and
@@ -58,152 +10,75 @@ dependence on multi-tenant platforms, it&rsquo;s becoming harder and harder for 
 to keep track of that &ldquo;restricted&rdquo; knowledge. It&rsquo;s a very risky practice to use
 the same passwords at multiple locations for obvious reasons. In case one
 platform is compromised, by extension, the other is too. It&rsquo;s also not good to
-use similar or derivable passwords depending on the platform.</p>
-<blockquote>
-<p>Passwords were meant for machines not humans</p>
-</blockquote>
-<p>Creating and remembering complicated and distinct passwords are not something
+use similar or derivable passwords depending on the platform.</p><blockquote><p>Passwords were meant for machines not humans</p></blockquote><p>Creating and remembering complicated and distinct passwords are not something
 which humans are good at. Humans are good at deriving and observing patterns,
-something that is not good for password creation.</p>
-<h2 id=solution-to-passwords>Solution to passwords</h2>
-<p>Machines are dumb too, they can only function according to the instructions they
+something that is not good for password creation.</p><h2 id=solution-to-passwords>Solution to passwords</h2><p>Machines are dumb too, they can only function according to the instructions they
 were giving which makes them not a good candidate for generating passwords. But
 over the years, machines have got a lot better in generating pseudo-randomness for
 cryptographic purposes. This article will refer to password generation and
 random number generation interchangeably because they are essentially all bits
-and can be interpreted in any fashion.</p>
-<p>So, let the machines generate passwords for your accounts and distinct and random
-passwords with no correlations. Easier said than done.</p>
-<p>Platforms are always on the look for methods to generate streams of bits with as
+and can be interpreted in any fashion.</p><p>So, let the machines generate passwords for your accounts and distinct and random
+passwords with no correlations. Easier said than done.</p><p>Platforms are always on the look for methods to generate streams of bits with as
 much <a href=https://en.wikipedia.org/wiki/Password_strength target=_blank>entropy</a> as possible.
 Depending on what the password will be used for, their sources may differ to
 provide stronger guarantees for randomness. The random number generation algorithms
 can be as simple as using a complex function over a fixed seed or using
 environmental events to generate randomness. A list of generators are present at
 <a href=https://en.wikipedia.org/wiki/Password_strength target=_blank>Wikipedia - List of random number
-generators</a>.</p>
-<p>One of the simplest sources is <a href=https://linux.die.net/man/4/urandom target=_blank><code>/dev/urandom</code></a>
+generators</a>.</p><p>One of the simplest sources is <a href=https://linux.die.net/man/4/urandom target=_blank><code>/dev/urandom</code></a>
 which is a block device serving as an interface to the kernel&rsquo;s random number
-generator with a little lesser entropy guarantees.</p>
-<pre><code class=language-bash>$ head -c 16 /dev/urandom | base64
+generator with a little lesser entropy guarantees.</p><pre><code class=language-bash>$ head -c 16 /dev/urandom | base64
 $ head -c 16 /dev/urandom | xxd -ps
 $ LC_ALL=C bash -c 'head /dev/urandom | tr -dc a-z0-9 | head -c16'; echo
-</code></pre>
-<p>All of these mechanisms use <code>/dev/urandom</code> for generating entropy and then
+</code></pre><p>All of these mechanisms use <code>/dev/urandom</code> for generating entropy and then
 transforming it to a more usable format. For stronger guarantees, <code>/dev/random</code>
-might also be used.</p>
-<h2 id=we-have-strong-passwords-what-next>We have strong passwords, what next</h2>
-<p>We have strong passwords now which are not even harder to remember. That&rsquo;s not
+might also be used.</p><h2 id=we-have-strong-passwords-what-next>We have strong passwords, what next</h2><p>We have strong passwords now which are not even harder to remember. That&rsquo;s not
 good! You would just end up writing the passwords on a Post It note which is even
-worse.</p>
-<p>The thought is not bad actually, instead of storing it on a Post It note, you
+worse.</p><p>The thought is not bad actually, instead of storing it on a Post It note, you
 could put it into a file and then protect the file using another password. This
 means, you only have to remember one strong password and others are protected
-using that password.</p>
-<p>Congratulations, we have decoded the basic mechanisms for</p>
-<ul>
-<li><a href=https://lastpass.com target=_blank>LastPass</a></li>
-<li><a href=https://1password.com target=_blank>1Password</a></li>
-<li><a href=https://dashlane.com target=_blank>DashLane</a></li>
-<li><a href=https://keepassx.org target=_blank>KeePassX</a></li>
-</ul>
-<p>Not to forget, the password managers in browsers.</p>
-<h2 id=password-management-the-old-school-way>Password management, the old school way</h2>
-<p>There are 3 parts to managing the passwords for the modern day,</p>
-<ul>
-<li>Generate a strong password for every login</li>
-<li>Protect all passwords using a strong password like a password manager</li>
-<li>Sync those encrypted passwords across all devices and have a backup for
-disaster management.</li>
-</ul>
-<p>Most of the password managers offer the above features, but what if we could do
-it ourselves.</p>
-<p>Enter <a href=https://linux.die.net/man/1/pass target=_blank><code>man pass(1)</code></a> or
+using that password.</p><p>Congratulations, we have decoded the basic mechanisms for</p><ul><li><a href=https://lastpass.com target=_blank>LastPass</a></li><li><a href=https://1password.com target=_blank>1Password</a></li><li><a href=https://dashlane.com target=_blank>DashLane</a></li><li><a href=https://keepassx.org target=_blank>KeePassX</a></li></ul><p>Not to forget, the password managers in browsers.</p><h2 id=password-management-the-old-school-way>Password management, the old school way</h2><p>There are 3 parts to managing the passwords for the modern day,</p><ul><li>Generate a strong password for every login</li><li>Protect all passwords using a strong password like a password manager</li><li>Sync those encrypted passwords across all devices and have a backup for
+disaster management.</li></ul><p>Most of the password managers offer the above features, but what if we could do
+it ourselves.</p><p>Enter <a href=https://linux.die.net/man/1/pass target=_blank><code>man pass(1)</code></a> or
 <a href=https://git.zx2c4.com/password-store target=_blank><code>zx2c4/pass</code></a> which is a UNIX-style
-password management CLI tool which offers all the above features.</p>
-<h2 id=using-pass-for-your-password-workflow>Using pass for your password workflow</h2>
-<p>Installation instructions are mostly as-is on the man page for the utility but
-there are a few things to keep in mind.</p>
-<h3 id=prerequisites>Prerequisites</h3>
-<p>The utility requires <a href=https://linux.die.net/man/1/gpg2 target=_blank><code>gnupg2</code></a> to be
+password management CLI tool which offers all the above features.</p><h2 id=using-pass-for-your-password-workflow>Using pass for your password workflow</h2><p>Installation instructions are mostly as-is on the man page for the utility but
+there are a few things to keep in mind.</p><h3 id=prerequisites>Prerequisites</h3><p>The utility requires <a href=https://linux.die.net/man/1/gpg2 target=_blank><code>gnupg2</code></a> to be
 installed and configured on the host. Generally <code>GnuPG</code> can be installed using
-the standard package managers.</p>
-<p>Once GPG is setup, you will need to generate a key for <code>pass</code> to use.</p>
-<pre><code class=language-bash>$ gpg --full-generate-key
-</code></pre>
-<p>This would prompt for</p>
-<ul>
-<li>What algorithm to use, you could use <code>ECC (sign and encrypt)</code> since we need to
-encrypt the passwords.</li>
-<li>Algorithm parameters, for ECC, the curve to be used, you could use <code>Curve 25519</code></li>
-<li>Expiry for the key</li>
-</ul>
-<p>Once this is done, an identity should be provided</p>
-<ul>
-<li>Full Name, eg <code>Foo Bar</code></li>
-<li>Email, eg <code>foo@bar.com</code></li>
-</ul>
-<p>This would have the identity <code>Foo Bar &lt;foo@bar.com></code></p>
-<blockquote>
-<p>Note: You will need to remember the password used to encrypt the gpg key
-itself. If you loose that, it won&rsquo;t be possible to recover the passwords.</p>
-</blockquote>
-<p>Once the key is generated, list the keys as such</p>
-<pre><code class=language-bash>$ gpg --list-secret-keys
+the standard package managers.</p><p>Once GPG is setup, you will need to generate a key for <code>pass</code> to use.</p><pre><code class=language-bash>$ gpg --full-generate-key
+</code></pre><p>This would prompt for</p><ul><li>What algorithm to use, you could use <code>ECC (sign and encrypt)</code> since we need to
+encrypt the passwords.</li><li>Algorithm parameters, for ECC, the curve to be used, you could use <code>Curve 25519</code></li><li>Expiry for the key</li></ul><p>Once this is done, an identity should be provided</p><ul><li>Full Name, eg <code>Foo Bar</code></li><li>Email, eg <code>foo@bar.com</code></li></ul><p>This would have the identity <code>Foo Bar &lt;foo@bar.com></code></p><blockquote><p>Note: You will need to remember the password used to encrypt the gpg key
+itself. If you loose that, it won&rsquo;t be possible to recover the passwords.</p></blockquote><p>Once the key is generated, list the keys as such</p><pre><code class=language-bash>$ gpg --list-secret-keys
 sec   ed25519 2021-10-27 [SC] [expires: 2022-10-27]
       545C94506B84898B3AD27D0682FCD8F82659B1DD
 uid           [ultimate] Foo Bar &lt;foo@bar.com&gt;
 ssb   cv25519 2021-10-27 [E] [expires: 2022-10-27]
-</code></pre>
-<p>Install an <a href=https://linux.die.net/man/1/xclip target=_blank><code>xclip</code></a>,
+</code></pre><p>Install an <a href=https://linux.die.net/man/1/xclip target=_blank><code>xclip</code></a>,
 <a href=https://www.unix.com/man-page/osx/1/pbcopy/ target=_blank><code>pbcopy</code></a> or an equivalent tool
-for clipboard manipulation.</p>
-<h3 id=installation-and-initial-setup>Installation and initial setup</h3>
-<p>Installation for <code>pass</code> is again fairly simple and is available on all major
-platforms using their default package managers. Refer to the <a href=https://www.passwordstore.org/ target=_blank><code>official documentation</code></a> for the steps.</p>
-<p>To initialise the pass utility</p>
-<pre><code class=language-bash>$ pass init &quot;your-gpg-key-id&quot;
-</code></pre>
-<p>This step initialises pass and tells it which key to use when encrypting or
+for clipboard manipulation.</p><h3 id=installation-and-initial-setup>Installation and initial setup</h3><p>Installation for <code>pass</code> is again fairly simple and is available on all major
+platforms using their default package managers. Refer to the <a href=https://www.passwordstore.org/ target=_blank><code>official documentation</code></a> for the steps.</p><p>To initialise the pass utility</p><pre><code class=language-bash>$ pass init &quot;your-gpg-key-id&quot;
+</code></pre><p>This step initialises pass and tells it which key to use when encrypting or
 decrypting your secrets. For example, we want to use the key generated above, we
-would have</p>
-<pre><code class=language-bash>$ pass init 545C94506B84898B3AD27D0682FCD8F82659B1DD
-</code></pre>
-<p>This should create a file <code>~/.password-store/.gpg-id</code> with the keyId as the
-contents.</p>
-<p>At this point, <code>pass</code> is ready to be used. But before that, we need to address
-the third requirement.</p>
-<h3 id=syncing-passwords>Syncing passwords</h3>
-<p>In order to sync the passwords or have access to the passwords on a different
-device, you will need to perform the following actions.</p>
-<p>According to the documentation, we would be using <code>github</code> as our storage
+would have</p><pre><code class=language-bash>$ pass init 545C94506B84898B3AD27D0682FCD8F82659B1DD
+</code></pre><p>This should create a file <code>~/.password-store/.gpg-id</code> with the keyId as the
+contents.</p><p>At this point, <code>pass</code> is ready to be used. But before that, we need to address
+the third requirement.</p><h3 id=syncing-passwords>Syncing passwords</h3><p>In order to sync the passwords or have access to the passwords on a different
+device, you will need to perform the following actions.</p><p>According to the documentation, we would be using <code>github</code> as our storage
 backend as <code>pass</code> uses <code>git</code> to manage the password history which makes it
-easier to rollback and keep track of when were passwords altered or added.</p>
-<pre><code class=language-bash>$ pass git init
+easier to rollback and keep track of when were passwords altered or added.</p><pre><code class=language-bash>$ pass git init
 $ pass git remote add origin https://github.com/foo/bar
-</code></pre>
-<p>This would convert the <code>~/.password-store</code> as a git repository pointing to the
+</code></pre><p>This would convert the <code>~/.password-store</code> as a git repository pointing to the
 github URL <code>https://github.com/foo/bar.git</code>. Any other git backend also can be
-used as it delegates the source control to the <code>git</code>.</p>
-<p>You will want to pull before adding a password and push after adding a password
-in order to avoid conflicts.</p>
-<pre><code class=language-bash>$ pass git pull
+used as it delegates the source control to the <code>git</code>.</p><p>You will want to pull before adding a password and push after adding a password
+in order to avoid conflicts.</p><pre><code class=language-bash>$ pass git pull
 $ # update passwords
 $ pass git push
-</code></pre>
-<p>This will push all the changes to the git repository. Make sure to have the git
-repo as private.</p>
-<p>You have the encrypted passwords, now you need the gpg keys that were used to
-encrypt it.</p>
-<pre><code class=language-bash>$ gpg --export-secret-key 545C94506B84898B3AD27D0682FCD8F82659B1DD &gt; pass.asc
-</code></pre>
-<p>This will export your key and will be encrypted with the creation password so it
+</code></pre><p>This will push all the changes to the git repository. Make sure to have the git
+repo as private.</p><p>You have the encrypted passwords, now you need the gpg keys that were used to
+encrypt it.</p><pre><code class=language-bash>$ gpg --export-secret-key 545C94506B84898B3AD27D0682FCD8F82659B1DD &gt; pass.asc
+</code></pre><p>This will export your key and will be encrypted with the creation password so it
 can be hosted on a non-secure channel, either the same git repo or any other
-location.</p>
-<h2 id=we-are-locked-and-loaded>We are locked and loaded</h2>
-<p>Once all these steps are done, we are good to store passwords and take control
-of our own security.</p>
-<pre><code class=language-bash>$ pass git pull
+location.</p><h2 id=we-are-locked-and-loaded>We are locked and loaded</h2><p>Once all these steps are done, we are good to store passwords and take control
+of our own security.</p><pre><code class=language-bash>$ pass git pull
 
 # Insert password
 $ pass insert example.com/username
@@ -226,109 +101,63 @@ $ pass mv example.com/username example.com/newusername
 $ pass mv example.com/username personal/example.com/username
 
 $ pass git push
-</code></pre>
-<p>Refer to the man page for <code>pass</code> for more detailed usage examples. The man page
+</code></pre><p>Refer to the man page for <code>pass</code> for more detailed usage examples. The man page
 has a convention of storing the password as <code>{{ website }}/{{ username }}</code> but
-you are free to organize it as you want.</p>
-<h2 id=setting-up-pass-on-a-different-machine>Setting up pass on a different machine</h2>
-<p>The above procedure sets up the frame to use <code>pass</code> on a different machine.
-Actual steps to do it are</p>
-<h3 id=setup-gnupg>Setup GnuPG</h3>
-<p>Download the exported secret key <code>pass.asc</code> on the machine and then import the
-key using.</p>
-<pre><code class=language-bash>$ gpg --import pass.asc
-</code></pre>
-<h3 id=setup-pass>Setup pass</h3>
-<p>The <code>pass</code> utility needs to be installed on the new host and then setup using
+you are free to organize it as you want.</p><h2 id=setting-up-pass-on-a-different-machine>Setting up pass on a different machine</h2><p>The above procedure sets up the frame to use <code>pass</code> on a different machine.
+Actual steps to do it are</p><h3 id=setup-gnupg>Setup GnuPG</h3><p>Download the exported secret key <code>pass.asc</code> on the machine and then import the
+key using.</p><pre><code class=language-bash>$ gpg --import pass.asc
+</code></pre><h3 id=setup-pass>Setup pass</h3><p>The <code>pass</code> utility needs to be installed on the new host and then setup using
 the same gpg key id as found in <code>~/.password-store/.gpg-id</code>. Point the git repo
-to the same git repo and pull.</p>
-<pre><code class=language-bash>$ pass init &quot;same-gpg-key-id&quot;
+to the same git repo and pull.</p><pre><code class=language-bash>$ pass init &quot;same-gpg-key-id&quot;
 $ pass git remote add origin https://github.com/foo/bar
 $ pass git pull origin master
-</code></pre>
-<p>And that&rsquo;s it!</p>
-<h2 id=getting-to-the-guts>Getting to the guts</h2>
-<blockquote>
-<p>Note: I went towards understanding the utility backwards without reading the
-implementation and trying to reverse-engineer the utility, so please bear with me.</p>
-</blockquote>
-<h3 id=manually-reading>Manually reading</h3>
-<p>If you inspect the folder <code>~/.password-store</code>, you will see a filesystem
-structure same as the way passwords were stored and how <code>pass list</code> shows.</p>
-<pre><code class=language-bash>$ file ~/.password-store/example.com/username.gpg
-</code></pre>
-<p>Since it&rsquo;s a wrapper over GPG, it can be decrypted using <code>gpg</code> itself,</p>
-<pre><code class=language-bash>$ gpg --decrypt ~/.password-store/example.com/username.gpg
-</code></pre>
-<p>This should give out the correct password cleanly.</p>
-<h3 id=manually-writing>Manually writing</h3>
-<p>If we can read through the passwords using the standard <code>gpg</code> utility, we should
-be able to write as well. And that&rsquo;s true!</p>
-<pre><code class=language-bash>$ echo &quot;password&quot; &gt; /tmp/pass.txt
+</code></pre><p>And that&rsquo;s it!</p><h2 id=getting-to-the-guts>Getting to the guts</h2><blockquote><p>Note: I went towards understanding the utility backwards without reading the
+implementation and trying to reverse-engineer the utility, so please bear with me.</p></blockquote><h3 id=manually-reading>Manually reading</h3><p>If you inspect the folder <code>~/.password-store</code>, you will see a filesystem
+structure same as the way passwords were stored and how <code>pass list</code> shows.</p><pre><code class=language-bash>$ file ~/.password-store/example.com/username.gpg
+</code></pre><p>Since it&rsquo;s a wrapper over GPG, it can be decrypted using <code>gpg</code> itself,</p><pre><code class=language-bash>$ gpg --decrypt ~/.password-store/example.com/username.gpg
+</code></pre><p>This should give out the correct password cleanly.</p><h3 id=manually-writing>Manually writing</h3><p>If we can read through the passwords using the standard <code>gpg</code> utility, we should
+be able to write as well. And that&rsquo;s true!</p><pre><code class=language-bash>$ echo &quot;password&quot; &gt; /tmp/pass.txt
 $ gpg --encrypt -o ~/.password-store/example.com/newusername.gpg -r &quot;Foo Bar &lt;foo@bar.com&quot; /tmp/pass.txt
 $ pass example.com/newusername
-</code></pre>
-<p>Note that we need to supply the identity of the key here which can again be
-found using the <code>gpg --list-secret-keys</code> command.</p>
-<h2 id=where-i-lost-2-hours-of-my-life>Where I lost 2 hours of my life</h2>
-<p>This would all work easily in the regular world. But&mldr; but but but, when have
-versions spared us. GnuPG is no exception to this.</p>
-<p>I had initialised the passwords using</p>
-<pre><code class=language-bash>$ gpg --version
+</code></pre><p>Note that we need to supply the identity of the key here which can again be
+found using the <code>gpg --list-secret-keys</code> command.</p><h2 id=where-i-lost-2-hours-of-my-life>Where I lost 2 hours of my life</h2><p>This would all work easily in the regular world. But&mldr; but but but, when have
+versions spared us. GnuPG is no exception to this.</p><p>I had initialised the passwords using</p><pre><code class=language-bash>$ gpg --version
 gpg (GnuPG) 2.3.3
 libgcrypt 1.9.4
-</code></pre>
-<p>And was trying to decrypt on a linux (Ubuntu) machine. Everything worked, except
+</code></pre><p>And was trying to decrypt on a linux (Ubuntu) machine. Everything worked, except
 the decryption of existing passwords. <code>gpg</code> would not throw any error, even the
-exit code was 0.</p>
-<p>Initially I assumed that it wasn&rsquo;t writing the password on stdout which would be
+exit code was 0.</p><p>Initially I assumed that it wasn&rsquo;t writing the password on stdout which would be
 a nice thing to do, but that too wasn&rsquo;t the case. I tried using the <code>-v</code> switch
-and got some more information</p>
-<pre><code>gpg: public key is XXXX
+and got some more information</p><pre><code>gpg: public key is XXXX
 gpg: using subkey XXXX instead of primary key XXXX
-</code></pre>
-<p>And that&rsquo;s it, nothing more.</p>
-<p>Tried using the <code>-vvv</code> switch to get more information, I would get an error
-message</p>
-<pre><code>gpg: public key is XXXX
+</code></pre><p>And that&rsquo;s it, nothing more.</p><p>Tried using the <code>-vvv</code> switch to get more information, I would get an error
+message</p><pre><code>gpg: public key is XXXX
 gpg: using subkey XXXX instead of public key XXXX
 gpg: public key encrypted data; good DEK
 
 :unknown package: type 20, length 95
 &lt;Some hex data&gt;
-</code></pre>
-<p>And then nothing!</p>
-<h3 id=the-breakthrough>The breakthrough</h3>
-<p>In the process of hunting for this error, I came across the issue
+</code></pre><p>And then nothing!</p><h3 id=the-breakthrough>The breakthrough</h3><p>In the process of hunting for this error, I came across the issue
 <a href=https://github.com/mozilla/sops/issues/896 target=_blank><code>mozilla/sops #896</code></a> which seemed
 to have a similar issue and had mentioned incompatibility between v2.3.x and
-v2.2.x.</p>
-<p>The version information for the linux system,</p>
-<pre><code class=language-bash>$ gpg --version
+v2.2.x.</p><p>The version information for the linux system,</p><pre><code class=language-bash>$ gpg --version
 gpg (GnuPG) 2.2.4
 libgcrypt 1.8.1
-</code></pre>
-<p>Bingo! Now time to test the above issue. Docker to the rescue,</p>
-<p>I pulled the image <a href=https://hub.docker.com/r/vladgh/gpg target=_blank><code>vladgh/gpg</code></a> with a
+</code></pre><p>Bingo! Now time to test the above issue. Docker to the rescue,</p><p>I pulled the image <a href=https://hub.docker.com/r/vladgh/gpg target=_blank><code>vladgh/gpg</code></a> with a
 version 2.3 on the linux system, followed the instructions on the page,
-replaced the <code>pass</code> command with the following in <code>~/.bash_profile</code>,</p>
-<pre><code class=language-bash>pass() {
+replaced the <code>pass</code> command with the following in <code>~/.bash_profile</code>,</p><pre><code class=language-bash>pass() {
     docker run --rm --it \
         -v /home/$USER/.gnupg:/root/.gnupg \
         -v /home/$USER/.password-store/:/root/.password-store/ \
         -e GPG_TTY=/dev/console vladgh/gpg -d &quot;/root/.password-store/$1.gpg&quot;
 }
-</code></pre>
-<p>And, voila, it works almost as good as pass but only for decryption!
+</code></pre><p>And, voila, it works almost as good as pass but only for decryption!
 The only downside is that it won&rsquo;t honor the GPG password
-cache and will ask for the GPG key&rsquo;s password.</p>
-<h2 id=transfer-my-passwords>Transfer my passwords</h2>
-<p>Now that we have a way to manually push passwords into pass, we could now insert
+cache and will ask for the GPG key&rsquo;s password.</p><h2 id=transfer-my-passwords>Transfer my passwords</h2><p>Now that we have a way to manually push passwords into pass, we could now insert
 passwords from other stores. For example, I was trying to import logins from my
 Firefox browsers which has a convenient way to export all logins into a CSV
 file. That CSV file can be cleaned and then a simple export <code>gpg</code> command should
-work.</p>
-<pre><code class=language-sh>insert_password() {
+work.</p><pre><code class=language-sh>insert_password() {
     website=$1;shift;
     username=$1;shift;
     password=$1;shift;
@@ -343,202 +172,22 @@ work.</p>
         -r &quot;Foo bar &lt;foo@bar.com&gt;&quot; \
         /tmp/pass.txt
 }
-</code></pre>
-<p>This function can be called from within a script as</p>
-<pre><code class=language-bash>insert_password &quot;example.com&quot; &quot;username&quot; &quot;password&quot;
-</code></pre>
-<p>And would serve as a batch update.</p>
-<h2 id=community-plugins>Community plugins</h2>
-<p><code>pass</code> is a really extensible tool and allows users to write extensions for it
+</code></pre><p>This function can be called from within a script as</p><pre><code class=language-bash>insert_password &quot;example.com&quot; &quot;username&quot; &quot;password&quot;
+</code></pre><p>And would serve as a batch update.</p><h2 id=community-plugins>Community plugins</h2><p><code>pass</code> is a really extensible tool and allows users to write extensions for it
 to add more functionality. The repo
 <a href=https://github.com/tijn/awesome-password-store target=_blank><code>tijn/awesome-password-store</code></a>
 has a list of community built extensions which provide some interesting
 functionality, including the one for bulk importing, GUI interfaces, browser
-plugins and much more.</p>
-<h2 id=note-to-the-readers>Note to the readers</h2>
-<p>In case something is very obvious about GPG that I didn&rsquo;t understand which lead
+plugins and much more.</p><h2 id=note-to-the-readers>Note to the readers</h2><p>In case something is very obvious about GPG that I didn&rsquo;t understand which lead
 me to run around like a crazy noob, please feel free to use the reddit link. This
 was more of a reverse engineering style of journey without reading the source or
-much about GPG.</p>
-<p>Discussion link: <a href=https://www.reddit.com/r/cybersecurity/comments/qhjfqv/passwords_over_gnupg/ target=_blank>/r/cybersecurity passwords over GnuPG</a></p>
-</div>
-</article>
-<div class="license markdown-body">
-<blockquote>
-<p>Unless otherwise noted, the content of this site is licensed under <a rel=license href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>CC BY-NC-SA 4.0</a>.</p>
-</blockquote>
-</div>
-</div>
-<aside class="col-12 col-md-3 float-left sidebar">
-<div class="sidebar-item sidebar-pages">
-<h3>Pages</h3>
-<ul>
-<li>
-<a href=/posts>Home</a>
-</li>
-<li>
-<a href=/about/>About</a>
-</li>
-<li>
-<a href=/index.xml>RSS</a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-links">
-<h3>Links</h3>
-<ul>
-<li>
-<a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a>
-</li>
-<li>
-<a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-tags">
-<h3>Tags</h3>
-<div>
-</div>
-</div>
-<div class="sidebar-item sidebar-toc">
-<h3>Table of Contents</h3><nav id=TableOfContents>
-<ul>
-<li><a href=#passwords-are-dangerous>Passwords are dangerous</a></li>
-<li><a href=#solution-to-passwords>Solution to passwords</a></li>
-<li><a href=#we-have-strong-passwords-what-next>We have strong passwords, what next</a></li>
-<li><a href=#password-management-the-old-school-way>Password management, the old school way</a></li>
-<li><a href=#using-pass-for-your-password-workflow>Using pass for your password workflow</a>
-<ul>
-<li><a href=#prerequisites>Prerequisites</a></li>
-<li><a href=#installation-and-initial-setup>Installation and initial setup</a></li>
-<li><a href=#syncing-passwords>Syncing passwords</a></li>
-</ul>
-</li>
-<li><a href=#we-are-locked-and-loaded>We are locked and loaded</a></li>
-<li><a href=#setting-up-pass-on-a-different-machine>Setting up pass on a different machine</a>
-<ul>
-<li><a href=#setup-gnupg>Setup GnuPG</a></li>
-<li><a href=#setup-pass>Setup pass</a></li>
-</ul>
-</li>
-<li><a href=#getting-to-the-guts>Getting to the guts</a>
-<ul>
-<li><a href=#manually-reading>Manually reading</a></li>
-<li><a href=#manually-writing>Manually writing</a></li>
-</ul>
-</li>
-<li><a href=#where-i-lost-2-hours-of-my-life>Where I lost 2 hours of my life</a>
-<ul>
-<li><a href=#the-breakthrough>The breakthrough</a></li>
-</ul>
-</li>
-<li><a href=#transfer-my-passwords>Transfer my passwords</a></li>
-<li><a href=#community-plugins>Community plugins</a></li>
-<li><a href=#note-to-the-readers>Note to the readers</a></li>
-</ul>
-</nav></div>
-</aside>
-</div>
-<div class=btn>
-<div class=btn-menu id=btn-menu>
-<i class="iconfont icon-grid-sharp"></i>
-</div>
-<div class=btn-toggle-mode>
-<i class="iconfont icon-contrast-sharp"></i>
-</div>
-<div class=btn-scroll-top>
-<i class="iconfont icon-chevron-up-circle-sharp"></i>
-</div>
-</div>
-<aside class=sidebar-mobile style=display:none>
-<div class=sidebar-wrapper>
-<div class="sidebar-item sidebar-pages">
-<h3>Pages</h3>
-<ul>
-<li>
-<a href=/posts>Home</a>
-</li>
-<li>
-<a href=/about/>About</a>
-</li>
-<li>
-<a href=/index.xml>RSS</a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-links">
-<h3>Links</h3>
-<ul>
-<li>
-<a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a>
-</li>
-<li>
-<a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-tags">
-<h3>Tags</h3>
-<div>
-</div>
-</div>
-<div class="sidebar-item sidebar-toc">
-<h3>Table of Contents</h3>
-<nav id=TableOfContents>
-<ul>
-<li><a href=#passwords-are-dangerous>Passwords are dangerous</a></li>
-<li><a href=#solution-to-passwords>Solution to passwords</a></li>
-<li><a href=#we-have-strong-passwords-what-next>We have strong passwords, what next</a></li>
-<li><a href=#password-management-the-old-school-way>Password management, the old school way</a></li>
-<li><a href=#using-pass-for-your-password-workflow>Using pass for your password workflow</a>
-<ul>
-<li><a href=#prerequisites>Prerequisites</a></li>
-<li><a href=#installation-and-initial-setup>Installation and initial setup</a></li>
-<li><a href=#syncing-passwords>Syncing passwords</a></li>
-</ul>
-</li>
-<li><a href=#we-are-locked-and-loaded>We are locked and loaded</a></li>
-<li><a href=#setting-up-pass-on-a-different-machine>Setting up pass on a different machine</a>
-<ul>
-<li><a href=#setup-gnupg>Setup GnuPG</a></li>
-<li><a href=#setup-pass>Setup pass</a></li>
-</ul>
-</li>
-<li><a href=#getting-to-the-guts>Getting to the guts</a>
-<ul>
-<li><a href=#manually-reading>Manually reading</a></li>
-<li><a href=#manually-writing>Manually writing</a></li>
-</ul>
-</li>
-<li><a href=#where-i-lost-2-hours-of-my-life>Where I lost 2 hours of my life</a>
-<ul>
-<li><a href=#the-breakthrough>The breakthrough</a></li>
-</ul>
-</li>
-<li><a href=#transfer-my-passwords>Transfer my passwords</a></li>
-<li><a href=#community-plugins>Community plugins</a></li>
-<li><a href=#note-to-the-readers>Note to the readers</a></li>
-</ul>
-</nav>
-</div>
-</div>
-</aside>
-</main>
-<footer>
-<div class="container-lg clearfix">
-<div class="col-12 footer">
-<span>&copy; 2020-2021
+much about GPG.</p><p>Discussion link: <a href=https://www.reddit.com/r/cybersecurity/comments/qhjfqv/passwords_over_gnupg/ target=_blank>/r/cybersecurity passwords over GnuPG</a></p></div></article><div class="license markdown-body"><blockquote><p>Unless otherwise noted, the content of this site is licensed under <a rel=license href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>CC BY-NC-SA 4.0</a>.</p></blockquote></div></div><aside class="col-12 col-md-3 float-left sidebar"><div class="sidebar-item sidebar-pages"><h3>Pages</h3><ul><li><a href=/posts>Home</a></li><li><a href=/about/>About</a></li><li><a href=/index.xml>RSS</a></li></ul></div><div class="sidebar-item sidebar-links"><h3>Links</h3><ul><li><a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a></li><li><a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a></li></ul></div><div class="sidebar-item sidebar-tags"><h3>Tags</h3><div><span><a href=/tags/listen/>listen</a></span>
+<span><a href=/tags/video/>video</a></span></div></div><div class="sidebar-item sidebar-toc"><h3>Table of Contents</h3><nav id=TableOfContents><ul><li><a href=#passwords-are-dangerous>Passwords are dangerous</a></li><li><a href=#solution-to-passwords>Solution to passwords</a></li><li><a href=#we-have-strong-passwords-what-next>We have strong passwords, what next</a></li><li><a href=#password-management-the-old-school-way>Password management, the old school way</a></li><li><a href=#using-pass-for-your-password-workflow>Using pass for your password workflow</a><ul><li><a href=#prerequisites>Prerequisites</a></li><li><a href=#installation-and-initial-setup>Installation and initial setup</a></li><li><a href=#syncing-passwords>Syncing passwords</a></li></ul></li><li><a href=#we-are-locked-and-loaded>We are locked and loaded</a></li><li><a href=#setting-up-pass-on-a-different-machine>Setting up pass on a different machine</a><ul><li><a href=#setup-gnupg>Setup GnuPG</a></li><li><a href=#setup-pass>Setup pass</a></li></ul></li><li><a href=#getting-to-the-guts>Getting to the guts</a><ul><li><a href=#manually-reading>Manually reading</a></li><li><a href=#manually-writing>Manually writing</a></li></ul></li><li><a href=#where-i-lost-2-hours-of-my-life>Where I lost 2 hours of my life</a><ul><li><a href=#the-breakthrough>The breakthrough</a></li></ul></li><li><a href=#transfer-my-passwords>Transfer my passwords</a></li><li><a href=#community-plugins>Community plugins</a></li><li><a href=#note-to-the-readers>Note to the readers</a></li></ul></nav></div></aside></div><div class=btn><div class=btn-menu id=btn-menu><i class="iconfont icon-grid-sharp"></i></div><div class=btn-toggle-mode><i class="iconfont icon-contrast-sharp"></i></div><div class=btn-scroll-top><i class="iconfont icon-chevron-up-circle-sharp"></i></div></div><aside class=sidebar-mobile style=display:none><div class=sidebar-wrapper><div class="sidebar-item sidebar-pages"><h3>Pages</h3><ul><li><a href=/posts>Home</a></li><li><a href=/about/>About</a></li><li><a href=/index.xml>RSS</a></li></ul></div><div class="sidebar-item sidebar-links"><h3>Links</h3><ul><li><a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a></li><li><a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a></li></ul></div><div class="sidebar-item sidebar-tags"><h3>Tags</h3><div><span><a href=/tags/listen/>listen</a></span>
+<span><a href=/tags/video/>video</a></span></div></div><div class="sidebar-item sidebar-toc"><h3>Table of Contents</h3><nav id=TableOfContents><ul><li><a href=#passwords-are-dangerous>Passwords are dangerous</a></li><li><a href=#solution-to-passwords>Solution to passwords</a></li><li><a href=#we-have-strong-passwords-what-next>We have strong passwords, what next</a></li><li><a href=#password-management-the-old-school-way>Password management, the old school way</a></li><li><a href=#using-pass-for-your-password-workflow>Using pass for your password workflow</a><ul><li><a href=#prerequisites>Prerequisites</a></li><li><a href=#installation-and-initial-setup>Installation and initial setup</a></li><li><a href=#syncing-passwords>Syncing passwords</a></li></ul></li><li><a href=#we-are-locked-and-loaded>We are locked and loaded</a></li><li><a href=#setting-up-pass-on-a-different-machine>Setting up pass on a different machine</a><ul><li><a href=#setup-gnupg>Setup GnuPG</a></li><li><a href=#setup-pass>Setup pass</a></li></ul></li><li><a href=#getting-to-the-guts>Getting to the guts</a><ul><li><a href=#manually-reading>Manually reading</a></li><li><a href=#manually-writing>Manually writing</a></li></ul></li><li><a href=#where-i-lost-2-hours-of-my-life>Where I lost 2 hours of my life</a><ul><li><a href=#the-breakthrough>The breakthrough</a></li></ul></li><li><a href=#transfer-my-passwords>Transfer my passwords</a></li><li><a href=#community-plugins>Community plugins</a></li><li><a href=#note-to-the-readers>Note to the readers</a></li></ul></nav></div></div></aside></main><footer><div class="container-lg clearfix"><div class="col-12 footer"><span>&copy; 2020-2022
 <a href=https://prateeknischal.github.io>Prateek</a>
 | <a href=https://github.com/prateeknischal/prateeknischal.github.io>Source code</a>
-| Powered by <a href=https://github.com/dsrkafuu/hugo-theme-fuji/ target=_blank>Fuji-v2</a> & <a href=https://gohugo.io/ target=_blank>Hugo</a>
-</span>
-</div>
-</div>
-</footer>
-<script defer src=https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js></script>
+| Powered by <a href=https://github.com/dsrkafuu/hugo-theme-fuji/ target=_blank>Fuji-v2</a> & <a href=https://gohugo.io/ target=_blank>Hugo</a></span></div></div></footer><script defer src=https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js></script>
-<script defer src=/assets/js/fuji.min.js></script>
-</body>
-</html>
+<script defer src=/assets/js/fuji.min.js></script></body></html>

@@ -1,55 +1,8 @@
-<!doctype html><html lang=en>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=HandheldFriendly content="True">
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=generator content="Hugo 0.90.1">
-<link rel=apple-touch-icon sizes=180x180 href=img/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=img/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=img/favicon-16x16.png>
-<link rel=manifest href=img/site.webmanifest>
-<meta name=msapplication-TileColor content="#da532c">
-<meta name=theme-color content="#ffffff">
-<title>I C and .so Does Rust - The Impatient Software Engineer</title>
-<meta name=author content="Prateek">
-<meta name=description content="Calling C functions from rust using ffi">
-<meta property="og:title" content="I C and .so Does Rust">
-<meta name=twitter:title content="I C and .so Does Rust">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://prateeknischal.github.io/posts/i-c-and-so-does-rust/"><meta property="og:description" content="Calling C functions from rust using ffi">
-<meta name=twitter:description content="Calling C functions from rust using ffi"><meta property="og:image" content="https://prateeknischal.github.io/img/og.png">
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://prateeknischal.github.io/img/og.png"><meta property="article:published_time" content="2020-09-08T01:03:26+05:30"><meta property="article:modified_time" content="2020-09-08T01:03:26+05:30">
-<link rel=stylesheet href=https://prateeknischal.github.io/assets/css/fuji.min.css>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-W9Z8MHH4V6')</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
-</head>
-<body data-theme=dark data-theme-auto=false>
-<script data-cfasync=false>var fujiThemeData=localStorage.getItem('fuji_data-theme');fujiThemeData?fujiThemeData!=='auto'&&document.body.setAttribute('data-theme',fujiThemeData==='dark'?'dark':'light'):localStorage.setItem('fuji_data-theme','auto')</script>
-<head>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
-<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-W9Z8MHH4V6',{anonymize_ip:!1})}</script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','G-W9Z8MHH4V6','auto'),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-</head>
-<main>
-<div class="container-lg clearfix">
-<div class="col-12 col-md-9 float-left content">
-<article>
-<h2 class="post-item post-title">
-<a href=https://prateeknischal.github.io/posts/i-c-and-so-does-rust/>I C and .so Does Rust</a>
-</h2>
-<div class="post-item post-meta">
-<span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-09-08</span>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=HandheldFriendly content="True"><meta http-equiv=x-ua-compatible content="IE=edge"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=generator content="Hugo 0.101.0"><link rel=apple-touch-icon sizes=180x180 href=img/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=img/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=img/favicon-16x16.png><link rel=manifest href=img/site.webmanifest><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"><title>I C and .so Does Rust - The Impatient Software Engineer</title><meta name=author content="Prateek"><meta name=description content="Calling C functions from rust using ffi"><meta property="og:title" content="I C and .so Does Rust"><meta name=twitter:title content="I C and .so Does Rust"><meta property="og:type" content="article"><meta property="og:url" content="https://prateeknischal.github.io/posts/i-c-and-so-does-rust/"><meta property="og:description" content="Calling C functions from rust using ffi"><meta name=twitter:description content="Calling C functions from rust using ffi"><meta property="og:image" content="https://prateeknischal.github.io/img/og.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://prateeknischal.github.io/img/og.png"><meta property="article:published_time" content="2020-09-08T01:03:26+05:30"><meta property="article:modified_time" content="2020-09-08T01:03:26+05:30"><link rel=stylesheet href=https://prateeknischal.github.io/assets/css/fuji.min.css><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-W9Z8MHH4V6")</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script></head><body data-theme=dark data-theme-auto=false><script data-cfasync=false>var fujiThemeData=localStorage.getItem("fuji_data-theme");fujiThemeData?fujiThemeData!=="auto"&&document.body.setAttribute("data-theme",fujiThemeData==="dark"?"dark":"light"):localStorage.setItem("fuji_data-theme","auto")</script><head><script async src="https://www.googletagmanager.com/gtag/js?id=G-W9Z8MHH4V6"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-W9Z8MHH4V6",{anonymize_ip:!1})}</script><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-W9Z8MHH4V6","auto"),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></head><main><div class="container-lg clearfix"><div class="col-12 col-md-9 float-left content"><article><h2 class="post-item post-title"><a href=https://prateeknischal.github.io/posts/i-c-and-so-does-rust/>I C and .so Does Rust</a></h2><div class="post-item post-meta"><span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-09-08</span>
 <span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2113 words</span>
 <span><i class="iconfont icon-time-sharp"></i>&nbsp;10 minutes</span>
-<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
-</div>
-<div class="post-content markdown-body">
-<p>Distributing software is a tricky thing. If you want to share the functionality
+<span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span></div><div class="post-content markdown-body"><p>Distributing software is a tricky thing. If you want to share the functionality
 with someone you may share the source with them and give them the build
 instructions and it would all play out good. But that may not be the case if the
 source is a different language and the consumer is using a different language.
@@ -57,74 +10,55 @@ For example, there are a lot of libraries that use common functionalities like
 <a href=https://openssl.org target=_blank>openssl</a> for crypto operations or network libraries or
 packages like <a href=https://github.com/madler/zlib target=_blank>zlib</a> just because they are
 reliable and have been tested for years on speed and correctness. You might not
-want to translate it in the language of your choice.</p>
-<p>How do you accomplish something like that. Calling a library written in some
+want to translate it in the language of your choice.</p><p>How do you accomplish something like that. Calling a library written in some
 other language that your source. There is a concept called <a href=https://en.wikipedia.org/wiki/Foreign_function_interface target=_blank>FFI or Foreign
 Function Interface</a>
-which is used for this exact thing.</p>
-<p>You might have heard about
+which is used for this exact thing.</p><p>You might have heard about
 <a href=https://en.wikipedia.org/wiki/Java_Native_Interface target=_blank>JNI or Java Native Interfaces</a>
 which is used to call subroutines in such native libraries. This came to me as a
 surprise, a lot of the core components of Java is written in C and is called
 within the language using JNI bindings. You would have seen the following
-signature in some Java classes when traversing the Go-To definitions.</p>
-<pre><code class=language-java>public native String foo()
-</code></pre>
-<p>For example, This is what <a href=https://github.com/openjdk/jdk/blob/master/src/java.base/share/native/libjava/FileInputStream.c#L59 target=_blank>FileInputStream.open</a>
-looks like</p>
-<pre><code class=language-c>JNIEXPORT void JNICALL
+signature in some Java classes when traversing the Go-To definitions.</p><pre><code class=language-java>public native String foo()
+</code></pre><p>For example, This is what <a href=https://github.com/openjdk/jdk/blob/master/src/java.base/share/native/libjava/FileInputStream.c#L59 target=_blank>FileInputStream.open</a>
+looks like</p><pre><code class=language-c>JNIEXPORT void JNICALL
 Java_java_io_FileInputStream_open0(JNIEnv *env, jobject this, jstring path) {
     fileOpen(env, this, path, fis_fd, O_RDONLY);
 }
-</code></pre>
-<p>That&rsquo;s the calling convention for JNI, the <code>java.io.FileInputStream.open0()</code>
-would be translated to <code>Java_java_io_FileInputStream_open0()</code>.</p>
-<p>Java is hardwired to look for these symbols when someone calls the Java name of
+</code></pre><p>That&rsquo;s the calling convention for JNI, the <code>java.io.FileInputStream.open0()</code>
+would be translated to <code>Java_java_io_FileInputStream_open0()</code>.</p><p>Java is hardwired to look for these symbols when someone calls the Java name of
 these functions and most of it is present in <code>libjava.so</code> and <code>libjvm.so</code> files.
 These are distributable <code>Shared Objects</code> that contains the implementation of
 these native functions and is platform dependant. This may come as a surprise to
 some people (or I may be making a fool out of myself), Java isn&rsquo;t platform
 independant, atleast not all the core components. The bytecode generated by Java
 compiler is platform independant. The VM on which the bytecode executes has to
-be written and compiled for all platforms and architectures.</p>
-<p>That looks something like this <a href=https://github.com/openjdk/jdk/tree/master/src/java.base target=_blank>jdk/src/java.base/
-</a>.</p>
-<h2 id=shared-objects>Shared objects</h2>
-<p>Shared objects or dynamic libraries are an interesting concept and sometimes a
-pain. Let&rsquo;s go through an example.</p>
-<pre><code class=language-c>#include &lt;stdio.h&gt;
+be written and compiled for all platforms and architectures.</p><p>That looks something like this <a href=https://github.com/openjdk/jdk/tree/master/src/java.base target=_blank>jdk/src/java.base/
+</a>.</p><h2 id=shared-objects>Shared objects</h2><p>Shared objects or dynamic libraries are an interesting concept and sometimes a
+pain. Let&rsquo;s go through an example.</p><pre><code class=language-c>#include &lt;stdio.h&gt;
 int main() {
     printf(&quot;hello world&quot;);
     return 0;
 }
-</code></pre>
-<p>This program is just calling a function called <code>printf</code>. But, wait, I can call
+</code></pre><p>This program is just calling a function called <code>printf</code>. But, wait, I can call
 the functions that actually exists, otherwise the compiler goes batshit crazy,
 unless it&rsquo;s javascript ofcourse, which will break at runtime. This code
 compiles, so this function must exist, but where, it&rsquo;s not present in my source
-file.</p>
-<p>Its present in the <code>/usr/include/stdio.h</code> file.</p>
-<pre><code class=language-c>extern int printf (const char *__restrict __format, ...);
-</code></pre>
-<p>Wait, it&rsquo;s only the declaration, where is the implementation. When I build this
-this code and run the linked dependency tools <a href=https://linux.die.net/man/1/ldd target=_blank>ldd</a>, it shows this,</p>
-<pre><code>$ gcc hello.c -o hello
+file.</p><p>Its present in the <code>/usr/include/stdio.h</code> file.</p><pre><code class=language-c>extern int printf (const char *__restrict __format, ...);
+</code></pre><p>Wait, it&rsquo;s only the declaration, where is the implementation. When I build this
+this code and run the linked dependency tools <a href=https://linux.die.net/man/1/ldd target=_blank>ldd</a>, it shows this,</p><pre><code>$ gcc hello.c -o hello
 $ ldd hello
         linux-vdso.so.1 (0x00007fff715ea000)
         libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f1f085a1000)
         /lib64/ld-linux-x86-64.so.2 (0x00007f1f08b94000)
-</code></pre>
-<p>Notice, there is something called, <code>libc</code> present in here. Linux exports all
+</code></pre><p>Notice, there is something called, <code>libc</code> present in here. Linux exports all
 these implementations in this shared object. For example, notice this file in
 the glibc repository, <a href=https://github.com/lattera/glibc/blob/master/stdio-common/printf.c#L27 target=_blank>glibc/printf.c</a>.
 If libc is not present on the target host, the simple hello world program
-won&rsquo;t work since it would not find the <code>printf</code> subroutine.</p>
-<p>Now, if the code is in a binary file, how do people and compilers know if they
+won&rsquo;t work since it would not find the <code>printf</code> subroutine.</p><p>Now, if the code is in a binary file, how do people and compilers know if they
 using it correctly. That&rsquo;s where the header files come in. Header files are
 basically signatures that the compiler can rely on to check if the code is
 correct syntactically. This is generally exported as a public <code>include</code> folder
-in C projects.</p>
-<p>There is a very nice explanation on what shared objects are in this
+in C projects.</p><p>There is a very nice explanation on what shared objects are in this
 <a href=https://stackoverflow.com/a/9688536/6266958 target=_blank>SO post</a>. TL;DR, it&rsquo;s a binary
 which contains implementation of the corresponding headers. Shared object naming
 convention is specific to link. For other platforms, they are called <a href=https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/DynamicLibraries/100-Articles/UsingDynamicLibraries.html target=_blank><code>dylib</code></a>
@@ -132,29 +66,19 @@ for MacOS and
 <a href=https://support.microsoft.com/en-in/help/815065/what-is-a-dll target=_blank><code>dll</code></a> for
 windows. They are not quite the same but, they behave in a similar fashion and
 this can be backed up by the C API <a href=https://linux.die.net/man/3/dlopen target=_blank>dlopen</a>
-which is used to load dynamic libraries.</p>
-<p>Now, that we have vague idea of what shared objects represent, let&rsquo;s move to
-&ldquo;why this waste of internet resources, this article&rdquo;.</p>
-<h2 id=interoperability-with-rust>Interoperability with Rust</h2>
-<p>Rust is popular because it boasts a good interoperability with the C APIs. Which
+which is used to load dynamic libraries.</p><p>Now, that we have vague idea of what shared objects represent, let&rsquo;s move to
+&ldquo;why this waste of internet resources, this article&rdquo;.</p><h2 id=interoperability-with-rust>Interoperability with Rust</h2><p>Rust is popular because it boasts a good interoperability with the C APIs. Which
 means, it&rsquo;s simple in Rust to call C APIs with minimal efforts. Let&rsquo;s see a
-minimal API.</p>
-<h3 id=the-c-code-we-would-call>The C code we would call.</h3>
-<p>We need to have some functionality that we want to call from other languages.
-Let&rsquo;s write a toy project which exposes such API.</p>
-<p>The project structure looks like this.</p>
-<pre><code>.
+minimal API.</p><h3 id=the-c-code-we-would-call>The C code we would call.</h3><p>We need to have some functionality that we want to call from other languages.
+Let&rsquo;s write a toy project which exposes such API.</p><p>The project structure looks like this.</p><pre><code>.
 ├── Makefile
 └── src
    ├── include
    │  └── shared.h
    └── shared
       └── shared.c
-</code></pre>
-<p>This is a fairly standard structure for C projects. To have definitions for all
-public APIs in the <code>include</code> folder.</p>
-<p>The <code>shared.h</code> file.</p>
-<pre><code class=language-c>#ifndef SHARED_H
+</code></pre><p>This is a fairly standard structure for C projects. To have definitions for all
+public APIs in the <code>include</code> folder.</p><p>The <code>shared.h</code> file.</p><pre><code class=language-c>#ifndef SHARED_H
 #define SHARED_H
 #endif
 
@@ -164,10 +88,8 @@ struct key_spec {
 };
 
 struct key_spec* get_key();
-</code></pre>
-<p>The <code>shared.c</code> file that contains the actual implementation. This is a very
-advanced key generator ! almost cryptographically secure.</p>
-<pre><code class=language-c>#include &lt;shared.h&gt;
+</code></pre><p>The <code>shared.c</code> file that contains the actual implementation. This is a very
+advanced key generator ! almost cryptographically secure.</p><pre><code class=language-c>#include &lt;shared.h&gt;
 #include &lt;stdlib.h&gt;
 
 struct key_spec *get_key() {
@@ -179,35 +101,23 @@ struct key_spec *get_key() {
     ks-&gt;type = (const char*)&quot;dummy\0&quot;;
     return ks;
 }
-</code></pre>
-<p>How to build it into a shared object (notice it does not have a <code>int main()</code>.
-Create a Makefile with</p>
-<pre><code class=language-make>build:
+</code></pre><p>How to build it into a shared object (notice it does not have a <code>int main()</code>.
+Create a Makefile with</p><pre><code class=language-make>build:
         gcc -shared -Isrc/include src/shared/shared.c -o libshared.so
-</code></pre>
-<p>And that&rsquo;s it. Just run <code>make</code> and it should dump a shared object file.</p>
-<pre><code class=language-sh>$ make
+</code></pre><p>And that&rsquo;s it. Just run <code>make</code> and it should dump a shared object file.</p><pre><code class=language-sh>$ make
 $ file libshared.so
 libshared.so: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV),
 dynamically linked, BuildID[sha1]=65587972f8df8f099b66363f0cc44f96f43c2828, not stripped
-</code></pre>
-<h2 id=interfacing-rust-with-the-shared-object>Interfacing rust with the shared object</h2>
-<p>Now that we have a shared object which has out advanced key generator, we need
+</code></pre><h2 id=interfacing-rust-with-the-shared-object>Interfacing rust with the shared object</h2><p>Now that we have a shared object which has out advanced key generator, we need
 to tell Rust, how does it look, function definitions, fields etc. There is just
 the tool for it, <a href=https://github.com/rust-lang/rust-bindgen target=_blank>bindgen</a>. It&rsquo;s a
 rust language project that generates FFI bindings (the interface in the target
 language, i.e. Rust for it&rsquo;s compiler to understand. It&rsquo;s basically a header
-file but in rust.)</p>
-<p>Install the bindgen crate via <code>cargo install bindgen</code>. Make sure you have some
-form of a C compiler present, I am using <code>gcc</code> here.</p>
-<h3 id=generating-the-header-ish-files-for-rust>Generating the header-ish files for rust</h3>
-<p>Let&rsquo;s ask rust to generate some code.</p>
-<pre><code class=language-bash>$ cargo init --bin test-rs
+file but in rust.)</p><p>Install the bindgen crate via <code>cargo install bindgen</code>. Make sure you have some
+form of a C compiler present, I am using <code>gcc</code> here.</p><h3 id=generating-the-header-ish-files-for-rust>Generating the header-ish files for rust</h3><p>Let&rsquo;s ask rust to generate some code.</p><pre><code class=language-bash>$ cargo init --bin test-rs
 $ cd test-rs
 $ bindgen cproject/src/include/shared.hpp -o src/shared.rs
-</code></pre>
-<p>This should generate a rust source file.</p>
-<pre><code class=language-rs>/* automatically generated by rust-bindgen 0.55.1 */
+</code></pre><p>This should generate a rust source file.</p><pre><code class=language-rs>/* automatically generated by rust-bindgen 0.55.1 */
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -221,11 +131,8 @@ pub struct key_spec {
 extern &quot;C&quot; {
     pub fn get_key() -&gt; *mut key_spec;
 }
-</code></pre>
-<p>Notice, it has a similar structure of our header file and defintions. Alright,
-it looks nice and usable in rust. Let&rsquo;s move on.</p>
-<p>Let&rsquo;s write the <code>main.rs</code> file.</p>
-<pre><code class=language-rs>mod shared;
+</code></pre><p>Notice, it has a similar structure of our header file and defintions. Alright,
+it looks nice and usable in rust. Let&rsquo;s move on.</p><p>Let&rsquo;s write the <code>main.rs</code> file.</p><pre><code class=language-rs>mod shared;
 
 fn main() {
     unsafe {
@@ -233,17 +140,11 @@ fn main() {
         println!(&quot;the key: {:#?}&quot;, k.as_ref());
     };
 }
-</code></pre>
-<p>Since, this is a call from a different library, rust can not guarantee it would
+</code></pre><p>Since, this is a call from a different library, rust can not guarantee it would
 not do something funny, so we have to write it inside the
-<a href=https://doc.rust-lang.org/book/ch19-01-unsafe-rust.html target=_blank><code>unsafe</code></a> block.</p>
-<p>That&rsquo;s all code we need.</p>
-<h2 id=building-it-in-rust>Building it in rust</h2>
-<p>Before we rush and do a <code>cargo run</code>, we need to tell the compiler what are we
-trying to do.</p>
-<p>If you try to build it now, the linker will throw a huge error saying, it can&rsquo;t
-find</p>
-<pre><code class=language-sh>$ cargo build
+<a href=https://doc.rust-lang.org/book/ch19-01-unsafe-rust.html target=_blank><code>unsafe</code></a> block.</p><p>That&rsquo;s all code we need.</p><h2 id=building-it-in-rust>Building it in rust</h2><p>Before we rush and do a <code>cargo run</code>, we need to tell the compiler what are we
+trying to do.</p><p>If you try to build it now, the linker will throw a huge error saying, it can&rsquo;t
+find</p><pre><code class=language-sh>$ cargo build
 error: linking with `cc` failed: exit code: 1
 ...
 error: linking with `cc` failed: exit code: 1
@@ -252,28 +153,16 @@ error: linking with `cc` failed: exit code: 1
   = note: test-rs/target/debug/deps/test_rs-b3e83acc1bd66527.3yrtf1vyhbvxamca.rcgu.o: In function `test_rs::main':
           test-rs/src/main.rs:5: undefined reference to `get_key'
           collect2: error: ld returned 1 exit status
-</code></pre>
-<p>which is logical as we just told rust about the definition, we never told rust
+</code></pre><p>which is logical as we just told rust about the definition, we never told rust
 where to look for the actual implementation is, notice it&rsquo;s a linker <code>ld</code> error
-saying it can&rsquo;t find <code>get_key</code> function.</p>
-<p>There are 2 ways to do it.</p>
-<h3 id=using-linker-flags-link-and-search-paths>Using linker flags, link and search paths</h3>
-<p>We can do it the old school way using the <code>-L</code> and the <code>-l</code> options in
-<a href=https://linux.die.net/man/1/ld target=_blank><code>ld</code></a>.</p>
-<p>The rust compiler, just like the gcc can take some linker flags and pass it on
-to the linker in the linking step.</p>
-<pre><code class=language-bash>$ env RUSTFLAGS=&quot;-Lcproject/ -lshared&quot; cargo build
-</code></pre>
-<p>This will tell <code>ld</code> to look for <code>libshared.so</code> file in the search path
-<code>cproject</code> (since we build the shared object in that project folder).</p>
-<h3 id=the-all-rust-way>The all rust way</h3>
-<p>We can tell rust by specifying a <code>links</code> key in <code>package</code> section in <code>Cargo.toml</code>.</p>
-<p>This naming convention is same as <code>dlopen</code>, omit the leading <code>lib</code> from the
-shared object name. So, <code>libshared.so</code> becomes <code>shared</code>.</p>
-<p>After adding this, <code>cargo build</code> will ask you to have a custom build script,
+saying it can&rsquo;t find <code>get_key</code> function.</p><p>There are 2 ways to do it.</p><h3 id=using-linker-flags-link-and-search-paths>Using linker flags, link and search paths</h3><p>We can do it the old school way using the <code>-L</code> and the <code>-l</code> options in
+<a href=https://linux.die.net/man/1/ld target=_blank><code>ld</code></a>.</p><p>The rust compiler, just like the gcc can take some linker flags and pass it on
+to the linker in the linking step.</p><pre><code class=language-bash>$ env RUSTFLAGS=&quot;-Lcproject/ -lshared&quot; cargo build
+</code></pre><p>This will tell <code>ld</code> to look for <code>libshared.so</code> file in the search path
+<code>cproject</code> (since we build the shared object in that project folder).</p><h3 id=the-all-rust-way>The all rust way</h3><p>We can tell rust by specifying a <code>links</code> key in <code>package</code> section in <code>Cargo.toml</code>.</p><p>This naming convention is same as <code>dlopen</code>, omit the leading <code>lib</code> from the
+shared object name. So, <code>libshared.so</code> becomes <code>shared</code>.</p><p>After adding this, <code>cargo build</code> will ask you to have a custom build script,
 i.e. <code>build.rs</code>. This very specific use case is present in the
-<a href=https://rust-lang.github.io/rust-bindgen/tutorial-3.html target=_blank>bindgen manual</a></p>
-<pre><code class=language-rs>use std::env;
+<a href=https://rust-lang.github.io/rust-bindgen/tutorial-3.html target=_blank>bindgen manual</a></p><pre><code class=language-rs>use std::env;
 
 fn main() {
     let project_dir = env::var(&quot;CARGO_MANIFEST_DIR&quot;).unwrap();
@@ -281,29 +170,20 @@ fn main() {
     println!(&quot;cargo:rustc-link-search={}&quot;, project_dir); // the &quot;-L&quot; flag
     println!(&quot;cargo:rustc-link-lib=shared&quot;); // the &quot;-l&quot; flag
 }
-</code></pre>
-<p>We tell cargo to use this <code>build.rs</code> file by specifying the <code>build</code> key in the
-<code>package</code> section in <code>Cargo.toml</code>.</p>
-<pre><code class=language-toml>[package]
+</code></pre><p>We tell cargo to use this <code>build.rs</code> file by specifying the <code>build</code> key in the
+<code>package</code> section in <code>Cargo.toml</code>.</p><pre><code class=language-toml>[package]
 name = test-rs
 ...
 links = &quot;shared&quot;
 build = &quot;build.rs&quot;
-</code></pre>
-<p>Now, when we run, we should get a successful build. Run a <code>cargo clean</code> to make
-sure old artefacts are removed.</p>
-<pre><code class=language-sh>$ cargo clean &amp;&amp; cargo build
-</code></pre>
-<h2 id=lets-celebrate-our-victory>Let&rsquo;s celebrate our victory</h2>
-<p>We are ready to fly..</p>
-<pre><code class=language-sh>$ cargo build
+</code></pre><p>Now, when we run, we should get a successful build. Run a <code>cargo clean</code> to make
+sure old artefacts are removed.</p><pre><code class=language-sh>$ cargo clean &amp;&amp; cargo build
+</code></pre><h2 id=lets-celebrate-our-victory>Let&rsquo;s celebrate our victory</h2><p>We are ready to fly..</p><pre><code class=language-sh>$ cargo build
 $ ./target/debug/test-rs
 ./target/debug/test-rs: error while loading shared libraries: libshared.so:
 cannot open shared object file: No such file or directory
-</code></pre>
-<p>But wait, this is trivial, remember <code>LD_LIBRARY_PATH</code>. All binaries that have
-dynamic dependencies should be told where to find those dependencies. eg:</p>
-<pre><code class=language-bash>$ ldd $HOME/.cargo/bin/cargo
+</code></pre><p>But wait, this is trivial, remember <code>LD_LIBRARY_PATH</code>. All binaries that have
+dynamic dependencies should be told where to find those dependencies. eg:</p><pre><code class=language-bash>$ ldd $HOME/.cargo/bin/cargo
         linux-vdso.so.1 (0x00007ffe401f4000)
         libdl.so.2 =&gt; /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f6ed709c000)
         librt.so.1 =&gt; /lib/x86_64-linux-gnu/librt.so.1 (0x00007f6ed6e94000)
@@ -312,12 +192,9 @@ dynamic dependencies should be told where to find those dependencies. eg:</p>
         libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f6ed666c000)
         libm.so.6 =&gt; /lib/x86_64-linux-gnu/libm.so.6 (0x00007f6ed62ce000)
         /lib64/ld-linux-x86-64.so.2 (0x00007f6ed7e2c000)
-</code></pre>
-<p>Notice, how all the shared objects are mapped to a physical location in the
+</code></pre><p>Notice, how all the shared objects are mapped to a physical location in the
 memory which is usually part of <code>/lib</code> and <code>/lib64</code>. For an exhustive list look at
-<code>/etc/ld.so.conf.d/</code>.</p>
-<p>We can set the environment variable <code>LD_LIBRARY_PATH</code> and then it should run.</p>
-<pre><code class=language-sh>$ env LD_LIBRARY_PATH=cproject target/debug/test-rs
+<code>/etc/ld.so.conf.d/</code>.</p><p>We can set the environment variable <code>LD_LIBRARY_PATH</code> and then it should run.</p><pre><code class=language-sh>$ env LD_LIBRARY_PATH=cproject target/debug/test-rs
 the key: Some(
     key_spec {
         key: [
@@ -331,49 +208,31 @@ the key: Some(
         type_: 0x00007fbafa2f2665,
     },
 )
-</code></pre>
-<p><strong>Rejoice!!</strong></p>
-<h2 id=something-interesting-that-i-observed>Something interesting that I observed</h2>
-<p>The original intent of this excercise was to get Rust to use C++ library. So, the
+</code></pre><p><strong>Rejoice!!</strong></p><h2 id=something-interesting-that-i-observed>Something interesting that I observed</h2><p>The original intent of this excercise was to get Rust to use C++ library. So, the
 initial version of the C source was in C++. Then, I decided to move to something
 simpler. But I forgot to rename the header file to a <code>.h</code> extension from a
 <code>.hpp</code> extension. Due to that, <code>bindgen</code> was compiling those headers into
-mangled <code>link_name</code>s causing a lot of pain to me.</p>
-<p>When generating the ffi bindings for the headers named as <code>.hpp</code> instead of
-<code>.h</code>, I was getting</p>
-<pre><code class=language-rs>extern &quot;C&quot; {
+mangled <code>link_name</code>s causing a lot of pain to me.</p><p>When generating the ffi bindings for the headers named as <code>.hpp</code> instead of
+<code>.h</code>, I was getting</p><pre><code class=language-rs>extern &quot;C&quot; {
     #[link_name = &quot;\u{1}_Z7get_keyv&quot;]
     pub fn get_key() -&gt; *mut key_spec;
 }
-</code></pre>
-<p>Notice the <code>link_name</code>, an additional attribute.The cargo builds kept failing due to
+</code></pre><p>Notice the <code>link_name</code>, an additional attribute.The cargo builds kept failing due to
 the following errors when I was trying to use the above generated code with a C
-version of the shared object build, i.e. using <code>gcc</code>.</p>
-<pre><code class=language-sh>&quot;cc&quot; &quot;-Wl,--as-needed&quot; ... &quot;-L&quot; &quot;cproject&quot; ... &quot;-l&quot; &quot;shared&quot; ...
-</code></pre>
-<p>It seems to be looking at the correct locations, but it&rsquo;s not able to find the
-mangled name.</p>
-<p>Notice the <code>link_name</code>, it&rsquo;s not <code>get_key</code> but <code>_Z7get_keyv</code>. This is called
+version of the shared object build, i.e. using <code>gcc</code>.</p><pre><code class=language-sh>&quot;cc&quot; &quot;-Wl,--as-needed&quot; ... &quot;-L&quot; &quot;cproject&quot; ... &quot;-l&quot; &quot;shared&quot; ...
+</code></pre><p>It seems to be looking at the correct locations, but it&rsquo;s not able to find the
+mangled name.</p><p>Notice the <code>link_name</code>, it&rsquo;s not <code>get_key</code> but <code>_Z7get_keyv</code>. This is called
 <a href=https://en.wikipedia.org/wiki/Name_mangling target=_blank>Name Mangling</a>, compiler&rsquo;s way of
 embedding meta data for the linker. Let&rsquo;s see what name is present in the <code>gcc</code>
-version of the shared object that the linker is trying to look in.</p>
-<pre><code class=language-sh>$ objdump -d libshared.so | grep get_key
+version of the shared object that the linker is trying to look in.</p><pre><code class=language-sh>$ objdump -d libshared.so | grep get_key
 000000000000060a &lt;get_key&gt;:
  627:   eb 18                   jmp    641 &lt;get_key+0x37&gt;
  645:   7e e2                   jle    629 &lt;get_key+0x1f&gt;
-</code></pre>
-<p>This seems to be plain and simple, no mangling at all, as expected.</p>
-<p>We can explicitly tell bindgen to not use those compiler provided mangled link
-names. by specifying</p>
-<pre><code class=language-sh>bindgen --distrust-clang-mangling &lt;header file&gt; -o src/shared.rs
-</code></pre>
-<hr>
-<h2 id=observing-bindgen-with-c>Observing bindgen with C++</h2>
-<p>Mangling is a very prominent feature in C++. Which means, g++
+</code></pre><p>This seems to be plain and simple, no mangling at all, as expected.</p><p>We can explicitly tell bindgen to not use those compiler provided mangled link
+names. by specifying</p><pre><code class=language-sh>bindgen --distrust-clang-mangling &lt;header file&gt; -o src/shared.rs
+</code></pre><hr><h2 id=observing-bindgen-with-c>Observing bindgen with C++</h2><p>Mangling is a very prominent feature in C++. Which means, g++
 should be able to produce the same results as <code>bindgen</code> when asserting the
-project to be a c++ project by the <code>.hpp</code> extension.</p>
-<p>Let&rsquo;s compile the source shared object with <code>g++</code> instead of <code>gcc</code>.</p>
-<pre><code class=language-bash>$ g++ -shared -Isrc/include src/shared/shared.c -o libshared.so
+project to be a c++ project by the <code>.hpp</code> extension.</p><p>Let&rsquo;s compile the source shared object with <code>g++</code> instead of <code>gcc</code>.</p><pre><code class=language-bash>$ g++ -shared -Isrc/include src/shared/shared.c -o libshared.so
 $ file libshared.so
 libshared.so: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV),
 dynamically linked, BuildID[sha1]=002b495798ab8683e9596c1e2a85104dc5e48fb6, not stripped
@@ -382,185 +241,16 @@ $ objdump -d libshared.so | grep get_key
 000000000000061a &lt;_Z7get_keyv&gt;:
  63b:   7f 1a                   jg     657 &lt;_Z7get_keyv+0x3d&gt;
  655:   eb e0                   jmp    637 &lt;_Z7get_keyv+0x1d&gt;
-</code></pre>
-<p>So, the shared object built with <code>g++</code> does produce the expected mangled name.</p>
-<pre><code class=language-bash>$ c++filt _Z7get_keyv
+</code></pre><p>So, the shared object built with <code>g++</code> does produce the expected mangled name.</p><pre><code class=language-bash>$ c++filt _Z7get_keyv
 get_key()
-</code></pre>
-<p>And is able to reverse properly too.</p>
-<p>Thanks to <a href=https://www.reddit.com/r/rust/comments/iovqrw/rust_and_ffi_initiation/g4gxp1y target=_blank>/u/boomshroom</a>
-for pointing this <code>.h</code> to <code>.hpp</code> error out.</p>
-<h3 id=references>References</h3>
-<p>Some interesting things that I came across that may help</p>
-<ul>
-<li><a href="https://www.youtube.com/watch?v=Mln3idSVsxg" target=_blank>Linux Executables: From Assembly to C and Rust</a></li>
-<li><a href="https://www.youtube.com/watch?v=jR2hUhjcAXI" target=_blank>Before Main: How Executables Work on Linux</a></li>
-<li><a href=https://rust-lang.github.io/rust-bindgen/ target=_blank>Rust bindgen tutorial</a></li>
-</ul>
-<hr>
-<p>Discussion thread: <a href=https://www.reddit.com/r/rust/comments/iovqrw/rust_and_ffi_initiation/ target=_blank>here</a></p>
-</div>
-</article>
-<div class="license markdown-body">
-<blockquote>
-<p>Unless otherwise noted, the content of this site is licensed under <a rel=license href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>CC BY-NC-SA 4.0</a>.</p>
-</blockquote>
-</div>
-</div>
-<aside class="col-12 col-md-3 float-left sidebar">
-<div class="sidebar-item sidebar-pages">
-<h3>Pages</h3>
-<ul>
-<li>
-<a href=/posts>Home</a>
-</li>
-<li>
-<a href=/about/>About</a>
-</li>
-<li>
-<a href=/index.xml>RSS</a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-links">
-<h3>Links</h3>
-<ul>
-<li>
-<a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a>
-</li>
-<li>
-<a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-tags">
-<h3>Tags</h3>
-<div>
-</div>
-</div>
-<div class="sidebar-item sidebar-toc">
-<h3>Table of Contents</h3><nav id=TableOfContents>
-<ul>
-<li><a href=#shared-objects>Shared objects</a></li>
-<li><a href=#interoperability-with-rust>Interoperability with Rust</a>
-<ul>
-<li><a href=#the-c-code-we-would-call>The C code we would call.</a></li>
-</ul>
-</li>
-<li><a href=#interfacing-rust-with-the-shared-object>Interfacing rust with the shared object</a>
-<ul>
-<li><a href=#generating-the-header-ish-files-for-rust>Generating the header-ish files for rust</a></li>
-</ul>
-</li>
-<li><a href=#building-it-in-rust>Building it in rust</a>
-<ul>
-<li><a href=#using-linker-flags-link-and-search-paths>Using linker flags, link and search paths</a></li>
-<li><a href=#the-all-rust-way>The all rust way</a></li>
-</ul>
-</li>
-<li><a href=#lets-celebrate-our-victory>Let&rsquo;s celebrate our victory</a></li>
-<li><a href=#something-interesting-that-i-observed>Something interesting that I observed</a></li>
-<li><a href=#observing-bindgen-with-c>Observing bindgen with C++</a>
-<ul>
-<li><a href=#references>References</a></li>
-</ul>
-</li>
-</ul>
-</nav></div>
-</aside>
-</div>
-<div class=btn>
-<div class=btn-menu id=btn-menu>
-<i class="iconfont icon-grid-sharp"></i>
-</div>
-<div class=btn-toggle-mode>
-<i class="iconfont icon-contrast-sharp"></i>
-</div>
-<div class=btn-scroll-top>
-<i class="iconfont icon-chevron-up-circle-sharp"></i>
-</div>
-</div>
-<aside class=sidebar-mobile style=display:none>
-<div class=sidebar-wrapper>
-<div class="sidebar-item sidebar-pages">
-<h3>Pages</h3>
-<ul>
-<li>
-<a href=/posts>Home</a>
-</li>
-<li>
-<a href=/about/>About</a>
-</li>
-<li>
-<a href=/index.xml>RSS</a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-links">
-<h3>Links</h3>
-<ul>
-<li>
-<a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a>
-</li>
-<li>
-<a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a>
-</li>
-</ul>
-</div>
-<div class="sidebar-item sidebar-tags">
-<h3>Tags</h3>
-<div>
-</div>
-</div>
-<div class="sidebar-item sidebar-toc">
-<h3>Table of Contents</h3>
-<nav id=TableOfContents>
-<ul>
-<li><a href=#shared-objects>Shared objects</a></li>
-<li><a href=#interoperability-with-rust>Interoperability with Rust</a>
-<ul>
-<li><a href=#the-c-code-we-would-call>The C code we would call.</a></li>
-</ul>
-</li>
-<li><a href=#interfacing-rust-with-the-shared-object>Interfacing rust with the shared object</a>
-<ul>
-<li><a href=#generating-the-header-ish-files-for-rust>Generating the header-ish files for rust</a></li>
-</ul>
-</li>
-<li><a href=#building-it-in-rust>Building it in rust</a>
-<ul>
-<li><a href=#using-linker-flags-link-and-search-paths>Using linker flags, link and search paths</a></li>
-<li><a href=#the-all-rust-way>The all rust way</a></li>
-</ul>
-</li>
-<li><a href=#lets-celebrate-our-victory>Let&rsquo;s celebrate our victory</a></li>
-<li><a href=#something-interesting-that-i-observed>Something interesting that I observed</a></li>
-<li><a href=#observing-bindgen-with-c>Observing bindgen with C++</a>
-<ul>
-<li><a href=#references>References</a></li>
-</ul>
-</li>
-</ul>
-</nav>
-</div>
-</div>
-</aside>
-</main>
-<footer>
-<div class="container-lg clearfix">
-<div class="col-12 footer">
-<span>&copy; 2020-2021
+</code></pre><p>And is able to reverse properly too.</p><p>Thanks to <a href=https://www.reddit.com/r/rust/comments/iovqrw/rust_and_ffi_initiation/g4gxp1y target=_blank>/u/boomshroom</a>
+for pointing this <code>.h</code> to <code>.hpp</code> error out.</p><h3 id=references>References</h3><p>Some interesting things that I came across that may help</p><ul><li><a href="https://www.youtube.com/watch?v=Mln3idSVsxg" target=_blank>Linux Executables: From Assembly to C and Rust</a></li><li><a href="https://www.youtube.com/watch?v=jR2hUhjcAXI" target=_blank>Before Main: How Executables Work on Linux</a></li><li><a href=https://rust-lang.github.io/rust-bindgen/ target=_blank>Rust bindgen tutorial</a></li></ul><hr><p>Discussion thread: <a href=https://www.reddit.com/r/rust/comments/iovqrw/rust_and_ffi_initiation/ target=_blank>here</a></p></div></article><div class="license markdown-body"><blockquote><p>Unless otherwise noted, the content of this site is licensed under <a rel=license href=http://creativecommons.org/licenses/by-nc-sa/4.0/ target=_blank>CC BY-NC-SA 4.0</a>.</p></blockquote></div></div><aside class="col-12 col-md-3 float-left sidebar"><div class="sidebar-item sidebar-pages"><h3>Pages</h3><ul><li><a href=/posts>Home</a></li><li><a href=/about/>About</a></li><li><a href=/index.xml>RSS</a></li></ul></div><div class="sidebar-item sidebar-links"><h3>Links</h3><ul><li><a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a></li><li><a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a></li></ul></div><div class="sidebar-item sidebar-tags"><h3>Tags</h3><div><span><a href=/tags/listen/>listen</a></span>
+<span><a href=/tags/video/>video</a></span></div></div><div class="sidebar-item sidebar-toc"><h3>Table of Contents</h3><nav id=TableOfContents><ul><li><a href=#shared-objects>Shared objects</a></li><li><a href=#interoperability-with-rust>Interoperability with Rust</a><ul><li><a href=#the-c-code-we-would-call>The C code we would call.</a></li></ul></li><li><a href=#interfacing-rust-with-the-shared-object>Interfacing rust with the shared object</a><ul><li><a href=#generating-the-header-ish-files-for-rust>Generating the header-ish files for rust</a></li></ul></li><li><a href=#building-it-in-rust>Building it in rust</a><ul><li><a href=#using-linker-flags-link-and-search-paths>Using linker flags, link and search paths</a></li><li><a href=#the-all-rust-way>The all rust way</a></li></ul></li><li><a href=#lets-celebrate-our-victory>Let&rsquo;s celebrate our victory</a></li><li><a href=#something-interesting-that-i-observed>Something interesting that I observed</a></li><li><a href=#observing-bindgen-with-c>Observing bindgen with C++</a><ul><li><a href=#references>References</a></li></ul></li></ul></nav></div></aside></div><div class=btn><div class=btn-menu id=btn-menu><i class="iconfont icon-grid-sharp"></i></div><div class=btn-toggle-mode><i class="iconfont icon-contrast-sharp"></i></div><div class=btn-scroll-top><i class="iconfont icon-chevron-up-circle-sharp"></i></div></div><aside class=sidebar-mobile style=display:none><div class=sidebar-wrapper><div class="sidebar-item sidebar-pages"><h3>Pages</h3><ul><li><a href=/posts>Home</a></li><li><a href=/about/>About</a></li><li><a href=/index.xml>RSS</a></li></ul></div><div class="sidebar-item sidebar-links"><h3>Links</h3><ul><li><a href=https://github.com/prateeknischal target=_blank><span>GitHub</span></a></li><li><a href=https://twitter.com/pikaynu target=_blank><span>Twitter</span></a></li></ul></div><div class="sidebar-item sidebar-tags"><h3>Tags</h3><div><span><a href=/tags/listen/>listen</a></span>
+<span><a href=/tags/video/>video</a></span></div></div><div class="sidebar-item sidebar-toc"><h3>Table of Contents</h3><nav id=TableOfContents><ul><li><a href=#shared-objects>Shared objects</a></li><li><a href=#interoperability-with-rust>Interoperability with Rust</a><ul><li><a href=#the-c-code-we-would-call>The C code we would call.</a></li></ul></li><li><a href=#interfacing-rust-with-the-shared-object>Interfacing rust with the shared object</a><ul><li><a href=#generating-the-header-ish-files-for-rust>Generating the header-ish files for rust</a></li></ul></li><li><a href=#building-it-in-rust>Building it in rust</a><ul><li><a href=#using-linker-flags-link-and-search-paths>Using linker flags, link and search paths</a></li><li><a href=#the-all-rust-way>The all rust way</a></li></ul></li><li><a href=#lets-celebrate-our-victory>Let&rsquo;s celebrate our victory</a></li><li><a href=#something-interesting-that-i-observed>Something interesting that I observed</a></li><li><a href=#observing-bindgen-with-c>Observing bindgen with C++</a><ul><li><a href=#references>References</a></li></ul></li></ul></nav></div></div></aside></main><footer><div class="container-lg clearfix"><div class="col-12 footer"><span>&copy; 2020-2022
 <a href=https://prateeknischal.github.io>Prateek</a>
 | <a href=https://github.com/prateeknischal/prateeknischal.github.io>Source code</a>
-| Powered by <a href=https://github.com/dsrkafuu/hugo-theme-fuji/ target=_blank>Fuji-v2</a> & <a href=https://gohugo.io/ target=_blank>Hugo</a>
-</span>
-</div>
-</div>
-</footer>
-<script defer src=https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js></script>
+| Powered by <a href=https://github.com/dsrkafuu/hugo-theme-fuji/ target=_blank>Fuji-v2</a> & <a href=https://gohugo.io/ target=_blank>Hugo</a></span></div></div></footer><script defer src=https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js></script>
 <script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js></script>
-<script defer src=/assets/js/fuji.min.js></script>
-</body>
-</html>
+<script defer src=/assets/js/fuji.min.js></script></body></html>
